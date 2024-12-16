@@ -1,20 +1,127 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function App() {
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Home from "./screens/main/Home";
+import Sport from "./screens/main/Sport";
+import Trend from "./screens/main/Trend";
+import Profile from "./screens/main/Profile";
+const Stack = createStackNavigator();
+function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home" component={Home} />
+    </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function SportScreen() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Sport" component={Sport} />
+    </Stack.Navigator>
+  );
+}
+function TrendScreen() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Trend" component={Trend} />
+    </Stack.Navigator>
+  );
+}
+function ProfileScreen() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Profile" component={Profile} />
+    </Stack.Navigator>
+  );
+}
+const Drawer = createDrawerNavigator();
+function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <Drawer.Navigator
+        screenOptions={{
+          drawerActiveBackgroundColor: "#ebf1f9",
+          drawerActiveTintColor: "#14375f",
+          drawerInactiveTintColor:"#ccc",
+          drawerLabelStyle: { fontFamily: "serif", fontWeight: "bold", fontSize:13 },
+          drawerStyle:{
+            width:200,
+          },
+          drawerItemStyle:{
+            borderRadius: 10,
+            height:50,
+          },
+          headerTitleStyle:{
+            fontWeight: "bold",
+            fontSize: 16,
+            fontFamily: "serif",
+          }
+        }}
+      >
+        <Drawer.Screen
+          name="HomeScreen"
+          component={HomeScreen}
+          options={{
+            title: "Trang chủ",
+            drawerIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="home"
+                size={24}
+                color={focused ? "#14375f" : "#ccc"}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="SportScreen"
+          component={SportScreen}
+          options={{
+            title: "Thể thao",
+            drawerIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="soccer"
+                size={24}
+                color={focused ? "#14375f" : "#ccc"}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="TrendScreen"
+          component={TrendScreen}
+          options={{
+            title: "Xu hướng",
+            drawerIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="trending-up"
+                size={24}
+                color={focused ? "#14375f" : "#ccc"}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
+          options={{
+            title: "Hồ sơ",
+            drawerIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="account"
+                size={24}
+                color={focused ? "#14375f" : "#ccc"}
+              />
+            ),
+          }}
+        />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+}
+export default function App() {
+  return (
+    //SettingProvider
+    <AppNavigator />
+  );
+}
