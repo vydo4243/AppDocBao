@@ -5,7 +5,7 @@ import {Dimensions} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 const windowWidth = Dimensions.get('window').width;
 
-export default function Thumbnail({title, image, content}){
+export default function Thumbnail({id, title, image, nav}){
     const navigation = useNavigation();
     const {theme, setReading} = useContext(SettingContext);
     const styles=StyleSheet.create({
@@ -34,8 +34,8 @@ export default function Thumbnail({title, image, content}){
     })
     return(
         <TouchableOpacity onPress={()=>{
-            setReading(value =>!value);
-            navigation.navigate('SportPost',title,image,content)    //cần sửa chỗ này
+            setReading(true);
+            navigation.navigate(nav,id) ;
         }}>
         <View style={styles.container}>
             <Image style={styles.image} source={image}/>

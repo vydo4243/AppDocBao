@@ -178,7 +178,7 @@ function AppNavigator() {
           component={ProfileScreen}
           options={({route})=>({
             title: "Hồ sơ",
-            headerShown: getFocusedRouteNameFromRoute(route) == "Profile",
+            headerShown: getFocusedRouteNameFromRoute(route) == "Profile"||(!getFocusedRouteNameFromRoute(route)),
             drawerIcon: ({ focused }) => (
               <MaterialCommunityIcons
                 name="account"
