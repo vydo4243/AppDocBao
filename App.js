@@ -47,18 +47,17 @@ function AppNavigator() {
           drawerActiveBackgroundColor: "#ebf1f9",
           drawerActiveTintColor: theme.color,
           drawerInactiveTintColor:theme.inactive,
-          drawerLabelStyle: { fontFamily: theme.font, fontWeight: "bold", fontSize:13 },
+          drawerLabelStyle: { fontFamily: theme.font.bold, fontSize:13, },
           drawerStyle:{
             width:200,
           },
           drawerItemStyle:{
             borderRadius: 10,
-            height:50,
           },
           headerTitleStyle:{
-            fontWeight: "bold",
+            width:"100%",
             fontSize: 16,
-            fontFamily: theme.font,
+            fontFamily: theme.font.bold,
           }
         }}
       >
