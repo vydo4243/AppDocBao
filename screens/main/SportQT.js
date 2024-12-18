@@ -1,9 +1,9 @@
 import { StyleSheet,View,Text } from "react-native";
 
-export default function AboutUs(){
+export default function SportQT(){
     return(
         <View style={styles.container}>
-            <Text>Ve chung toi</Text>
+            <Text>Sport quốc tế</Text>
         </View>
     )
 }

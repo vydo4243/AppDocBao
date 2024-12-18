@@ -3,7 +3,7 @@ import Thumbnail from "../../component/Thumbnail";
 export default function Home(){
     return(
         <View style={styles.container}>
-            
+            <Text>Trang chủ</Text>
         </View>
     )
 }
@@ -13,6 +13,5 @@ const styles=StyleSheet.create({
         flex:1,
         justifyContent:'center',
         alignItems: "center",
-        backgroundColor: "red"
     },
 })

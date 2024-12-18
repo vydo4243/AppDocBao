@@ -1,9 +1,9 @@
 import { StyleSheet,View,Text } from "react-native";
-
+import Thumbnail from "../../component/Thumbnail";
 export default function Sport(){
     return(
         <View style={styles.container}>
-            <Text>Hi</Text>
+            <Text>Sport trong nước</Text>
         </View>
     )
 }

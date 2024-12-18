@@ -3,7 +3,7 @@ import { StyleSheet,View,Text } from "react-native";
 export default function Trend(){
     return(
         <View style={styles.container}>
-            <Text>Hi</Text>
+            <Text>Xu hướng</Text>
         </View>
     )
 }
