@@ -9,6 +9,9 @@ import SportQT from "./screens/main/SportQT";
 import Trend from "./screens/main/Trend";
 import Profile from "./screens/main/Profile";
 import Post from "./screens/main/Post";
+import LogIn from "./screens/login/LogIn"
+import SignUp from "./screens/login/SignUp"
+import ForgotPassword from "./screens/login/ForgotPassword"
 import AboutUs from "./screens/profile-opt/AboutUs"
 import Bookmark from "./screens/profile-opt/Bookmark"
 import Notification from "./screens/profile-opt/Notification"
@@ -75,9 +78,9 @@ function ProfileScreen() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="LogIn" component={Profile} />
-      <Stack.Screen name="SignUp" component={Profile} />
-      <Stack.Screen name="ForgotPassword" component={Profile} />
+      <Stack.Screen name="LogIn" component={LogIn} />
+      <Stack.Screen name="SignUp" component={SignUp} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       <Stack.Screen name="AboutUs" component={AboutUs} />
       <Stack.Screen name="Bookmark" component={Bookmark} />
       <Stack.Screen name="Notification" component={Notification} />
