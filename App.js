@@ -6,6 +6,8 @@ import Home from "./screens/main/Home";
 import Sport from "./screens/main/Sport";
 import Trend from "./screens/main/Trend";
 import Profile from "./screens/main/Profile";
+import { useContext } from "react";
+import { SettingProvider, SettingContext } from "./context/SettingContext";
 const Stack = createStackNavigator();
 function HomeScreen() {
   return (
@@ -37,14 +39,15 @@ function ProfileScreen() {
 }
 const Drawer = createDrawerNavigator();
 function AppNavigator() {
+  const { theme } = useContext(SettingContext);
   return (
     <NavigationContainer>
       <Drawer.Navigator
         screenOptions={{
           drawerActiveBackgroundColor: "#ebf1f9",
-          drawerActiveTintColor: "#14375f",
-          drawerInactiveTintColor:"#ccc",
-          drawerLabelStyle: { fontFamily: "serif", fontWeight: "bold", fontSize:13 },
+          drawerActiveTintColor: theme.color,
+          drawerInactiveTintColor:theme.inactive,
+          drawerLabelStyle: { fontFamily: theme.font, fontWeight: "bold", fontSize:13 },
           drawerStyle:{
             width:200,
           },
@@ -55,7 +58,7 @@ function AppNavigator() {
           headerTitleStyle:{
             fontWeight: "bold",
             fontSize: 16,
-            fontFamily: "serif",
+            fontFamily: theme.font,
           }
         }}
       >
@@ -68,7 +71,7 @@ function AppNavigator() {
               <MaterialCommunityIcons
                 name="home"
                 size={24}
-                color={focused ? "#14375f" : "#ccc"}
+                color={focused ? theme.color : theme.inactive}
               />
             ),
           }}
@@ -82,7 +85,7 @@ function AppNavigator() {
               <MaterialCommunityIcons
                 name="soccer"
                 size={24}
-                color={focused ? "#14375f" : "#ccc"}
+                color={focused ? theme.color : theme.inactive}
               />
             ),
           }}
@@ -96,7 +99,7 @@ function AppNavigator() {
               <MaterialCommunityIcons
                 name="trending-up"
                 size={24}
-                color={focused ? "#14375f" : "#ccc"}
+                color={focused ? theme.color : theme.inactive}
               />
             ),
           }}
@@ -110,7 +113,7 @@ function AppNavigator() {
               <MaterialCommunityIcons
                 name="account"
                 size={24}
-                color={focused ? "#14375f" : "#ccc"}
+                color={focused ? theme.color : theme.inactive}
               />
             ),
           }}
@@ -121,7 +124,8 @@ function AppNavigator() {
 }
 export default function App() {
   return (
-    //SettingProvider
-    <AppNavigator />
+    <SettingProvider>
+      <AppNavigator />
+    </SettingProvider>
   );
 }
