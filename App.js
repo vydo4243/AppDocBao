@@ -17,6 +17,9 @@ import Bookmark from "./screens/profile-opt/Bookmark"
 import Notification from "./screens/profile-opt/Notification"
 import Personal from "./screens/profile-opt/Personal"
 import Policy from "./screens/profile-opt/Poilcy"
+import AddPost  from "./screens/writer/AddPost"
+import EditPost  from "./screens/writer/EditPost"
+import YourPost  from "./screens/writer/YourPost"
 import { useContext } from "react";
 import { SettingProvider, SettingContext } from "./context/SettingContext";
 const Stack = createStackNavigator();
@@ -75,17 +78,27 @@ function TrendScreen() {
   );
 }
 function ProfileScreen() {
+  const { theme } = useContext(SettingContext);
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="LogIn" component={LogIn} />
-      <Stack.Screen name="SignUp" component={SignUp} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-      <Stack.Screen name="AboutUs" component={AboutUs} />
-      <Stack.Screen name="Bookmark" component={Bookmark} />
-      <Stack.Screen name="Notification" component={Notification} />
-      <Stack.Screen name="Personal" component={Personal} />
-      <Stack.Screen name="Policy" component={Policy} />
+    <Stack.Navigator screenOptions={{
+      headerTitleStyle:{        
+          width:"100%",
+          fontSize: 18,
+          fontFamily: theme.font.bold,
+      }
+    }}>
+      <Stack.Screen name="Profile" component={Profile} options={{headerShown:false}}/>
+      <Stack.Screen name="LogIn" component={LogIn} options={{headerShown:false}}/>
+      <Stack.Screen name="SignUp" component={SignUp} options={{headerShown:false}}/>
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{headerShown:false}}/>
+      <Stack.Screen name="AboutUs" component={AboutUs} options={{title:"Về chúng tôi"}}/>
+      <Stack.Screen name="Bookmark" component={Bookmark} options={{title:"Bài viết đã lưu"}}/>
+      <Stack.Screen name="Notification" component={Notification} options={{title:"Thông báo"}}/>
+      <Stack.Screen name="Personal" component={Personal} options={{title:"Thông tin cá nhân"}}/>
+      <Stack.Screen name="Policy" component={Policy} options={{title:"Chính sách & Điều khoản"}}/>
+      <Stack.Screen name="YourPost" component={YourPost} options={{title:"Bài viết của bạn"}}/>
+      <Stack.Screen name="AddPost" component={AddPost} options={{title:"Tạo bài viết"}}/>
+      <Stack.Screen name="EditPost" component={EditPost} options={{title:"Chỉnh sửa bài viết"}}/>
     </Stack.Navigator>
   );
 }
@@ -108,7 +121,7 @@ function AppNavigator() {
           },
           headerTitleStyle:{
             width:"100%",
-            fontSize: 16,
+            fontSize: 18,
             fontFamily: theme.font.bold,
           }
         }}
@@ -163,8 +176,9 @@ function AppNavigator() {
         <Drawer.Screen
           name="ProfileScreen"
           component={ProfileScreen}
-          options={{
+          options={({route})=>({
             title: "Hồ sơ",
+            headerShown: getFocusedRouteNameFromRoute(route) == "Profile",
             drawerIcon: ({ focused }) => (
               <MaterialCommunityIcons
                 name="account"
@@ -172,7 +186,7 @@ function AppNavigator() {
                 color={focused ? theme.color : theme.inactive}
               />
             ),
-          }}
+          })}
         />
       </Drawer.Navigator>
     </NavigationContainer>
