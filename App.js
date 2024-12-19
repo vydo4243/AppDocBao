@@ -99,6 +99,7 @@ function ProfileScreen() {
       <Stack.Screen name="YourPost" component={YourPost} options={{title:"Bài viết của bạn"}}/>
       <Stack.Screen name="AddPost" component={AddPost} options={{title:"Tạo bài viết"}}/>
       <Stack.Screen name="EditPost" component={EditPost} options={{title:"Chỉnh sửa bài viết"}}/>
+      <Stack.Screen name="Post" component={Post} options={{headerShown:false}}/>
     </Stack.Navigator>
   );
 }
