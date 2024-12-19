@@ -10,8 +10,9 @@ import Trend from "./screens/main/Trend";
 import Profile from "./screens/main/Profile";
 import Post from "./screens/main/Post";
 import LogIn from "./screens/login/LogIn"
-import SignUp from "./screens/login/SignUp"
+import SignUp from "./screens/register/SignUp"
 import ForgotPassword from "./screens/login/ForgotPassword"
+import PasswordReset from "./screens/login/PasswordReset"
 import AboutUs from "./screens/profile-opt/AboutUs"
 import Bookmark from "./screens/profile-opt/Bookmark"
 import Notification from "./screens/profile-opt/Notification"
@@ -22,6 +23,7 @@ import EditPost  from "./screens/writer/EditPost"
 import YourPost  from "./screens/writer/YourPost"
 import { useContext } from "react";
 import { SettingProvider, SettingContext } from "./context/SettingContext";
+import { UserProvider} from "./context/UserContext"; // Import UserProvider
 const Stack = createStackNavigator();
 function HomeScreen() {
   return (
@@ -87,10 +89,11 @@ function ProfileScreen() {
           fontFamily: theme.font.bold,
       }
     }}>
-      <Stack.Screen name="Profile" component={Profile} options={{headerShown:false}}/>
+      <Stack.Screen name="Profile" component={Profile} options={{headerShown:false, title:"Hồ sơ"}}/>
       <Stack.Screen name="LogIn" component={LogIn} options={{headerShown:false}}/>
       <Stack.Screen name="SignUp" component={SignUp} options={{headerShown:false}}/>
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{headerShown:false}}/>
+      <Stack.Screen name="PasswordReset" component={PasswordReset} options={{headerShown:false}}/>
       <Stack.Screen name="AboutUs" component={AboutUs} options={{title:"Về chúng tôi"}}/>
       <Stack.Screen name="Bookmark" component={Bookmark} options={{title:"Bài viết đã lưu"}}/>
       <Stack.Screen name="Notification" component={Notification} options={{title:"Thông báo"}}/>
@@ -196,7 +199,9 @@ function AppNavigator() {
 export default function App() {
   return (
     <SettingProvider>
+      <UserProvider>
       <AppNavigator />
+      </UserProvider>
     </SettingProvider>
   );
 }
