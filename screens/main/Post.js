@@ -1,105 +1,177 @@
-import { StyleSheet,View,Text, TouchableOpacity, Image , ScrollView} from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { SettingContext } from "../../context/SettingContext";
-import { useContext, useState, useRef} from "react";
+import { useContext, useState, useRef } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-export default function Post({id}){
-    //Lấy từ CSDL các thông tin bài viết dựa theo ID
-    const [title,setTitle] = useState("Đây là bài viết mẫu");
-    const [image,setImage] = useState("");
-    const [content,setContent] = useState(
-`Bài viết này là bài viết mẫu, với mục đích làm mẫu để thiết kết FE, do chưa kết nối CSDL nên chưa có dữ liệu cụ thể cho các bài viết. 
-Nội dung hiển thị là như nhau.
+import Zocial from "@expo/vector-icons/Zocial";
+export default function Post({ id }) {
+  //Lấy từ CSDL các thông tin bài viết dựa theo ID
+  const [title, setTitle] = useState("Đây là bài viết mẫu");
+  const [image, setImage] = useState("");
+  const [content, setContent] = useState(
+    `Bài viết này là bài viết mẫu, với mục đích làm mẫu để thiết kết FE, do chưa kết nối CSDL nên chưa có dữ liệu cụ thể cho các bài viết. 
+Vải dứa - sản phẩm thương mại từ tơ, sợi dứa của ECOFA lần đầu ra mắt thu hút cộng đồng khởi nghiệp, nhất là những người ủng hộ sản phẩm thời trang xanh.
+Tốt nghiệp Đại học Bách khoa Hà Nội, anh Đậu Văn Nam (32 tuổi, Hà Nội) sang Nhật làm việc theo diện phái cử với công việc thiết kế cơ khí, máy móc tại một công ty đối tác của Toyota. Nhưng Đậu Văn Nam lúc nào cũng nung nấu ý định về Việt Nam khởi nghiệp. 
+Một lần tình cờ, khi tới một quán bar ở Nhật, Nam được nhân viên pha chế giới thiệu cho rượu Tequila – một loại rượu được làm từ cây họ thùa có nguồn gốc từ Mexico. Anh tìm hiểu sâu hơn thì biết củ của loại cây này được chưng lên thành rượu, còn lá thì được sử dụng để kéo thành sợi. Cơ duyên ấy gợi cho Nam ý tưởng về việc tìm về cây dứa tương tự ở Việt Nam.
+Khi biết rằng người Philipines đang sử dụng sợi của cây dứa tương tự dứa Việt Nam để làm quốc phục, anh nhận ra đây là một cơ hội lớn. Bởi lẽ, Việt Nam có lợi thế vùng trồng lớn với diện tích 50.000ha dứa trải dài từ Bắc chí Nam, đặc biệt hiện chưa có dự án nào từng thử nghiệm ứng dụng cây dứa vào sản xuất sợi và các thành phẩm khác.
+Trong lĩnh vực sợi, vùng trồng lớn là điều kiện bắt buộc, tầm nhìn của Nam là cải tiến quy trình sản xuất sợi dứa trên quy mô công nghiệp thay vì thủ công, từ đó xuất khẩu ra thế giới.
+Nghĩ là làm, Nam nhanh chóng quyết định trở về mảnh đất Ninh Bình để nghiên cứu vùng nguyên liệu dứa.
+“Sau khi về thăm vùng nguyên liệu, thấy cuộc sống bà con nơi đây còn bấp bênh, giá cả phụ thuộc vào thương lái, lá dứa bị bỏ đi, bị đốt cùng với túi nilon trong quá trình trồng, rất lãng phí và gây hại cho môi trường, động lực khởi nghiệp trong tôi càng trở nên mạnh mẽ ”, Nam tâm sự.
+Mọi thứ từ số 0, họ bắt đầu tách sợi dứa bằng tay lấy mẫu xơ đầu tiên rồi và những ấp ủ về một sản phẩm thuần tự nhiên của người Việt ra đời với những bước đệm từ đó.
 
-Chiều 18/12, Công ty Xổ số Điện toán Việt Nam (Vietlott) - Bộ Tài chính trao giải đặc biệt của sản phẩm Max 3D+ kỳ quay 853 với tổng trị giá hơn 30 tỷ đồng cho bà P. (ngụ TP.HCM).
+11 sản phẩm từ phế phẩm của quá trình sản xuất vải dứa
+Ở các vùng trồng dứa, sau khi thu hoạch, lá dứa chỉ là phế phẩm, thường được nông dân phun cỏ cháy rồi đốt đi. Các vùng bằng phẳng hơn như tại Nghệ An, họ dùng máy băm rồi đốt vừa tốn công vừa gây ô nhiễm môi trường.
+Làm xong máy tách xơ lá dứa bán tự động đầu tiên với chi phí 150-200 triệu đồng, ECOFA đã nhân bản lên 15 máy rồi phát cho mỗi hộ dân một cái, sau đó thu gom lại sợi. Nhiều bài học được các kỹ sư trẻ vỡ ra, có lúc tưởng như thất bại.
+"Khi phát máy cho các hộ dân trồng dứa tự tách xơ, sản lượng rất thấp, lúc 5 lúc 10 cân, không có định mức nào cả. Tính ra chi phí mỗi cân lá dứa lên đến 2.000 đồng", Nam nói về thất bại đầu tiên.
+Đầu năm 2022, anh bắt đầu nghiên cứu chiếc máy tách xơ dứa tự động. Tháng 6 năm đó chính thức ra mắt mẫu máy tách xơ tự động ECOFA "một đầu cho lá, một đầu ra xơ".
+Ở lần cải tiến máy này, ECOFA thay đổi cách làm. Họ hợp tác với các hợp tác xã mua lá dứa của người dân ở các vùng lân cận, tự tổ chức thu gom đưa lá dứa về sản xuất tập trung tại xưởng.
+Hai sự thay đổi này giúp ECOFA vượt qua được thử thách đầu tiên. Mỗi ca làm việc, máy tự động tách xơ cho công suất 200kg, tương đương 10 tấn lá dứa tươi. Giá thu gom giảm còn 800 đồng/kg lá dứa tươi.
+Đánh giá về tiềm năng của vải dứa, anh Nam nói nếu khai thác hết vùng nguyên liệu, mỗi năm có thể khai thác 2 triệu tấn lá. Với tỉ lệ sợi 2% sẽ thu được 40.000 tấn xơ lá dứa.
+Bên cạnh công nghệ kéo sợi từ lá dứa, công ty còn tập trung nghiên cứu và phát triển các sản phẩm từ phụ phẩm nông nghiệp khác của cây dứa. Điển hình, công ty nghiên cứu quy trình ủ thịt lá dứa trong khi kéo sợi thô thành thức ăn chăn nuôi và phân bón hữu cơ, quy trình thu thập bụi và tạp chất trong bông hóa sợi dứa thành giá thể nuôi nấm… Hiện tại, ECOFA đã sản xuất ra được 11 sản phẩm từ phế phẩm của quá trình sản xuất vải dứa.
+Mục tiêu của ECOFA là tạo ra một mô hình kinh tế tuần hoàn cho sản phẩm của mình – tận dụng tất cả phụ phẩm nông nghiệp để tạo ra giá trị kinh tế cho chính mình và sinh kế cho nông dân. Không có bất cứ sản phẩm nào trong quá trình mô hình trên là lãng phí.
+Với khả năng làm chủ công nghệ đảm bảo được chất lượng và công suất, đội ngũ ECOFA hiểu rằng giờ đây chính là thời điểm để xuất kích - mở rộng vùng trồng để đáp ứng nhu cầu của ngành vải, sợi không chỉ ở Việt Nam mà còn trên thế giới.
+`
+  );
+  const [publisher, setWriter] = useState("HacThienCau");
+  const [publishDate, setDate] = useState("18-12-2024");
 
-Trước đó, bà P. đã mua 30 vé (số vé tối đa mua trong 1 kỳ của sản phẩm Max 3D+) chứa bộ số 704 - 065 và may mắn đã đến với bà khi tất cả các vé đều trúng giải đặc biệt trị giá 1 tỷ đồng/vé. Đây là giải đặc biệt lớn nhất từ trước đến nay của sản phẩm Max 3D+.
-Bên cạnh đó, bà P. còn trúng thêm hơn 40 triệu đồng từ các giải thưởng nhỏ khác. Sau khi trừ thuế thu nhập cá nhân theo quy định, bà P. thực lĩnh hơn 27 tỷ đồng.
+  const { theme, setReading } = useContext(SettingContext);
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      marginTop: 50,
+    },
+    backButton: {
+      position: "absolute",
+      top: 30,
+      left: 10,
+      width: 30,
+      height: 30,
+      zIndex: 10,
+      borderRadius: 10,
+      backgroundColor: "rgba(55,55,55,0.1)",
+    },
+    upButton: {
+      position: "absolute",
+      bottom: 30,
+      right: 20,
+      width: 30,
+      height: 30,
+      zIndex: 10,
+      borderRadius: 10,
+      backgroundColor: "rgba(55,55,55,0.1)",
+    },
+    image: {
+      marginVertical: 20,
+      width: "100%",
+      height: 300,
+      backgroundColor: "gray",
+    },
+    title: {
+      fontSize: 20,
+      fontFamily: theme.font.bold,
+      marginHorizontal: 20,
+    },
+    publishInfoFrame: {
+      display: "flex",
+      width: "90%",
+      flexDirection: "row",
+      marginHorizontal: 20,
+      marginVertical: 10,
+      justifyContent: "space-between",
+    },
+    publishInfo: {
+      fontSize: 14,
+      fontFamily: theme.font.italic,
+    },
+    content: {
+      marginHorizontal: 20,
+      fontSize: 16,
+      fontFamily: theme.font.reg,
+      lineHeight: 30,
+      marginBottom: 20,
+    },
+  });
+  const [saved, setSaved] = useState(false); // kiểm tra ng dùng đã lưu bài viết này chưa?
+  const [iconSaved, setIcon] = useState("bookmark-outline");
+  const bookmark = () => {
+    if (saved == false) {
+      setSaved(true);
+      //thay đổi giá trị trên CSDL
+      setIcon("bookmark");
+    } else {
+      setSaved(false);
+      //thay đổi giá trị trên CSDL
+      setIcon("bookmark-outline");
+    }
+  };
+  const shareFB = () => {
+    //share qua fb
+    console.log("Share qua facebook thành công");
+  };
+  const shareGM = () => {
+    //share qua gmail
+    console.log("Share qua gmail thành công");
+  };
+  const navigation = useNavigation();
+  const scrollRef = useRef(null);
+  return (
+    <View style={styles.container}>
+      <ScrollView ref={scrollRef}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            setReading(false);
+            navigation.goBack();
+          }}
+        >
+          <MaterialCommunityIcons
+            name="keyboard-backspace"
+            size={30}
+            color="black"
+          />
+        </TouchableOpacity>
 
-Theo bà P., bà đang là lao động tự do. Bà thường xuyên mua vé số Vietlott để cầu may. Vào cuối tháng 11/2024, bà quyết định “chơi lớn” nên mua một lúc 30 vé. Những tấm vé này được bà chọn số ngẫu nhiên. Bà vẫn chưa có kế hoạch sử dụng đối với số tiền trúng thưởng.
-Trước đó, vào năm 2020, anh A. - sinh viên tại TP.HCM cũng trúng cùng lúc 20 giải đặc biệt (số vé được mua tối đa thời điểm đó) của sản phẩm Max 3D+ với tổng trị giá lên tới 20 tỷ đồng. Bộ số may mắn của anh A là 123044.
-Đầu tháng 12/2024, Vietlott cũng đã trao giải Jackpot (độc đắc) sản phẩm Mega 6/45 kỳ quay 1277 trị giá hơn 45 tỷ đồng cho anh P.L (ngụ TP.HCM). Sau khi trừ thuế thu nhập cá nhân, anh L. thực lĩnh khoảng hơn 40,5 tỷ đồng. Anh L. dự định sẽ dùng tiền trúng thưởng để đầu tư kinh doanh và phát triển sự nghiệp. 
-`);
-    const [publisher,setWriter] = useState("HacThienCau");
-    const [publishDate,setDate] = useState("18-12-2024");
-
-    const {theme, setReading} = useContext(SettingContext)
-    const styles=StyleSheet.create({
-        container:{
-            flex:1,
-            marginTop:50,
-        },
-        backButton:{
-            position: "absolute",
-            top: 30,
-            left: 10,
-            width: 30,
-            height: 30,
-            zIndex:10,
-            borderRadius:10,
-            backgroundColor:"lightgray",
-        },
-        upButton:{
-            position: "absolute",
-            bottom: 30,
-            right: 20,
-            width: 30,
-            height: 30,
-            zIndex:10,
-            borderRadius:10,
-            backgroundColor:"lightgray",
-        },
-        image:{
-            marginVertical: 20,
-            width:"100%",
-            height:300,
-            backgroundColor:"gray"
-        },
-        title:{
-            fontSize:24,
-            fontFamily: theme.font.bold,
-            marginHorizontal: 20,
-        },
-        publishInfoFrame:{
-            display:"flex",
-            width:"90%",
-            flexDirection:"row",
-            margin: 20,
-            justifyContent:"space-between",  
-        },
-        publishInfo:{            
-            fontSize:14,
-            fontFamily: theme.font.italic,       
-        },
-        content:{
-            marginHorizontal:20,
-            fontSize:16,
-            fontFamily: theme.font.reg,
-            lineHeight:30,   
-        }
-    })
-    const navigation = useNavigation();
-    const scrollRef = useRef(null);
-    return(
-        <ScrollView style={styles.container} ref={scrollRef}>
-            <TouchableOpacity style={styles.backButton} onPress={()=>{
-                setReading(false);
-                navigation.goBack();
-            }}>
-                <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
+        <Image style={styles.image} source={image} />
+        <Text style={styles.title}>{title}</Text>
+        <View style={styles.publishInfoFrame}>
+          <Text style={styles.publishInfo}>Người đăng: {publisher}</Text>
+          <Text style={styles.publishInfo}>Ngày đăng: {publishDate}</Text>
+        </View>
+        <View style={styles.publishInfoFrame}>
+          <View style={{ flexDirection: "row", gap: 20 }}>
+            <TouchableOpacity onPress={() => shareFB()}>
+              <Zocial name="facebook" size={24} color="blue" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.upButton} onPress={()=>{
-                scrollRef.current.scrollTo({ offset: 0, animated: true });
-            }}>
-                <MaterialCommunityIcons name="arrow-collapse-up" size={30} color="black" />
+            <TouchableOpacity onPress={() => shareGM()}>
+              <Zocial name="gmail" size={24} color="red" />
             </TouchableOpacity>
-            <Image style={styles.image} source={image}/>
-            <Text style={styles.title}>{title}</Text>
-            <View style={styles.publishInfoFrame}>
-                <Text style={styles.publishInfo}>Người đăng: {publisher}</Text>
-                <Text style={styles.publishInfo}>Ngày đăng: {publishDate}</Text>
-            </View>
-            <Text style={styles.content}>{content}</Text>
-        </ScrollView>
-    )
+          </View>
+          <TouchableOpacity onPress={() => bookmark()}>
+            <MaterialCommunityIcons name={iconSaved} size={30} />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.content}>{content}</Text>
+      </ScrollView>
+      <TouchableOpacity
+        style={styles.upButton}
+        onPress={() => {
+          scrollRef.current.scrollTo({ offset: 0, animated: true });
+        }}
+      >
+        <MaterialCommunityIcons
+          name="arrow-collapse-up"
+          size={30}
+          color="black"
+        />
+      </TouchableOpacity>
+    </View>
+  );
 }
