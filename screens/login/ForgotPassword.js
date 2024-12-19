@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     marginTop: 56,
     width: 300,
     height: 100,
+    backgroundColor:"#D9D9D9"
   },
   formContainer: {
     marginTop: 39,
@@ -121,18 +122,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     },
     resendButton: {
-    marginTop: 5,
-    padding: 5,
     borderRadius: 20,
     width: 100,
+    height: 50,
     borderColor: "rgba(0, 0, 0, 0.5)",
     borderWidth: 1,
-    justifyContent: "flex-end",
-    alignContent:"stretch",
-    alignItems: "flex-end",
-    alignSelf:"stretch",
-    marginBottom: 0,
-    height: 100,
+    justifyContent: "center",
+    alignContent:"center",
+    alignItems: "center",
+    alignSelf:"flex-end",
+    marginBottom: 5,
     },
     resendButtonText: {
     fontFamily: "IBM Plex Serif, sans-serif",
