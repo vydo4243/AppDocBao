@@ -22,37 +22,41 @@ const socialLoginOptions = [
 
 export default function LogIn () {
     const navigation = useNavigation();
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Quản lý trạng thái mật khẩu
 
+    const { logIn } = useContext(UserContext); // Truy cập logIn từ UserContext
+  
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Hiển thị/ẩn mật khẩu
+    const [username, setUsername] = useState(""); // Trạng thái tên người dùng/email
+    const [password, setPassword] = useState(""); // Trạng thái mật khẩu
+  
     const togglePasswordVisibility = () => {
-      setIsPasswordVisible(!isPasswordVisible); // Đảo ngược trạng thái hiện/ẩn mật khẩu
+      setIsPasswordVisible(!isPasswordVisible);
+
     };
   
     const PasswordRightComponent = () => (
       <View style={styles.passwordVisibility}>
         <TouchableOpacity onPress={togglePasswordVisibility}>
-            <Icon
+          <Icon
             name={isPasswordVisible ? "visibility-off" : "visibility"}
             size={24}
             color="gray"
-            />
+          />
         </TouchableOpacity>
       </View>
-    );  
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const { logIn } = useContext(UserContext);
+    );
   
     const loginEvent = () => {
-        if (username.trim() === "") {
-            Alert.alert("Lỗi", "Vui lòng nhập tên người dùng hoặc email.");
-          } else if (password.trim() === "") {
-            Alert.alert("Lỗi", "Vui lòng nhập mật khẩu.");
-          } else {
-            logIn(username);
-            Alert.alert("Đăng nhập thành công!");
-            navigation.navigate('Profile');
-        }
+      if (username.trim() === "") {
+        Alert.alert("Lỗi", "Vui lòng nhập tên người dùng hoặc email.");
+      } else if (password.trim() === "") {
+        Alert.alert("Lỗi", "Vui lòng nhập mật khẩu.");
+      } else {
+        const userType = "reader"; // Mặc định userType là "reader"
+        logIn(username, userType); // Gọi hàm logIn từ UserContext
+        Alert.alert("Đăng nhập thành công!");
+        navigation.navigate("Profile"); // Điều hướng đến màn hình Profile
+      }
     };
   return (
     <ScrollView>
@@ -88,6 +92,7 @@ export default function LogIn () {
           <View style={styles.dividerLine} />
           <Text style={styles.dividerText}>Hoặc đăng nhập với</Text>
           <View style={styles.dividerLine} />
+
         </View>
 
         <View style={styles.socialLoginContainer}>
@@ -124,6 +129,8 @@ const styles = StyleSheet.create({
     marginTop: 56,
     width: 300,
     height: 100,
+    backgroundColor:"#D9D9D9"
+
   },
   formContainer: {
     marginTop: 39,

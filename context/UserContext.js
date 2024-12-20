@@ -1,24 +1,30 @@
-import React, { createContext, useState } from 'react'; // Đỗ Mai Tường Vy - 22521701
+
+import React, { createContext, useState } from 'react';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState("");
 
-  const logIn = (username) => {
+  const [userType, setUserType] = useState('reader');
+  const [username, setUsername] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const logIn = (username, userType) => {
+    setUsername(username);
+    setUserType(userType);
     setIsAuthenticated(true);
-    setUsername(username); // Cập nhật username khi đăng nhập
   };
 
   const logOut = () => {
+    setUsername('');
+    setUserType('');
     setIsAuthenticated(false);
-    setUsername(""); // Xóa username khi đăng xuất
   };
 
   return (
-    <UserContext.Provider value={{ isAuthenticated, username, logIn, logOut }}>
+    <UserContext.Provider value={{ userType, setUserType, username, setUsername, isAuthenticated, logIn, logOut }}>
       {children}
     </UserContext.Provider>
   );
 };
+
