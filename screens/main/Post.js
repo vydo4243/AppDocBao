@@ -14,7 +14,7 @@ import Zocial from "@expo/vector-icons/Zocial";
 export default function Post({ id }) {
   //Lấy từ CSDL các thông tin bài viết dựa theo ID
   const [title, setTitle] = useState("Đây là bài viết mẫu");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState("https://cdn-i.vtcnews.vn/resize/th/upload/2024/12/20/bien-dong-don-ap-thap-nhiet-doi-19052415.jpg");
   const [content, setContent] = useState(
     `Bài viết này là bài viết mẫu, với mục đích làm mẫu để thiết kết FE, do chưa kết nối CSDL nên chưa có dữ liệu cụ thể cho các bài viết. 
 Vải dứa - sản phẩm thương mại từ tơ, sợi dứa của ECOFA lần đầu ra mắt thu hút cộng đồng khởi nghiệp, nhất là những người ủng hộ sản phẩm thời trang xanh.
@@ -56,7 +56,7 @@ Với khả năng làm chủ công nghệ đảm bảo được chất lượng 
       height: 30,
       zIndex: 10,
       borderRadius: 10,
-      backgroundColor: "rgba(55,55,55,0.1)",
+      backgroundColor: "rgba(255,255,255,0.8)",
     },
     upButton: {
       position: "absolute",
@@ -66,7 +66,7 @@ Với khả năng làm chủ công nghệ đảm bảo được chất lượng 
       height: 30,
       zIndex: 10,
       borderRadius: 10,
-      backgroundColor: "rgba(55,55,55,0.1)",
+      backgroundColor: "rgba(255,255,255,0.2)",
     },
     image: {
       marginVertical: 20,
@@ -139,7 +139,7 @@ Với khả năng làm chủ công nghệ đảm bảo được chất lượng 
           />
         </TouchableOpacity>
 
-        <Image style={styles.image} source={image} />
+        <Image style={styles.image} source={image?{uri:image}:image} />
         <Text style={styles.title}>{title}</Text>
         <View style={styles.publishInfoFrame}>
           <Text style={styles.publishInfo}>Người đăng: {publisher}</Text>

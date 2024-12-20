@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity, TextInput, Alert } from "react-native";
 import { SettingContext } from "../../context/SettingContext";
 import { UserContext } from "../../context/UserContext";
 import { useContext, useEffect, useState } from "react";
@@ -9,14 +9,16 @@ import { launchImageLibrary } from "react-native-image-picker";
 import * as ImagePicker from 'expo-image-picker';
 
 export default function Personal() {
-    const { uid, userType, username, email, avatar, password, setAvatar, setUsername, setPassword } = useContext(UserContext);
+    const { birth, setBirth, uid, userType, username, email, avatar, password, setAvatar, setUsername, setPassword } = useContext(UserContext);
     const [newName, changeName] = useState();
     const [newPass, changePass] = useState();
+    const [newBirth, changeBirth] = useState();
     const { theme } = useContext(SettingContext);
 
     useEffect(() => {
         changeName(username);
         changePass(password);
+        changeBirth(birth);
     }, []);
 
     const styles = StyleSheet.create({
@@ -139,9 +141,10 @@ export default function Personal() {
 
     const updateName = async () => {
         try {
-            await updateInfo(uid, { name: newName });
+            await updateInfo(uid, { name: newName, birth: newBirth });
             setUsername(newName);
-            console.log("Cập nhật tên người dùng thành công");
+            setBirth(newBirth);
+            Alert.alert("Cập nhật thông tin thành công");
         } catch (error) {
             console.error("Failed to update name:", error);
         }
@@ -178,18 +181,19 @@ export default function Personal() {
                 <TextInput style={styles.field} onChangeText={changeName} value={newName} />
             </View>
             <View style={styles.fieldFrame}>
+                <Text style={styles.fieldName}>Ngày sinh</Text>
+                <TextInput style={styles.field} onChangeText={changeBirth} value={newBirth} />
+            </View>
+            <View style={styles.fieldFrame}>
                 <Text style={styles.fieldName}>Email</Text>
                 <TextInput style={styles.typeField} value={email} editable={false} />
             </View>
-            <View style={styles.fieldFrame}>
-                <Text style={styles.fieldName}>Password</Text>
-                <TextInput style={styles.field} onChangeText={changePass} value={newPass} secureTextEntry={true} />
-            </View>
+            
             <View style={styles.fieldFrame}>
                 <Text style={styles.fieldName}>Loại người dùng</Text>
                 <TextInput style={styles.typeField} value={userType} editable={false} />
             </View>
-            <TouchableOpacity style={styles.updateButton} onPress={update}>
+            <TouchableOpacity style={styles.updateButton} onPress={updateName}>
                 <Text style={styles.updateText}>Cập nhật thông tin</Text>
             </TouchableOpacity>
         </View>

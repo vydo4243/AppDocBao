@@ -6,13 +6,13 @@ export default function SportQT(){
     const list = [
         {
             id:1,
-            title:"Bóng đá quốc tế 1",
-            image:"",
+            title:"Mbappe vẫn mơ làm đồng đội của Ronaldo",
+            image:"https://i1-thethao.vnecdn.net/2024/12/20/mba7-1734663068-2813-1734663203.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=_BVE26Ma-jWUzklgJNZSKg",
         },
         {
             id:2,
-            title:"Bóng đá quốc tế 2",
-            image:"",
+            title:"Vinicius - người hùng chung kết của Real",
+            image:"https://i1-thethao.vnecdn.net/2024/12/20/vini11-1734682243-9516-1734682340.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=YG02qWE6s5wG54IwAWIFAw",
         },
     ]
     return(

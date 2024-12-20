@@ -19,7 +19,7 @@ export default function EditPost({ id }) {
   const [title, setTitle] = useState(
     "You can configure supported styles with the UIUserInterfaceStyle key in your app Info.plist"
   );
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState("https://cdn.tcdulichtphcm.vn/upload/4-2024/images/2024-10-18/1729244893-a1.jpg");
   const [content, setContent] = useState(
     `Bài viết này là bài viết mẫu, với mục đích làm mẫu để thiết kết FE, do chưa kết nối CSDL nên chưa có dữ liệu cụ thể cho các bài viết. 
 Vải dứa - sản phẩm thương mại từ tơ, sợi dứa của ECOFA lần đầu ra mắt thu hút cộng đồng khởi nghiệp, nhất là những người ủng hộ sản phẩm thời trang xanh.
@@ -179,7 +179,7 @@ Với khả năng làm chủ công nghệ đảm bảo được chất lượng 
             addImage();
           }}
         >
-          <ImageBackground style={styles.image} source={image}>
+          <ImageBackground style={styles.image} source={{uri:image}}>
             <MaterialCommunityIcons name="plus" size={50} color="#fff" />
             <Text style={styles.addImage}>Thêm hình ảnh</Text>
           </ImageBackground>
