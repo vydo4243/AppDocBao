@@ -56,7 +56,7 @@ const login = async (email, password) => {
             const userData = userDoc.data();
             return userData; // Trả về dữ liệu người dùng
         } else {
-            console.log("Thông tin người dùng không tồn tại.");
+           return "Thông tin người dùng không tồn tại.";
         }
     } catch (error) {
         if(error.message == "Firebase: Error (auth/invalid-email)."){
@@ -70,4 +70,31 @@ const login = async (email, password) => {
 const logout = () => {
     signOut(auth);
 }
+
+const addPost = () =>{
+
+}
+const updatePost = () => {
+
+}
+
+const deletePost = () =>{
+
+}
+
+const updateAvatar =() =>{
+
+}
+
+const updateInfo = () =>{
+
+}
+
+const getNotif = () =>{
+
+}
+const bookmarked = () => {
+    
+}
+
  export{ auth, signup, login, logout}

@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import  Input  from './components/Input';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import  SocialLoginButton from './components/SocialLogin';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from '@react-navigation/native';
@@ -74,6 +75,18 @@ export default function LogIn () {
     };
   return (
     <View style={styles.x}>
+      <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <MaterialCommunityIcons
+            name="keyboard-backspace"
+            size={30}
+            color="black"
+          />
+        </TouchableOpacity>
     <ScrollView>
       <View style={styles.container}>
 
@@ -137,6 +150,16 @@ export default function LogIn () {
 const styles = StyleSheet.create({
   x:{
     flex:1,
+  },
+  backButton: {
+    position: "absolute",
+    top: 30,
+    left: 10,
+    width: 30,
+    height: 30,
+    zIndex: 10,
+    borderRadius: 10,
+    backgroundColor: "rgba(55,55,55,0.1)",
   },
   container: {
     height:"80%",

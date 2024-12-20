@@ -61,7 +61,7 @@ function ProfileScreen({ logOut, userType, username, avatar }) {
   const handleMenuPress = (title) => {
     if (title === "Đăng xuất") {
       logOut();
-      navigation.navigate("Profile");
+      navigation.navigate("LogIn");
     } else {
       const routes = {
         "Thông tin cá nhân": "Personal",
