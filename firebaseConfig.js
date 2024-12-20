@@ -74,6 +74,10 @@ const logout = () => {
 const addPost = () =>{
 
 }
+const getPost = () => {
+
+}
+
 const updatePost = () => {
 
 }
@@ -82,19 +86,25 @@ const deletePost = () =>{
 
 }
 
-const updateAvatar =() =>{
-
-}
-
-const updateInfo = () =>{
-
+const updateInfo = async(uid, updatedData) =>{
+    try {
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, updatedData);
+        return true;
+      } catch (error) {
+        console.error("Hồ sơ cập nhật thất bại:", error);
+        return false;
+      }
 }
 
 const getNotif = () =>{
 
 }
 const bookmarked = () => {
-    
+
+}
+const getBookmark = () =>{
+
 }
 
- export{ auth, signup, login, logout}
+ export{ auth, signup, login, logout, updateInfo}
