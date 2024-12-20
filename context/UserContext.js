@@ -1,8 +1,10 @@
+
 import React, { createContext, useState } from 'react';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+
   const [userType, setUserType] = useState('reader');
   const [username, setUsername] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,3 +27,4 @@ export const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+

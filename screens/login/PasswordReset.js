@@ -123,7 +123,9 @@ const styles = StyleSheet.create({
     marginTop: 56,
     width: 300,
     height: 100,
+
     backgroundColor:"#D9D9D9"
+
   },
   formContainer: {
     marginTop: 39,

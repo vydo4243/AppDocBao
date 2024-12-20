@@ -28,6 +28,7 @@ export default function SignUp() {
     setIsConfirmPasswordVisible(!isConfirmPasswordVisible); // Đảo ngược trạng thái mật khẩu xác nhận
   };
 
+
   const signUpEvent = () => {
     if (username.trim() === "") {
       Alert.alert("Lỗi", "Vui lòng nhập tên người dùng.");
@@ -83,18 +84,23 @@ export default function SignUp() {
             label="Tên người dùng"
             placeholder="Tên người dùng"
             value={username}
+
             onChangeText={setUsername}
           />
           <Input
             label="Email"
             placeholder="Email"
+
             value={email}
+
             onChangeText={setEmail}
           />
           <Input
             label="Mật khẩu"
             placeholder="Mật khẩu"
+
             value={password}
+
             onChangeText={setPassword}
             secureTextEntry={!isPasswordVisible}
             rightComponent={<PasswordRightComponent />}
@@ -102,7 +108,9 @@ export default function SignUp() {
           <Input
             label="Nhập lại mật khẩu"
             placeholder="Nhập lại mật khẩu"
+
             value={confirmPassword}
+
             onChangeText={setConfirmPassword}
             secureTextEntry={!isConfirmPasswordVisible}
             rightComponent={<ConfirmPasswordRightComponent />}
@@ -123,6 +131,9 @@ export default function SignUp() {
         </View>
 
         <View style={styles.termsContainer}>
+
+          {/* Checkbox được thêm vào ở đây */}
+
           <CheckBox
             label=""
             value={isChecked}
@@ -131,7 +142,9 @@ export default function SignUp() {
             style={styles.checkbox}
           />
           <View style={styles.textContainer}>
+
             <Text style={styles.termsText}>Tôi đồng ý với{' '}</Text>
+
             <TouchableOpacity onPress={() => navigation.navigate('Policy')}>
               <Text style={styles.policyButtonText}>Chính sách và Điều khoản của ....</Text>
             </TouchableOpacity>
@@ -143,10 +156,12 @@ export default function SignUp() {
         </TouchableOpacity>
 
         <View style={styles.loginPrompt}>
+
           <Text style={styles.loginPromptText}>Đã có tài khoản?{' '}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('LogIn')}>
             <Text style={styles.logInText2}>Đăng nhập ngay!</Text>
           </TouchableOpacity>
+
         </View>
       </View>
     </ScrollView>
@@ -204,7 +219,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
     flexDirection: 'row',
-    marginLeft: 5,
+    marginLeft: 5, // Thêm khoảng cách giữa checkbox và văn bản
+
   },
   termsText: {
     color: 'rgba(0, 0, 0, 1)',
@@ -271,3 +287,4 @@ const styles = StyleSheet.create({
     letterSpacing: -0.32,
   },
 });
+

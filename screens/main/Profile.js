@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { useContext } from "react";
+
 import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "../../context/UserContext";
 
@@ -45,6 +46,7 @@ function ProfileMenuItem({ icon, title, onPress }) {
   );
 }
 
+
 function ProfileScreen({ logOut, userType, username }) {
   const navigation = useNavigation();
   
@@ -70,27 +72,33 @@ function ProfileScreen({ logOut, userType, username }) {
         "Bài viết của tôi": "YourPost",
       };
       navigation.navigate(routes[title]);
+
     }
   };
 
   return (
     <>
+
       <ProfileHeader username={username} />
       <View style={styles.menuContainer}>
         {enhancedMenuItems.map((item, index) => (
+
           <ProfileMenuItem
             key={index}
             icon={item.icon}
             title={item.title}
+
             onPress={() => handleMenuPress(item.title)}
           />
         ))}
       </View>
+
     </>
   );
 }
 
 export default function Profile() {
+
   const { isAuthenticated, username, userType, logOut } = useContext(UserContext);
   const navigation = useNavigation();
 
@@ -107,6 +115,7 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <ProfileScreen logOut={logOut} userType={userType} username={username} />
+
     </View>
   );
 }
@@ -126,7 +135,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center", 
     width: "100%",  
+
     padding: 20,
+
   },
   avatarContainer: {
     justifyContent: "center", 
@@ -151,7 +162,9 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     display: "flex",
+
     width: "95%",
+
     paddingTop: 20,
     paddingBottom: 100,
     flexDirection: "column",
@@ -170,12 +183,16 @@ const styles = StyleSheet.create({
     display: "flex",
     paddingLeft: 30,
     paddingRight: 30,
+
     padding: 15,
+
     alignItems: "center",
     gap: 10,
     overflow: "hidden",
     flexDirection: "row",
+
     backgroundColor: "#f9f9f9",
+
     borderRadius: 10, // Rounded corners for each menu item
     marginBottom: 10, // Space between menu items
   },
@@ -198,6 +215,7 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25, // Set a fixed size for the arrow icon
     marginLeft: "auto", // Push arrow icon to the right
+
     tintColor: "#666"
   },
 });
