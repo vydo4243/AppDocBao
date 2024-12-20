@@ -6,7 +6,7 @@ import { doc, getDoc, getFirestore } from "firebase/firestore";
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user,setUser] = useState(null)
+  const [uid,setUid] = useState(null)
   const [userType, setUserType] = useState('Reader');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -19,7 +19,6 @@ export const UserProvider = ({ children }) => {
       
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUser(currentUser); 
         setIsAuthenticated(true); 
         console.log("Người dùng đã đăng nhập")
         try {
@@ -27,6 +26,7 @@ export const UserProvider = ({ children }) => {
           const userDoc = await getDoc(userRef);
 
           if (userDoc.exists()) {
+            setUid(userDoc.data().uid || "")
             setUsername(userDoc.data().name || "");
             setUserType(userDoc.data().userType || "");
             setEmail(userDoc.data().email || "");
@@ -40,7 +40,6 @@ export const UserProvider = ({ children }) => {
         }
       } else {
         setIsAuthenticated(false);
-        setUser(null);
         console.log("Người dùng chưa đăng nhập")
       } });
       return () => unsubscribe();
@@ -60,7 +59,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ userType, setUserType, username, setUsername, email, setEmail, password,setPassword, avatar, setAvatar, isAuthenticated, setIsAuthenticated, logIn, logOut }}>
+    <UserContext.Provider value={{uid, userType, setUserType, username, setUsername, email, setEmail, password,setPassword, avatar, setAvatar, isAuthenticated, setIsAuthenticated, logIn, logOut }}>
       {children}
     </UserContext.Provider>
   );
