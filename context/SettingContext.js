@@ -4,6 +4,7 @@ import {
     IBMPlexSerif_400Regular,
     IBMPlexSerif_400Regular_Italic,
     IBMPlexSerif_700Bold,
+    IBMPlexSerif_600SemiBold,
   } from '@expo-google-fonts/ibm-plex-serif';
 export const SettingContext = createContext();
 
@@ -12,11 +13,13 @@ export function SettingProvider({ children }) {
     let [fontsLoaded] = useFonts({
         IBMPlexSerif_400Regular,
         IBMPlexSerif_400Regular_Italic,
+        IBMPlexSerif_600SemiBold,
         IBMPlexSerif_700Bold,
     });
     const theme = {
         font:{
             bold: "IBMPlexSerif_700Bold",
+            semiBold: "IBMPlexSerif_600SemiBold",
             reg : "IBMPlexSerif_400Regular",
             italic: "IBMPlexSerif_400Regular_Italic"
         },
