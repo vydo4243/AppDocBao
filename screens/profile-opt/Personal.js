@@ -1,13 +1,11 @@
 import { StyleSheet,View,Text, Image, TouchableOpacity, TextInput } from "react-native";
 import { SettingContext } from "../../context/SettingContext";
+import { UserContext } from "../../context/UserContext";
 import { useContext, useState} from "react";
 
 export default function Personal(){
     //Lấy từ csdl thông tin người dùng (tên, avt, email,loại người dùng)
-    const [username,setUsername] = useState("HacThienCau");
-    const [email,setEmail] = useState("dragneel.takeshi@gmail.com");
-    const [userType,setType] = useState("Writer");
-    const [avt, setAvt] = useState("");
+    const {userType, username, setUsername, email, setEmail, avatar, setAvatar,} = useContext(UserContext);
     const {theme} = useContext(SettingContext);
     const styles=StyleSheet.create({
         container:{
@@ -75,7 +73,7 @@ export default function Personal(){
     }
     return(
         <View style={styles.container}>
-            <Image alt="avatar" source={avt} style={styles.avt}/>
+            <Image alt="avatar" source={{uri: avatar}} style={styles.avt}/>
             <TouchableOpacity onPress={()=>{changeAvt()}}>
                 <Text style={styles.avtChange}>Thay đổi ảnh đại diện</Text>
             </TouchableOpacity>

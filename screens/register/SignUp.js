@@ -6,7 +6,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from '@react-navigation/native';
 import CheckBox from 'react-native-checkbox';
 import { UserContext } from '../../context/UserContext';
-
+import { signup } from '../../firebaseConfig';
 export default function SignUp() {
   const [isChecked, setIsChecked] = useState(false); // Trạng thái cho checkbox
   const [username, setUsername] = useState('');
@@ -29,7 +29,7 @@ export default function SignUp() {
   };
 
 
-  const signUpEvent = () => {
+  const signUpEvent = async() => {
     if (username.trim() === "") {
       Alert.alert("Lỗi", "Vui lòng nhập tên người dùng.");
     } else if (email.trim() === "") {
@@ -45,9 +45,22 @@ export default function SignUp() {
     //   Alert.alert("Lỗi", "Vui lòng đọc và đồng ý với chính sách và điều khoản.");
     // } 
     else {
-      logIn(username, userType, email, password); // Gọi hàm logIn từ UserContext
-      Alert.alert("Đăng ký thành công!");
-      navigation.navigate("Profile"); // Chỉ điều hướng khi đã xác thực
+        //tạo user trên firebase;
+        try{
+          const additionalData = {
+          userType: userType,
+          avt: "https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245",
+          saved: [],
+          };
+          const user = await signup(username, email, password, additionalData);
+          if (user && typeof user !== "string") {
+            Alert.alert("Đăng ký thành công!");
+            navigation.goBack(); // Quay lại trang đăng nhập
+          }else {
+            Alert.alert("Đăng ký thất bại",user);
+          }
+      } catch (error) {
+      }
     }
   };
 
@@ -76,6 +89,7 @@ export default function SignUp() {
   );
 
   return (
+    <View style={styles.x}>
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.logo} />
@@ -155,7 +169,10 @@ export default function SignUp() {
           <Text style={styles.signUpButtonText}>Đăng ký</Text>
         </TouchableOpacity>
 
-        <View style={styles.loginPrompt}>
+        
+      </View>
+    </ScrollView>
+    <View style={styles.loginPrompt}>
 
           <Text style={styles.loginPromptText}>Đã có tài khoản?{' '}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('LogIn')}>
@@ -163,16 +180,15 @@ export default function SignUp() {
           </TouchableOpacity>
 
         </View>
-      </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  x:{flex:1},
   container: {
     fontFamily: 'IBM Plex Serif',
     borderRadius: 25,
-    flex: 1,
     maxWidth: 510,
     paddingTop: 16,
     padding: 30,
@@ -251,7 +267,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: 'rgba(0, 0, 0, 1)',
     width: '100%',
-    marginTop: 80,
     paddingVertical: 20,
     flexDirection: 'row',
     justifyContent: 'center',

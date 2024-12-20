@@ -13,7 +13,7 @@ import  SocialLoginButton from './components/SocialLogin';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from '@react-navigation/native';
 import {UserContext} from "../../context/UserContext";
-
+import { login } from '../../firebaseConfig';
 const socialLoginOptions = [
   { id: 1, uri: "https://cdn.builder.io/api/v1/image/assets/9c7992bcbe164b8dad4f2629b8fc1688/601391a9a676842ff158bb60ba0b43dd7c4777f81735dca4f02b7a468fdcbb6e?apiKey=9c7992bcbe164b8dad4f2629b8fc1688&" },
   { id: 2, uri: "https://cdn.builder.io/api/v1/image/assets/9c7992bcbe164b8dad4f2629b8fc1688/2ec15b707eee1d75d7e78910d07735cad9d960d002fece29c9b17813df02a5e9?apiKey=9c7992bcbe164b8dad4f2629b8fc1688&" },
@@ -26,7 +26,7 @@ export default function LogIn () {
     const { logIn } = useContext(UserContext); // Truy cập logIn từ UserContext
   
     const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Hiển thị/ẩn mật khẩu
-    const [username, setUsername] = useState(""); // Trạng thái tên người dùng/email
+    const [email, setEmail] = useState(""); // Trạng thái email
     const [password, setPassword] = useState(""); // Trạng thái mật khẩu
   
     const togglePasswordVisibility = () => {
@@ -46,19 +46,34 @@ export default function LogIn () {
       </View>
     );
   
-    const loginEvent = () => {
-      if (username.trim() === "") {
-        Alert.alert("Lỗi", "Vui lòng nhập tên người dùng hoặc email.");
+    const loginEvent = async() => {
+      if (email.trim() === "") {
+        Alert.alert("Lỗi", "Vui lòng nhập email.");
       } else if (password.trim() === "") {
         Alert.alert("Lỗi", "Vui lòng nhập mật khẩu.");
       } else {
-        const userType = "Reader"; // Mặc định userType là "Reader"
-        logIn(username, userType, password); // Gọi hàm logIn từ UserContext
-        Alert.alert("Đăng nhập thành công!");
-        navigation.navigate("Profile"); // Điều hướng đến màn hình Profile
+        try {
+          const userData = await login(email, password);
+          if (userData && typeof userData !== "string") {
+            // lấy dữ liệu ng dùng đưa vào context
+              const userName = userData.name;
+              const em = userData.email;
+              const pass = userData.password;
+              const type = userData.userType;
+              const avt = userData.avt;
+              logIn(userName,type,em,pass,avt); // Gọi hàm logIn từ UserContext
+              Alert.alert("Đăng nhập thành công!");
+              navigation.navigate("Profile"); // Điều hướng đến màn hình Profile
+          }else{
+              Alert.alert("Đăng nhập thất bại",userData);
+          }
+      } catch (error) {
+         
+      }
       }
     };
   return (
+    <View style={styles.x}>
     <ScrollView>
       <View style={styles.container}>
 
@@ -66,10 +81,10 @@ export default function LogIn () {
 
         <View style={styles.formContainer}>
           <Input
-            label="Tên người dùng hoặc Email"
-            placeholder="Tên người dùng hoặc Email"
-            value={username} 
-            onChangeText={setUsername}
+            label="Email"
+            placeholder="Email"
+            value={email} 
+            onChangeText={setEmail}
           />
           <Input
             label="Mật khẩu"
@@ -104,7 +119,10 @@ export default function LogIn () {
           ))}
         </View>
 
-        <View style={styles.signupContainer}>
+        
+      </View>
+    </ScrollView>
+    <View style={styles.signupContainer}>
           <Text style={styles.signupText}>
             Chưa có tài khoản?{"  "}
           </Text>
@@ -112,13 +130,16 @@ export default function LogIn () {
             <Text style={styles.signUpText2}>Đăng ký ngay!</Text>           
         </TouchableOpacity>
         </View>
-      </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  x:{
+    flex:1,
+  },
   container: {
+    height:"80%",
     fontFamily: "IBM Plex Serif, sans-serif",
     borderRadius: 25,
     maxWidth: 510,
@@ -206,7 +227,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: "rgba(0, 0, 0, 1)",
     width: '100%',
-    marginTop: 133,
+    position:"absolute",
+    bottom:0,
     paddingVertical: 20,
   },
   signupText: {
