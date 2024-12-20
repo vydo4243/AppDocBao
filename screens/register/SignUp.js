@@ -45,7 +45,7 @@ export default function SignUp() {
     //   Alert.alert("Lỗi", "Vui lòng đọc và đồng ý với chính sách và điều khoản.");
     // } 
     else {
-      logIn(username, userType); // Gọi hàm logIn từ UserContext
+      logIn(username, userType, email, password); // Gọi hàm logIn từ UserContext
       Alert.alert("Đăng ký thành công!");
       navigation.navigate("Profile"); // Chỉ điều hướng khi đã xác thực
     }
@@ -120,13 +120,13 @@ export default function SignUp() {
         <View style={styles.radioGroup}>
           <RadioOption
             label="Độc giả"
-            isSelected={userType === 'reader'}
-            onPress={() => setUserType('reader')}
+            isSelected={userType === 'Reader'}
+            onPress={() => setUserType('Reader')}
           />
           <RadioOption
             label="Tác giả"
-            onPress={() => setUserType('author')}
-            isSelected={userType === 'author'}
+            onPress={() => setUserType('Writer')}
+            isSelected={userType === 'Writer'}
           />
         </View>
 
