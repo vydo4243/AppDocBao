@@ -2,6 +2,7 @@ import { initializeApp, getApp } from "firebase/app";
 import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch} from "firebase/firestore";
 import { initializeAuth, getReactNativePersistence, getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -71,6 +72,32 @@ const logout = () => {
     signOut(auth);
 }
 
+const uploadImage = async (selectedFileName) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFileName);
+      formData.append("upload_preset", "discenda");
+  
+      const response = await axios.post(
+        process.env.REACT_APP_CLOUDINARY_URL,
+        formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      }
+      );
+  
+      const uploadedImageUrl = response.data.secure_url;
+      return uploadedImageUrl;
+    } catch (error) {
+      if (error.response) {
+        console.error("Phản hồi lỗi từ Cloudinary:", error.response.data);
+      } else {
+        console.error("Lỗi yêu cầu:", error.message);
+      }
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  };
+
 const addPost = () =>{
 
 }
@@ -82,9 +109,23 @@ const deletePost = () =>{
 
 }
 
-const updateAvatar =() =>{
-
-}
+const updateAvatar = async (userId, selectedFile) => {
+    try {
+      // Bước 1: Upload ảnh lên Cloudinary
+      const uploadedImageUrl = await uploadImage(selectedFile);
+  
+      // Bước 2: Cập nhật URL avatar trong Firestore
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        avatar: uploadedImageUrl
+      });
+  
+      return uploadedImageUrl; // Trả về URL của ảnh đại diện mới
+    } catch (error) {
+      console.error("Failed to update avatar:", error);
+      throw error; // Ném lỗi để xử lý bên ngoài
+    }
+};
 
 const updateInfo = () =>{
 
@@ -97,4 +138,4 @@ const bookmarked = () => {
     
 }
 
- export{ auth, signup, login, logout}
+ export{ auth, signup, login, logout,uploadImage, updateAvatar}

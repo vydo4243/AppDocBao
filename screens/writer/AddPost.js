@@ -19,7 +19,7 @@ import {
     const [title, setTitle] = useState("");
     const [image, setImage] = useState("");
     const [content, setContent] = useState("");
-    const [hashtag, setHash] = useState(["Khoa học", "Đời sống", "Xu hướng"]);
+    const [hashtag, setHash] = useState([]);
     const styles = StyleSheet.create({
       container: {
         marginHorizontal: 15,

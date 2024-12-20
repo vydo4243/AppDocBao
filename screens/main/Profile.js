@@ -105,9 +105,13 @@ export default function Profile() {
   if (!isAuthenticated) {
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.navigate("LogIn")}>
-          <Text>Vui lòng đăng nhập để xem hồ sơ</Text>
+        <View style={styles.loginContainer}>
+          <Text>Vui lòng </Text>
+        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate("LogIn")} >
+          <Text>Đăng nhập</Text>
         </TouchableOpacity>
+        <Text> để xem hồ sơ.</Text>
+        </View>
       </View>
     );
   }
@@ -128,6 +132,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: "column",
     overflow: "hidden",
+  },
+  loginContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    padding: 20,
+  },
+  loginButton: {
+    backgroundColor: '#73E3D4',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10,
   },
   profileContent: {
     gap: 20,
@@ -218,5 +235,6 @@ const styles = StyleSheet.create({
 
     tintColor: "#666"
   },
+
 });
 

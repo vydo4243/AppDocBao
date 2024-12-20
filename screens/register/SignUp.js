@@ -4,7 +4,7 @@ import Input from './components/Input';
 import RadioOption from './components/RadioOption';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from '@react-navigation/native';
-import CheckBox from 'react-native-checkbox';
+import CheckBox from './components/CheckBox';
 import { UserContext } from '../../context/UserContext';
 import { signup } from '../../firebaseConfig';
 export default function SignUp() {
@@ -41,9 +41,9 @@ export default function SignUp() {
     } else if (password !== confirmPassword) {
       Alert.alert("Lỗi", "Mật khẩu không khớp.");
     } 
-    // else if (!isChecked) {
-    //   Alert.alert("Lỗi", "Vui lòng đọc và đồng ý với chính sách và điều khoản.");
-    // } 
+    else if (!isChecked) {
+      Alert.alert("Lỗi", "Vui lòng đọc và đồng ý với chính sách và điều khoản.");
+    } 
     else {
         //tạo user trên firebase;
         try{
@@ -145,20 +145,13 @@ export default function SignUp() {
         </View>
 
         <View style={styles.termsContainer}>
-
           {/* Checkbox được thêm vào ở đây */}
-
           <CheckBox
-            label=""
             value={isChecked}
             onValueChange={setIsChecked}
-            tintColors={{ true: '#73E3D4', false: '#000' }}
-            style={styles.checkbox}
           />
           <View style={styles.textContainer}>
-
             <Text style={styles.termsText}>Tôi đồng ý với{' '}</Text>
-
             <TouchableOpacity onPress={() => navigation.navigate('Policy')}>
               <Text style={styles.policyButtonText}>Chính sách và Điều khoản của ....</Text>
             </TouchableOpacity>
@@ -223,6 +216,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignContent: 'center',
     alignItems: 'center',
+    paddingHorizontal:30,
   },
   checkbox: {
     width: 24,
@@ -235,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
     flexDirection: 'row',
-    marginLeft: 5, // Thêm khoảng cách giữa checkbox và văn bản
+    marginLeft: 20, // Thêm khoảng cách giữa checkbox và văn bản
 
   },
   termsText: {
@@ -300,6 +294,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     letterSpacing: -0.32,
+    overflow: 'hidden',
   },
 });
 
