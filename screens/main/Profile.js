@@ -48,7 +48,7 @@ function ProfileMenuItem({ icon, title, onPress }) {
 function ProfileScreen({ logOut, userType, username }) {
   const navigation = useNavigation();
   
-  const enhancedMenuItems = userType === "author"
+  const enhancedMenuItems = userType === "Writer"
     ? [
         menuItems[0], // "Thông tin cá nhân"
         { icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/d799ab0018b4fb8a973c8ba61f24b7f698e73df75548e6ce1628d045e8413113?placeholderIfAbsent=true&apiKey=ed88ccc76b9841ed868b106d756c46f3", title: "Bài viết của tôi" }, // Bài viết của tôi in the second position

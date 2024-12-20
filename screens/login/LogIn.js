@@ -50,8 +50,8 @@ export default function LogIn () {
       } else if (password.trim() === "") {
         Alert.alert("Lỗi", "Vui lòng nhập mật khẩu.");
       } else {
-        const userType = "reader"; // Mặc định userType là "reader"
-        logIn(username, userType); // Gọi hàm logIn từ UserContext
+        const userType = "Reader"; // Mặc định userType là "Reader"
+        logIn(username, userType, password); // Gọi hàm logIn từ UserContext
         Alert.alert("Đăng nhập thành công!");
         navigation.navigate("Profile"); // Điều hướng đến màn hình Profile
       }
