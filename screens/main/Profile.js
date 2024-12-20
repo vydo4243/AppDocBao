@@ -14,13 +14,13 @@ const menuItems = [
   { icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/f6b1a8fec17cbd87c63f2fa2af13a9e36fc032a7efde76b4a8ba00cf4f733eb9", title: "Đăng xuất" },
 ];
 
-function ProfileHeader({ username }) {
+function ProfileHeader({ username ,avatar}) {
   return (
     <View style={styles.profileContent}>
       <Image
         resizeMode="cover"
         source={{
-          uri: "https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245",
+          uri: avatar,
         }}
         style={styles.avatarImage}
       />
@@ -47,7 +47,7 @@ function ProfileMenuItem({ icon, title, onPress }) {
 }
 
 
-function ProfileScreen({ logOut, userType, username }) {
+function ProfileScreen({ logOut, userType, username, avatar }) {
   const navigation = useNavigation();
   
   const enhancedMenuItems = userType === "Writer"
@@ -61,7 +61,7 @@ function ProfileScreen({ logOut, userType, username }) {
   const handleMenuPress = (title) => {
     if (title === "Đăng xuất") {
       logOut();
-      navigation.navigate("LogIn");
+      navigation.navigate("Profile");
     } else {
       const routes = {
         "Thông tin cá nhân": "Personal",
@@ -79,7 +79,7 @@ function ProfileScreen({ logOut, userType, username }) {
   return (
     <>
 
-      <ProfileHeader username={username} />
+      <ProfileHeader username={username} avatar={avatar}/>
       <View style={styles.menuContainer}>
         {enhancedMenuItems.map((item, index) => (
 
@@ -99,7 +99,7 @@ function ProfileScreen({ logOut, userType, username }) {
 
 export default function Profile() {
 
-  const { isAuthenticated, username, userType, logOut } = useContext(UserContext);
+  const { isAuthenticated, username, userType, avatar, logOut } = useContext(UserContext);
   const navigation = useNavigation();
 
   if (!isAuthenticated) {
@@ -114,7 +114,7 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-      <ProfileScreen logOut={logOut} userType={userType} username={username} />
+      <ProfileScreen logOut={logOut} userType={userType} username={username} avatar={avatar}/>
 
     </View>
   );
