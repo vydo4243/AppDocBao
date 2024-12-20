@@ -17,7 +17,7 @@ export default function Sport(){
     ]
     return(
     <View style={styles.container}>
-        {list.length==0?
+        {list.length===0?
             <Text style={styles.error}>Không có tin để hiển thị</Text>        
         :
       <FlatList

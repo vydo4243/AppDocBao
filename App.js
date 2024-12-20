@@ -17,7 +17,7 @@ import AboutUs from "./screens/profile-opt/AboutUs"
 import Bookmark from "./screens/profile-opt/Bookmark"
 import Notification from "./screens/profile-opt/Notification"
 import Personal from "./screens/profile-opt/Personal"
-import Policy from "./screens/profile-opt/Poilcy"
+import Policy from "./screens/profile-opt/Policy"
 import AddPost  from "./screens/writer/AddPost"
 import EditPost  from "./screens/writer/EditPost"
 import YourPost  from "./screens/writer/YourPost"
@@ -34,9 +34,10 @@ function HomeScreen() {
   );
 }
 function TTTN(){
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Sport" component={Sport} />
+      <Stack.Screen name="SportTN" component={Sport} />
       <Stack.Screen name="SportPost" component={Post} />
     </Stack.Navigator>
   );
@@ -44,7 +45,7 @@ function TTTN(){
 function TTQT(){
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Sport2" component={SportQT} />
+      <Stack.Screen name="SportQT" component={SportQT} />
       <Stack.Screen name="SportPostQT" component={Post} />
     </Stack.Navigator>
   );
@@ -66,8 +67,8 @@ function SportScreen() {
         display: reading?"none":"flex"
       }
       }}>
-      <Tab.Screen name="SportTN" component={TTTN} options={{title:"Trong nước"}}/>
-      <Tab.Screen name="SportQT" component={TTQT} options={{title:"Quốc tế"}} />
+      <Tab.Screen name="TTTN" component={TTTN} options={{title:"Trong nước"}}/>
+      <Tab.Screen name="TTQT" component={TTQT} options={{title:"Quốc tế"}} />
     </Tab.Navigator>
   );
 }
@@ -147,7 +148,7 @@ function AppNavigator() {
           }}
         />
         <Drawer.Screen
-          name="SportScreen"
+          name="SportsScreen"
           component={SportScreen}
           options={({route})=>({
             title: "Thể thao",
