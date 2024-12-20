@@ -15,6 +15,14 @@ const firebaseConfig = {
   measurementId: "G-SJKXN84DJK"
 };
 
+// Cloudinary Configuration
+const cloudinaryConfig = {
+    cloudName: "dkcqv4uel",
+    uploadPreset: "Default_preset",
+    cloudinaryUrl: "https://api.cloudinary.com/v1_1/dkcqv4uel/image/upload",
+  };
+  
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = initializeAuth(app, {persistence: getReactNativePersistence(ReactNativeAsyncStorage)});
@@ -72,31 +80,32 @@ const logout = () => {
     signOut(auth);
 }
 
-const uploadImage = async (selectedFileName) => {
+// Cloudinary Functions
+const uploadImage = async (fileUri) => {
     try {
-      const formData = new FormData();
-      formData.append("file", selectedFileName);
-      formData.append("upload_preset", "discenda");
-  
-      const response = await axios.post(
-        process.env.REACT_APP_CLOUDINARY_URL,
-        formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      }
-      );
-  
-      const uploadedImageUrl = response.data.secure_url;
-      return uploadedImageUrl;
+        const formData = new FormData();
+        formData.append("file", {
+            uri: fileUri,
+            type: "image/jpeg", // Ensure the MIME type matches the file type
+            name: "image.jpg", // Adjust the name if necessary
+        });
+        formData.append("upload_preset", "Default_preset"); 
+
+        const response = await axios.post(cloudinaryConfig.cloudinaryUrl, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        console.log("Upload response:", response.data); // Log response from Cloudinary
+        return response.data.secure_url;
     } catch (error) {
-      if (error.response) {
-        console.error("Phản hồi lỗi từ Cloudinary:", error.response.data);
-      } else {
-        console.error("Lỗi yêu cầu:", error.message);
-      }
-      console.error("Error uploading image:", error);
-      throw error;
+        if (error.response) {
+            console.error("Error uploading image:", error.response.data); // Log detailed error message
+        } else {
+            console.error("Error uploading image:", error.message); // Log generic error message
+        }
+        throw error;
     }
-  };
+};
 
 const addPost = () =>{
 
@@ -113,23 +122,19 @@ const deletePost = () =>{
 
 }
 
-const updateAvatar = async (userId, selectedFile) => {
+const updateAvatar = async (userId, fileUri) => {
     try {
-      // Bước 1: Upload ảnh lên Cloudinary
-      const uploadedImageUrl = await uploadImage(selectedFile);
+      const uploadedImageUrl = await uploadImage(fileUri);
   
-      // Bước 2: Cập nhật URL avatar trong Firestore
       const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, {
-        avatar: uploadedImageUrl
-      });
+      await updateDoc(userRef, { avatar: uploadedImageUrl });
   
-      return uploadedImageUrl; // Trả về URL của ảnh đại diện mới
+      return uploadedImageUrl;
     } catch (error) {
-      console.error("Failed to update avatar:", error);
-      throw error; // Ném lỗi để xử lý bên ngoài
+      console.error("Error updating avatar:", error);
+      throw error;
     }
-};
+  };
 
 const updateInfo = async(uid, updatedData) =>{
     try {
