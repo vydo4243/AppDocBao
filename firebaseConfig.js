@@ -127,7 +127,7 @@ const updateAvatar = async (userId, fileUri) => {
       const uploadedImageUrl = await uploadImage(fileUri);
   
       const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, { avatar: uploadedImageUrl });
+      await updateDoc(userRef, { avt: uploadedImageUrl });
   
       return uploadedImageUrl;
     } catch (error) {

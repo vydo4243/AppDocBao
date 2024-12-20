@@ -7,6 +7,7 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [uid,setUid] = useState(null)
+  const [birth,setBirth] = useState(null);
   const [userType, setUserType] = useState('Reader');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -31,6 +32,7 @@ export const UserProvider = ({ children }) => {
             setUserType(userDoc.data().userType || "");
             setEmail(userDoc.data().email || "");
             setPassword(userDoc.data().password || "");
+            setBirth(userDoc.data().birth || "")
             setAvatar(userDoc.data().avt || "https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245");
           } else {
             console.warn("User document không tồn tại");
@@ -59,7 +61,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{uid, userType, setUserType, username, setUsername, email, setEmail, password,setPassword, avatar, setAvatar, isAuthenticated, setIsAuthenticated, logIn, logOut }}>
+    <UserContext.Provider value={{birth, setBirth, uid, userType, setUserType, username, setUsername, email, setEmail, password,setPassword, avatar, setAvatar, isAuthenticated, setIsAuthenticated, logIn, logOut }}>
       {children}
     </UserContext.Provider>
   );

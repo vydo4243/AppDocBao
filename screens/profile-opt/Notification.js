@@ -17,21 +17,6 @@ export default function Notification() {
       state: "Chưa đọc",
     },
     {
-      ten: "Thông báo 3",
-      image: "",
-      state: "Chưa đọc",
-    },
-    {
-      ten: "Thông báo 2",
-      image: "",
-      state: "Chưa đọc",
-    },
-    {
-      ten: "Thông báo 1",
-      image: "",
-      state: "Đã đọc",
-    },
-    {
       ten: "Chào mừng bạn đến với AppDocBao của Uyên và Vy :))",
       image: "",
       state: "Đã đọc",

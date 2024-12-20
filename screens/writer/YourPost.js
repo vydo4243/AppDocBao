@@ -19,19 +19,19 @@ export default function YourPost() {
       id: 1,
       title:
         "Chủ tiệm tạp hóa ở TPHCM bị đánh tới tấp vì không bán dao lúc rạng sáng",
-      image: "",
+      image: "https://image.tienphong.vn/w645/Uploaded/2024/qjh-vcobuhviob/2024_12_19/danh-chu-tiem-tap-hoa-5303.jpg",
     },
     {
       id: 2,
       title:
         "Vụ phóng hỏa quán cà phê làm 11 người tử vong: Chuyên gia tội phạm học lên tiếng",
-      image: "",
+      image: "https://image.tienphong.vn/w645/Uploaded/2024/aohuooh/2024_12_19/f5-529.jpg",
     },
     {
       id: 3,
       title:
         "Kỹ sư cơ khí 'bẻ lái', biến lá dứa thành vải đầu tiên tại Việt Nam",
-      image: "",
+      image: "https://cdn.tcdulichtphcm.vn/upload/4-2024/images/2024-10-18/1729244893-a1.jpg",
     },
   ];
   const { theme } = useContext(SettingContext);

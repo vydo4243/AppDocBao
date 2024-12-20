@@ -7,22 +7,22 @@ export default function Bookmark(){
         {
             id:1,
             title:"Bài viết bạn đã lưu (mẫu)",
-            image:"",
+            image:"https://cdn.tcdulichtphcm.vn/upload/4-2024/images/2024-10-18/1729244926-a2.jpg",
         },
         {
             id:2,
             title:"On iOS you can specify any number of buttons",
-            image:"",
+            image:"https://cdn.tcdulichtphcm.vn/upload/4-2024/images/2024-10-18/1729244947-a3.jpg",
         },
         {
             id:3,
             title:"On Android at most three buttons can be specified. Android has a concept of a neutral, negative and a positive button",
-            image:"",
+            image:"https://cdn.tcdulichtphcm.vn/upload/4-2024/images/2024-10-18/1729244970-a4.jpg",
         },
         {
             id:4,
             title:"The cancel event can be handled by providing an onDismiss callback property inside the options parameter.",
-            image:"",
+            image:"https://cdn.tcdulichtphcm.vn/upload/4-2024/images/2024-10-18/1729244999-a5.jpg",
         },
     ]
     return(
