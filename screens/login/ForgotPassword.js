@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 100,
     backgroundColor:"#D9D9D9"
+
   },
   formContainer: {
     marginTop: 39,
@@ -132,6 +133,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf:"flex-end",
     marginBottom: 5,
+
     },
     resendButtonText: {
     fontFamily: "IBM Plex Serif, sans-serif",

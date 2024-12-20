@@ -22,6 +22,7 @@ const socialLoginOptions = [
 
 export default function LogIn () {
     const navigation = useNavigation();
+
     const { logIn } = useContext(UserContext); // Truy cập logIn từ UserContext
   
     const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Hiển thị/ẩn mật khẩu
@@ -30,6 +31,7 @@ export default function LogIn () {
   
     const togglePasswordVisibility = () => {
       setIsPasswordVisible(!isPasswordVisible);
+
     };
   
     const PasswordRightComponent = () => (
@@ -90,6 +92,7 @@ export default function LogIn () {
           <View style={styles.dividerLine} />
           <Text style={styles.dividerText}>Hoặc đăng nhập với</Text>
           <View style={styles.dividerLine} />
+
         </View>
 
         <View style={styles.socialLoginContainer}>
@@ -127,6 +130,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 100,
     backgroundColor:"#D9D9D9"
+
   },
   formContainer: {
     marginTop: 39,
