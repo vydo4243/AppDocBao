@@ -1,12 +1,20 @@
 import { StyleSheet,View,Text, Image, TouchableOpacity, TextInput } from "react-native";
 import { SettingContext } from "../../context/SettingContext";
 import { UserContext } from "../../context/UserContext";
-import { useContext, useState} from "react";
+import { useContext, useEffect, useState} from "react";
+import {updateInfo} from "../../firebaseConfig"
+import { getAuth ,updatePassword } from "firebase/auth";
 
 export default function Personal(){
     //Lấy từ csdl thông tin người dùng (tên, avt, email,loại người dùng)
-    const {userType, username, setUsername, email, setEmail, avatar, setAvatar,} = useContext(UserContext);
+    const {uid, userType, username, email, avatar, password, setAvatar, setUsername, setPassword} = useContext(UserContext);
+    const [newName , changeName] = useState();
+    const [newPass , changePass] = useState();
     const {theme} = useContext(SettingContext);
+    useEffect(()=>{
+        changeName(username)
+        changePass(password);
+    },[])
     const styles=StyleSheet.create({
         container:{
             flex:1,
@@ -64,12 +72,38 @@ export default function Personal(){
             fontSize: 18,
         }
     })
-    const changeAvt = () => {   //truy cập vòa bộ sưu tập trên thiết bị và đăng tải ảnh lên
-
+    //Vy làm phần này!!!!
+    const changeAvt = async() => {   
+        //truy cập vòa bộ sưu tập trên thiết bị và đăng tải ảnh lên biến newAvatar
+        await updateInfo(uid,{
+            "avt" : avatar, // thay avatar => newAvatar
+        })
+        console.log("Cập nhật ảnh đại diện thành công")
+        setAvatar(avatar); // thay avatar => newAvatar
     }
-    const update = () => {  
-        // cập nhật thông tin lên csdl
-        console.log("Cập nhật thông tin thành công")
+    //!!!
+    const updateName = async() => {  
+        await updateInfo(uid,{
+            "name" : newName,
+        })
+        console.log("Cập nhật tên người dùng thành công")       
+    }
+    const updatePass = async() => {  
+        await updateInfo(uid,{
+            "password" : newPass,
+        })
+        await updatePassword(getAuth().currentUser,newPass)
+        console.log("Cập nhật mật khẩu thành công") 
+    }
+    const update = () =>{
+        if(newName != username){
+            updateName();
+            setUsername(newName);
+        }
+        if(newPass != password){
+            updatePass();
+            setPassword(newPass);
+        }
     }
     return(
         <View style={styles.container}>
@@ -79,14 +113,18 @@ export default function Personal(){
             </TouchableOpacity>
             <View style={styles.fieldFrame}>
                 <Text style={styles.fieldName}>Tên người dùng</Text>
-                <TextInput style={styles.field} onChangeText={setUsername} value={username}/>
+                <TextInput style={styles.field} onChangeText={changeName} value={newName}/>
             </View>
             <View style={styles.fieldFrame}>
                 <Text style={styles.fieldName}>Email</Text>
-                <TextInput style={styles.field} onChangeText={setEmail} value={email}/>
+                <TextInput style={styles.typeField} value={email} editable={false}/>
             </View>
             <View style={styles.fieldFrame}>
-                <Text style={styles.fieldName}>Email</Text>
+                <Text style={styles.fieldName}>Password</Text>
+                <TextInput style={styles.field} onChangeText={changePass} value={newPass}/>
+            </View>
+            <View style={styles.fieldFrame}>
+                <Text style={styles.fieldName}>Loại người dùng</Text>
                 <TextInput style={styles.typeField} value={userType} editable={false}/>
             </View>
             <TouchableOpacity style={styles.updateButton} onPress={()=>{update()}}>
