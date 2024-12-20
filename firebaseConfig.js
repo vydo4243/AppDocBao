@@ -131,8 +131,6 @@ const updateAvatar = async (userId, selectedFile) => {
     }
 };
 
-const updateInfo = () =>{
-
 const updateInfo = async(uid, updatedData) =>{
     try {
         const userRef = doc(db, "users", uid);
