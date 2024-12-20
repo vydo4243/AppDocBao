@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [avatar, setAvatar] = useState("https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245");
+  const [avatar, setAvatar] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(()=>{
     const auth = getAuth(); 
@@ -31,7 +31,7 @@ export const UserProvider = ({ children }) => {
             setUserType(userDoc.data().userType || "");
             setEmail(userDoc.data().email || "");
             setPassword(userDoc.data().password || "");
-            setAvatar(userDoc.data().avt || null);
+            setAvatar(userDoc.data().avt || "https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245");
           } else {
             console.warn("User document không tồn tại");
           }

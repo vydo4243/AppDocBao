@@ -2,6 +2,7 @@ import { initializeApp, getApp } from "firebase/app";
 import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch} from "firebase/firestore";
 import { initializeAuth, getReactNativePersistence, getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -13,6 +14,14 @@ const firebaseConfig = {
   appId: "1:50414891525:web:3acce699265c4b4987e26c",
   measurementId: "G-SJKXN84DJK"
 };
+
+// Cloudinary Configuration
+const cloudinaryConfig = {
+    cloudName: "dkcqv4uel",
+    uploadPreset: "Default_preset",
+    cloudinaryUrl: "https://api.cloudinary.com/v1_1/dkcqv4uel/image/upload",
+  };
+  
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -71,6 +80,33 @@ const logout = () => {
     signOut(auth);
 }
 
+// Cloudinary Functions
+const uploadImage = async (fileUri) => {
+    try {
+        const formData = new FormData();
+        formData.append("file", {
+            uri: fileUri,
+            type: "image/jpeg", // Ensure the MIME type matches the file type
+            name: "image.jpg", // Adjust the name if necessary
+        });
+        formData.append("upload_preset", "Default_preset"); 
+
+        const response = await axios.post(cloudinaryConfig.cloudinaryUrl, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        console.log("Upload response:", response.data); // Log response from Cloudinary
+        return response.data.secure_url;
+    } catch (error) {
+        if (error.response) {
+            console.error("Error uploading image:", error.response.data); // Log detailed error message
+        } else {
+            console.error("Error uploading image:", error.message); // Log generic error message
+        }
+        throw error;
+    }
+};
+
 const addPost = () =>{
 
 }
@@ -85,6 +121,20 @@ const updatePost = () => {
 const deletePost = () =>{
 
 }
+
+const updateAvatar = async (userId, fileUri) => {
+    try {
+      const uploadedImageUrl = await uploadImage(fileUri);
+  
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, { avatar: uploadedImageUrl });
+  
+      return uploadedImageUrl;
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      throw error;
+    }
+  };
 
 const updateInfo = async(uid, updatedData) =>{
     try {
@@ -107,4 +157,4 @@ const getBookmark = () =>{
 
 }
 
- export{ auth, signup, login, logout, updateInfo}
+ export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo}
