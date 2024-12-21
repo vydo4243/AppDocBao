@@ -1,5 +1,5 @@
 import { initializeApp, getApp } from "firebase/app";
-import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch} from "firebase/firestore";
+import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch, collection, arrayRemove,arrayUnion} from "firebase/firestore";
 import { initializeAuth, getReactNativePersistence, getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
@@ -110,19 +110,63 @@ const uploadImage = async (fileUri) => {
     }
 };
 
-const addPost = () =>{
-
+const addPost = async(title,image,content,hashtag,publisher,publishDate) =>{
+    console.log(title,image,content,hashtag,publisher,publishDate);
+    const docRef = await addDoc(collection(db,"posts"),{
+        title,
+        image,
+        content,
+        hashtag,
+        publisher,
+        publishDate,
+    })
+    console.log("Document written with ID: ", docRef.id);
 }
-const getPost = () => {
-
+const getPost = async(postID) => {
+    try{
+        const postRef = await getDoc(doc(db, "posts", postID));
+        if(postRef.exists()){
+        const postData = postRef.data();
+ 
+        return postData;
+    }
+    }catch(error){
+        console.log(error)
+    }
+}
+const getYourPost = async() =>{
+    const userUid = auth.currentUser.uid;
+    const q = query(collection(db, "posts"), where("publisher", "==", userUid));
+    const tempDoc = []
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        tempDoc.push({ id: doc.id, ...doc.data() })
+     })
+     return tempDoc;
+}
+const updatePost = async(postID,title,image,content,hashtag,publisher,publishDate) => {
+    try{
+        console.log("updatePost");
+        const postRef = doc(db, "posts", postID);
+        await updateDoc(postRef,{
+            title,
+            image,
+            content,
+            hashtag,
+            publisher,
+            publishDate,
+        })
+    }catch(error){
+        console.log(error)
+    }
 }
 
-const updatePost = () => {
-
-}
-
-const deletePost = () =>{
-
+const deletePost = async(postID) =>{
+    try{
+        await deleteDoc(doc(db, "posts", postID));
+    }catch(error){
+        console.log(error)
+    }
 }
 
 const updateAvatar = async (userId, fileUri) => {
@@ -150,14 +194,76 @@ const updateInfo = async(uid, updatedData) =>{
       }
 }
 
-const getNotif = () =>{
-
+const getPostsByHash = async(hashtag) =>{
+    const q = query(collection(db, "posts"), where("hashtag", "==", hashtag));
+    const tempDoc = []
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        tempDoc.push({ id: doc.id, ...doc.data() })
+     })
+     return tempDoc;
 }
-const bookmarked = () => {
 
+const bookmarked = async(postID) => {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+        const uid = user.uid;
+        const userDocRef = doc(db, "users", uid);
+        // Lưu toàn bộ movieList vào history
+        await updateDoc(userDocRef, { saved: arrayUnion(postID) });
+    
+      } catch (error) {
+        console.error("Không thể cập nhật lịch sử:", error);
+      }
 }
-const getBookmark = () =>{
-
+const getBookmark = async() =>{
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+        const uid = user.uid;
+        const userDoc = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDoc);
+    
+        if (userDocSnap.exists()) {
+          const saved = userDocSnap.data().saved;
+          return saved || null; // Trả về mảng rỗng nếu không có lịch sử
+        } else {
+          console.warn("Không tìm thấy tài liệu người dùng.");  
+        }
+      } catch (error) {
+        console.error("Không thể lấy ds đã lưu:", error);
+      }
 }
-
- export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo}
+const unbookmark = async(postID) =>{
+    
+        try {
+            const user = auth.currentUser;
+            if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+            const uid = user.uid;
+            
+            const userDoc = doc(db, "users", uid);
+            // Lưu toàn bộ movieList vào history
+            await updateDoc(userDoc, { saved: arrayRemove(postID) });
+            
+            const userDocSnap = await getDoc(userDoc);
+    
+            if (userDocSnap.exists()) {
+                const currentSave = userDocSnap.data().saved || null;
+                const updatedSave = currentSave.filter(post => post !== postID);
+                await updateDoc(userDoc, { saved: updatedSave });
+                return true;
+            } else {
+                console.log("User not found.");
+                return false;
+            }
+        } catch (error) {
+            console.error("Error removing bookmarked post:", error);
+            return false;
+        }
+    
+}
+ export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, getPostsByHash, getBookmark, bookmarked, unbookmark}
