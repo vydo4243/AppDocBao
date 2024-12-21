@@ -9,19 +9,6 @@ import {
 import { SettingContext } from "../../context/SettingContext";
 import { useContext, useState } from "react";
 export default function Notification() {
-  //lấy từ csdl (tên, hình ảnh, trạng thái) thông báo từ người dùng
-  const [notifList, setList] = useState([
-    {
-      ten: "Đổi mật khẩu thành công",
-      image: "",
-      state: "Chưa đọc",
-    },
-    {
-      ten: "Chào mừng bạn đến với AppDocBao của Uyên và Vy :))",
-      image: "",
-      state: "Đã đọc",
-    },
-  ]);
   const { theme } = useContext(SettingContext);
   const styles = StyleSheet.create({
     container: {
