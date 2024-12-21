@@ -6,6 +6,7 @@ import {
     IBMPlexSerif_700Bold,
     IBMPlexSerif_600SemiBold,
   } from '@expo-google-fonts/ibm-plex-serif';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export const SettingContext = createContext();
 
 export function SettingProvider({ children }) {
@@ -29,6 +30,39 @@ export function SettingProvider({ children }) {
         //chỉnh màu ở đây
     } 
     
+    const [darkMode, setDarkMode] = useState(false); // Chế độ tối mặc định tắt
+    const [fontSize, setFontSize] = useState(16); // Kích thước phông chữ mặc định là 16
+  
+    // Lưu cài đặt vào AsyncStorage
+    const saveSettings = async () => {
+      try {
+        await AsyncStorage.setItem('setting', JSON.stringify({ darkMode, fontSize }));
+      } catch (error) {
+        console.error('Failed to save settings:', error);
+      }
+    };
+  
+    // Nạp cài đặt từ AsyncStorage khi khởi tạo ứng dụng
+    useEffect(() => {
+      const loadSettings = async () => {
+        try {
+          const savedSettings = await AsyncStorage.getItem('setting');
+          if (savedSettings) {
+            const { darkMode, fontSize } = JSON.parse(savedSettings);
+            setDarkMode(darkMode);
+            setFontSize(fontSize);
+          }
+        } catch (error) {
+          console.error('Failed to load settings:', error);
+        }
+      };
+      loadSettings();
+    }, []);
+  
+    // Lưu cài đặt mỗi khi thay đổi
+    useEffect(() => {
+      saveSettings();
+    }, [darkMode, fontSize]);
 
     return (
         <SettingContext.Provider

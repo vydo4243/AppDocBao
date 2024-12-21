@@ -97,7 +97,6 @@ function HomeTab() {
               shadowOpacity: 0,
             },
             tabBarItemStyle: {
-              maxWidth: 200, // Đảm bảo tabs không quá rộng
               backgroundColor: "transparent", // Đảm bảo các tab không có hiệu ứng nền
             },
           }}
@@ -217,14 +216,14 @@ function AppNavigator() {
               return <CustomHeader navigation={navigation} />;
             }
             // Các màn hình khác hiển thị header mặc định với title
-            return (
-              <View style={styles.defaultHeader}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{options.title}</Text>
-              </View>
-            );
+            // return (
+            //   <View style={styles.defaultHeader}>
+            //     <TouchableOpacity onPress={() => navigation.goBack()}>
+            //       <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
+            //     </TouchableOpacity>
+            //     <Text style={styles.headerTitle}>{options.title}</Text>
+            //   </View>
+            // );
           },
         })}
       >
