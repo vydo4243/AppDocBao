@@ -101,7 +101,13 @@ import {
     const navigation = useNavigation();
     const [loading,setLoading] = useState(false);
     const createPost = async() => {
-      var datetime = new Date().toLocaleString();
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      let mm = today.getMonth() + 1; // Months start at 0!
+      let dd = today.getDate();
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+      const datetime = dd + '/' + mm + '/' + yyyy;
       setLoading(true);
       console.log("Đang tạo bài viết")
       await addPost(title,image,content,hashtag,auth.currentUser.uid,datetime);

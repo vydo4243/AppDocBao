@@ -133,7 +133,13 @@ export default function EditPost({ route }) {
     );
   };
   const updateBv = async() => {
-    var datetime = new Date().toLocaleString();
+    const today = new Date();
+      const yyyy = today.getFullYear();
+      let mm = today.getMonth() + 1; // Months start at 0!
+      let dd = today.getDate();
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+      const datetime = dd + '/' + mm + '/' + yyyy;
     console.log("update...")
     await updatePost(id,title,image,content,hashtag,auth.currentUser.uid,datetime);
     console.log("Cập nhật bài viết thành công");
