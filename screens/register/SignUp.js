@@ -48,7 +48,7 @@ export default function SignUp() {
         //tạo user trên firebase;
         try{
           const additionalData = {
-          userType: userType,
+          userType: "Reader",
           avt: "https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245",
           saved: {},
           history:{},
