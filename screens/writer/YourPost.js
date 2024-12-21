@@ -6,34 +6,20 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Thumbnail from "../../component/Thumbnail";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SettingContext } from "../../context/SettingContext";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { getYourPost } from "../../firebaseConfig";
 
 export default function YourPost() {
   const navigation = useNavigation();
-  // Lấy id, title, image từ các bài viết mà publisher là id người dùng đưa vào list
-  const list = [
-    {
-      id: 1,
-      title:
-        "Chủ tiệm tạp hóa ở TPHCM bị đánh tới tấp vì không bán dao lúc rạng sáng",
-      image: "https://image.tienphong.vn/w645/Uploaded/2024/qjh-vcobuhviob/2024_12_19/danh-chu-tiem-tap-hoa-5303.jpg",
-    },
-    {
-      id: 2,
-      title:
-        "Vụ phóng hỏa quán cà phê làm 11 người tử vong: Chuyên gia tội phạm học lên tiếng",
-      image: "https://image.tienphong.vn/w645/Uploaded/2024/aohuooh/2024_12_19/f5-529.jpg",
-    },
-    {
-      id: 3,
-      title:
-        "Kỹ sư cơ khí 'bẻ lái', biến lá dứa thành vải đầu tiên tại Việt Nam",
-      image: "https://cdn.tcdulichtphcm.vn/upload/4-2024/images/2024-10-18/1729244893-a1.jpg",
-    },
-  ];
+  const [list,setList] = useState([]);
+  useEffect(()=>{
+    getYourPost().then((docs)=>{
+      setList(docs);
+    })
+  },[])  
   const { theme } = useContext(SettingContext);
   const styles = StyleSheet.create({
     container: {
@@ -117,13 +103,13 @@ export default function YourPost() {
                   >
                     <TouchableOpacity
                       style={styles.watchFrame}
-                      onPress={() => navigation.navigate("Post", item.id)}
+                      onPress={() => navigation.navigate("Post", {id:item.id})}
                     >
                       <Text style={styles.editButton}>Xem bài viết</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.editFrame}
-                      onPress={() => navigation.navigate("EditPost", item.id)}
+                      onPress={() =>navigation.navigate("EditPost", {id:item.id})}
                     >
                       <Text style={styles.editButton}>Chỉnh sửa bài viết</Text>
                     </TouchableOpacity>

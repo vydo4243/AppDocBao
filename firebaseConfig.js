@@ -1,5 +1,5 @@
 import { initializeApp, getApp } from "firebase/app";
-import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch} from "firebase/firestore";
+import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch, collection} from "firebase/firestore";
 import { initializeAuth, getReactNativePersistence, getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
@@ -110,19 +110,63 @@ const uploadImage = async (fileUri) => {
     }
 };
 
-const addPost = () =>{
-
+const addPost = async(title,image,content,hashtag,publisher,publishDate) =>{
+    console.log(title,image,content,hashtag,publisher,publishDate);
+    const docRef = await addDoc(collection(db,"posts"),{
+        title,
+        image,
+        content,
+        hashtag,
+        publisher,
+        publishDate,
+    })
+    console.log("Document written with ID: ", docRef.id);
 }
-const getPost = () => {
-
+const getPost = async(postID) => {
+    try{
+        const postRef = await getDoc(doc(db, "posts", postID));
+        if(postRef.exists()){
+        const postData = postRef.data();
+        console.log("FR config:", postData);
+        return postData;
+    }
+    }catch(error){
+        console.log(error)
+    }
+}
+const getYourPost = async() =>{
+    const userUid = auth.currentUser.uid;
+    const q = query(collection(db, "posts"), where("publisher", "==", userUid));
+    const tempDoc = []
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        tempDoc.push({ id: doc.id, ...doc.data() })
+     })
+     return tempDoc;
+}
+const updatePost = async(postID,title,image,content,hashtag,publisher,publishDate) => {
+    try{
+        console.log("updatePost");
+        const postRef = doc(db, "posts", postID);
+        await updateDoc(postRef,{
+            title,
+            image,
+            content,
+            hashtag,
+            publisher,
+            publishDate,
+        })
+    }catch(error){
+        console.log(error)
+    }
 }
 
-const updatePost = () => {
-
-}
-
-const deletePost = () =>{
-
+const deletePost = async(postID) =>{
+    try{
+        await deleteDoc(doc(db, "posts", postID));
+    }catch(error){
+        console.log(error)
+    }
 }
 
 const updateAvatar = async (userId, fileUri) => {
@@ -160,4 +204,4 @@ const getBookmark = () =>{
 
 }
 
- export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo}
+ export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost}
