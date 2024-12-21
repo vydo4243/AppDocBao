@@ -41,13 +41,14 @@ import {
   StyleSheet,
   StatusBar,
   Text,
+  ScrollView
 } from "react-native";
 
 // Custom Header
 const CustomHeader = () => {
   return (
-    <View>
-      <StatusBar />
+    <View style={styles.headerContainer}>
+      <StatusBar/>
       <View style={styles.header}>
           <TouchableOpacity>
               <Icon name="format-size" size={24} color="gray" />
@@ -67,42 +68,74 @@ const CustomHeader = () => {
 const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 const BottomTab = createBottomTabNavigator();
+const CustomTabBar = ({state, descriptors, navigation }) =>{
+  const { theme } = useContext(SettingContext);
+  return(
+    <View style={styles.tabRow}>      
+      <TouchableOpacity style={styles.homeIcon}>
+        <Icon name="home" size={24} color={theme.color} />
+      </TouchableOpacity>
+      <ScrollView  
+      contentContainerStyle={{ 
+        elevation: 0, // Ẩn đổ bóng
+        backgroundColor: "transparent",
+        shadowOpacity: 0,
+        gap:10,
+      }} 
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}>
+      {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name;
+
+          const isFocused = state.index === index;
+
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                const event = navigation.emit({
+                  type: 'tabPress',
+                  target: route.key,
+                });
+
+                if (!isFocused && !event.defaultPrevented) {
+                  navigation.navigate(route.name);
+                }
+              }}
+              style={{ 
+                maxWidth: 200, // Đảm bảo tabs không quá rộng
+                backgroundColor: "transparent", // Đảm bảo các tab không có hiệu ứng nền
+                borderBottomWidth:isFocused?2:0,
+              }}
+            >
+              <Text style={{ 
+                padding:5,
+                fontSize: 14,
+                fontFamily: theme.font.bold,
+                textAlign: "center", // Căn giữa chữ trong Tab
+                whiteSpace: "nowrap",
+                color:isFocused?theme.color:theme.inactive
+               }}>{label}</Text>
+              
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
+  )
+}
 
 function HomeTab() {
-  const { theme } = useContext(SettingContext);
-
   return (
-    <View style={{ flex: 1 }}>
-      {/* Header với Icon Home và Tabs */}
-      <View style={styles.tabRow}>
-        {/* Icon Home */}
-        <TouchableOpacity style={styles.homeIcon}>
-          <Icon name="home" size={24} color={theme.color} />
-        </TouchableOpacity>
-
-        {/* Tabs */}
         <Tab.Navigator
-          screenOptions={{
-            tabBarLabelStyle: {
-              fontSize: 14,
-              fontFamily: theme.font.bold,
-              textAlign: "center", // Căn giữa chữ trong Tab
-              whiteSpace: "nowrap",
-            },
-            tabBarIndicatorStyle: { backgroundColor: theme.color },
-            tabBarScrollEnabled: true, // Cho phép cuộn ngang
-            tabBarStyle: {
-              elevation: 0, // Ẩn đổ bóng
-              backgroundColor: "transparent",
-              shadowOpacity: 0,
-            },
-            tabBarItemStyle: {
-              backgroundColor: "transparent", // Đảm bảo các tab không có hiệu ứng nền
-            },
-          }}
-          style={styles.tabsContainer} // Style cho toàn bộ navigator
+        tabBar={props => <CustomTabBar {...props}/>}
         >
-          <Tab.Screen name="World" component={World} options={{ title: "Thế giới" }} />
+          <Tab.Screen name="World" component={WorldScreen} options={{ title: "Thế giới" }} />
           <Tab.Screen name="Business" component={Bussiness} options={{ title: "Kinh doanh" }} />
           <Tab.Screen name="RealEstate" component={RealEstate} options={{ title: "Bất động sản" }} />
           <Tab.Screen name="Science" component={Science} options={{ title: "Khoa học" }} />
@@ -110,8 +143,6 @@ function HomeTab() {
           <Tab.Screen name="Sport" component={Sport} options={{ title: "Thể thao" }} />
           <Tab.Screen name="Law" component={Law} options={{ title: "Pháp luật" }} />
         </Tab.Navigator>
-      </View>
-    </View>
   );
 }
 
@@ -157,6 +188,14 @@ function TrendScreen() {
     </Stack.Navigator>
   );
 }
+function WorldScreen() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="World" component={World} />
+      <Stack.Screen name="WorldPost" component={Post} />
+    </Stack.Navigator>
+  );
+}
 
 function ProfileScreen() {
   const { theme } = useContext(SettingContext);
@@ -169,16 +208,8 @@ function ProfileScreen() {
       }
     }}>
       <Stack.Screen name="Profile" component={Profile} options={{headerShown:false, title:"Hồ sơ"}}/>
-      <Stack.Screen name="LogIn" component={LogIn} options={{headerShown:false}}/>
-      <Stack.Screen name="SignUp" component={SignUp} options={{headerShown:false}}/>
-      <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{headerShown:false}}/>
-      <Stack.Screen name="PasswordReset" component={PasswordReset} options={{headerShown:false}}/>
-      <Stack.Screen name="AboutUs" component={AboutUs} options={{title:"Về chúng tôi"}}/>
-      <Stack.Screen name="Bookmark" component={Bookmark} options={{title:"Bài viết đã lưu"}}/>
-      <Stack.Screen name="History" component={History} options={{ title: "Bài viết đã xem" }} />
-      <Stack.Screen name="Notification" component={Notification} options={{title:"Thông báo"}}/>
+
       <Stack.Screen name="Personal" component={Personal} options={{title:"Thông tin cá nhân"}}/>
-      <Stack.Screen name="Policy" component={Policy} options={{title:"Chính sách & Điều khoản"}}/>
       <Stack.Screen name="YourPost" component={YourPost} options={{title:"Bài viết của bạn"}}/>
       <Stack.Screen name="AddPost" component={AddPost} options={{title:"Tạo bài viết"}}/>
       <Stack.Screen name="EditPost" component={EditPost} options={{title:"Chỉnh sửa bài viết"}}/>
@@ -187,51 +218,57 @@ function ProfileScreen() {
   );
 }
 
-// BottomTabNavigator
-function AppNavigator() {
-  const { theme } = useContext(SettingContext);
+function MainStackNavigator() {
   return (
-    
     <NavigationContainer>
-      <BottomTab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused }) => {
-            let iconName;
-            if (route.name === "HomeScreen") iconName = "home";
-            else if (route.name === "TrendScreen") iconName = "trending-up";
-            else if (route.name === "ProfileScreen") iconName = "account";
-            return (
-              <MaterialCommunityIcons
-                name={iconName}
-                size={24}
-                color={focused ? theme.color : theme.inactive}
-              />
-            );
-          },
-          tabBarActiveTintColor: theme.color,
-          tabBarInactiveTintColor: theme.inactive,
-          header: ({ navigation, route, options }) => {
-            // Nếu ở HomeScreen, hiển thị CustomHeader
-            if (route.name === "HomeScreen") {
-              return <CustomHeader navigation={navigation} />;
-            }
-            // Các màn hình khác hiển thị header mặc định với title
-            // return (
-            //   <View style={styles.defaultHeader}>
-            //     <TouchableOpacity onPress={() => navigation.goBack()}>
-            //       <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
-            //     </TouchableOpacity>
-            //     <Text style={styles.headerTitle}>{options.title}</Text>
-            //   </View>
-            // );
-          },
-        })}
-      >
-        <BottomTab.Screen name="HomeScreen" component={HomeTab} options={{  title: "Trang chủ"}} />
-        <BottomTab.Screen name="TrendScreen" component={TrendScreen} options={{ title: "Xu hướng"}} />
-        <BottomTab.Screen name="ProfileScreen" component={ProfileScreen} options={{ title: "Hồ sơ" }} />
-      </BottomTab.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {/* Đặt BottomTabNavigator bên trong StackNavigator */}
+        <Stack.Screen name="Main" component={BottomTabNavigator} />
+
+        {/* Các màn hình không cần BottomTabNavigator */}
+        <Stack.Screen name="LogIn" component={LogIn} />
+        <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="PasswordReset" component={PasswordReset} />
+        <Stack.Screen name="Policy" component={Policy} />
+      </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+// BottomTabNavigator
+function BottomTabNavigator() {
+  const { theme } = useContext(SettingContext);
+
+  return (
+    <BottomTab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused }) => {
+          let iconName;
+          if (route.name === "HomeScreen") iconName = "home";
+          else if (route.name === "TrendScreen") iconName = "trending-up";
+          else if (route.name === "ProfileScreen") iconName = "account";
+          return (
+            <MaterialCommunityIcons
+              name={iconName}
+              size={24}
+              color={focused ? theme.color : theme.inactive}
+            />
+          );
+        },
+        tabBarActiveTintColor: theme.color,
+        tabBarInactiveTintColor: theme.inactive,
+        header: ({ navigation, route }) => {
+          if (route.name === "HomeScreen") {
+            return <CustomHeader navigation={navigation} />;
+          }
+        },
+      })}
+    >
+      <BottomTab.Screen name="HomeScreen" component={HomeTab} options={{ title: "Trang chủ" }} />
+      <BottomTab.Screen name="TrendScreen" component={TrendScreen} options={{ title: "Xu hướng" }} />
+      <BottomTab.Screen name="ProfileScreen" component={ProfileScreen} options={{ title: "Hồ sơ" }} />
+    </BottomTab.Navigator>
   );
 }
 
@@ -239,19 +276,24 @@ export default function App() {
   return (
     <SettingProvider>
       <UserProvider>
-      <AppNavigator />
+        <MainStackNavigator />
       </UserProvider>
     </SettingProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  // headerContainer: {
+  //   paddingTop: StatusBar.currentHeight, // Ensure the header is below the StatusBar
+  //   backgroundColor: '#fff',
+  // },
   header: {
+    flexDirection: "row",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     height: 50,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     backgroundColor: "#F4F3F0",
     elevation: 2,
   },

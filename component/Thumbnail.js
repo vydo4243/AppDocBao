@@ -5,7 +5,7 @@ import {Dimensions} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 const windowWidth = Dimensions.get('window').width;
 
-export default function Thumbnail({id, title, image, nav}){
+export default function Thumbnail({id, title, image,hashtag, nav}){
     const navigation = useNavigation();
     const {theme, setReading} = useContext(SettingContext);
     const styles=StyleSheet.create({
@@ -46,6 +46,7 @@ export default function Thumbnail({id, title, image, nav}){
             <View style={styles.image} />
             )}
             <Text style={styles.title}>{title}</Text>
+            <Text style={{fontFamily: theme.font.regular, fontSize: 14, color: theme.inactive}}>{hashtag}</Text>
         </View>
         </TouchableOpacity>
     )
