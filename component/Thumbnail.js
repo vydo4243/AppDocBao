@@ -37,7 +37,7 @@ export default function Thumbnail({id, title, image, nav}){
     return(
         <TouchableOpacity onPress={()=>{
             if(nav!="EditPost") setReading(true);
-            navigation.navigate(nav,id) ;
+            navigation.navigate(nav,{id:id}) ;
         }}>
         <View style={styles.container}>
             {image ? (
