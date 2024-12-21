@@ -31,7 +31,7 @@ export default function Post({ route }) {
         setContent(data.content);
         setHash(data.hashtag);
         setDate(data.publishDate);
-        setWriter("");
+        setWriter("HTC");
       }
       const docs = await getBookmark();
         setSaved(docs.includes(id));
@@ -46,7 +46,6 @@ export default function Post({ route }) {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: 50,
     },
     backButton: {
       position: "absolute",

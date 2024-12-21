@@ -29,7 +29,7 @@ export const UserProvider = ({ children }) => {
           if (userDoc.exists()) {
             setUid(userDoc.data().uid || "")
             setUsername(userDoc.data().name || "");
-            setUserType(userDoc.data().userType || "");
+            setUserType(userDoc.data().userType || "Reader");
             setEmail(userDoc.data().email || "");
             setPassword(userDoc.data().password || "");
             setBirth(userDoc.data().birth || "")
