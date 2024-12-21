@@ -40,13 +40,14 @@ import {
   Image,
   StyleSheet,
   StatusBar,
+  Text,
 } from "react-native";
 
 // Custom Header
 const CustomHeader = () => {
   return (
-    <View style={styles.headerContainer}>
-      <StatusBar barStyle="dark-content" />
+    <View>
+      <StatusBar />
       <View style={styles.header}>
           <TouchableOpacity>
               <Icon name="format-size" size={24} color="gray" />
@@ -210,8 +211,21 @@ function AppNavigator() {
           },
           tabBarActiveTintColor: theme.color,
           tabBarInactiveTintColor: theme.inactive,
-          header: (props) =>
-            route.name === "HomeScreen" ? <CustomHeader {...props} /> : undefined, // Chỉ hiển thị CustomHeader ở Home
+          header: ({ navigation, route, options }) => {
+            // Nếu ở HomeScreen, hiển thị CustomHeader
+            if (route.name === "HomeScreen") {
+              return <CustomHeader navigation={navigation} />;
+            }
+            // Các màn hình khác hiển thị header mặc định với title
+            return (
+              <View style={styles.defaultHeader}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>{options.title}</Text>
+              </View>
+            );
+          },
         })}
       >
         <BottomTab.Screen name="HomeScreen" component={HomeTab} options={{  title: "Trang chủ"}} />
@@ -233,10 +247,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  // headerContainer: {
-  //   paddingTop: StatusBar.currentHeight, // Ensure the header is below the StatusBar
-  //   backgroundColor: '#fff',
-  // },
   header: {
     flexDirection: "row",
     alignItems: "center",
