@@ -211,11 +211,10 @@ const bookmarked = async(postID) => {
     
         const uid = user.uid;
         const userDocRef = doc(db, "users", uid);
-        // Lưu toàn bộ movieList vào history
         await updateDoc(userDocRef, { saved: arrayUnion(postID) });
     
       } catch (error) {
-        console.error("Không thể cập nhật lịch sử:", error);
+        console.error("Không thể cập nhật ds đã lưu:", error);
       }
 }
 const getBookmark = async() =>{
@@ -229,7 +228,7 @@ const getBookmark = async() =>{
     
         if (userDocSnap.exists()) {
           const saved = userDocSnap.data().saved;
-          return saved || null; // Trả về mảng rỗng nếu không có lịch sử
+          return saved || null;
         } else {
           console.warn("Không tìm thấy tài liệu người dùng.");  
         }
@@ -249,21 +248,59 @@ const unbookmark = async(postID) =>{
             // Lưu toàn bộ movieList vào history
             await updateDoc(userDoc, { saved: arrayRemove(postID) });
             
-            const userDocSnap = await getDoc(userDoc);
-    
-            if (userDocSnap.exists()) {
-                const currentSave = userDocSnap.data().saved || null;
-                const updatedSave = currentSave.filter(post => post !== postID);
-                await updateDoc(userDoc, { saved: updatedSave });
-                return true;
-            } else {
-                console.log("User not found.");
-                return false;
-            }
+            
         } catch (error) {
             console.error("Error removing bookmarked post:", error);
             return false;
         }
     
 }
- export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, getPostsByHash, getBookmark, bookmarked, unbookmark}
+const getHistory = async()=>{
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+        const uid = user.uid;
+        const userDoc = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDoc);
+    
+        if (userDocSnap.exists()) {
+          const history = userDocSnap.data().history;
+          return history || null;
+        } else {
+          console.warn("Không tìm thấy tài liệu người dùng.");  
+        }
+      } catch (error) {
+        console.error("Không thể lấy lịch sử:", error);
+      }
+}
+
+const updateHistory = async(postID) =>{
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+        const uid = user.uid;
+        const userDocRef = doc(db, "users", uid);
+        // Lưu toàn bộ movieList vào history
+        await updateDoc(userDocRef, { history: arrayUnion(postID) });
+    
+      } catch (error) {
+        console.error("Không thể cập nhật lịch sử:", error);
+      }
+}
+const deleteHistory = async(postID) =>{
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+        const uid = user.uid;
+        const userDoc = doc(db, "users", uid);
+        await updateDoc(userDoc, { history: arrayRemove(postID) });        
+    } catch (error) {
+        console.error("Không thể xóa bài viết này khỏi lịch sử:", error);
+        return false;
+    }
+}
+
+ export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, 
+    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory}

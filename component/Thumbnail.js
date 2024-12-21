@@ -4,6 +4,7 @@ import { SettingContext } from "../context/SettingContext";
 import {Dimensions} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 const windowWidth = Dimensions.get('window').width;
+import { updateHistory } from "../firebaseConfig";
 
 export default function Thumbnail({id, title, image, nav}){
     const navigation = useNavigation();
@@ -37,7 +38,10 @@ export default function Thumbnail({id, title, image, nav}){
     return(
         <TouchableOpacity onPress={()=>{
             if(nav!="EditPost") setReading(true);
-            navigation.navigate(nav,{id:id}) ;
+            updateHistory(id).then(()=>{
+                navigation.navigate(nav,{id:id}) ;
+            })
+            
         }}>
         <View style={styles.container}>
             {image ? (
