@@ -5,21 +5,23 @@ import {
     TextInput,
     ScrollView,
     TouchableOpacity,
-    ImageBackground,
+    Image,
     KeyboardAvoidingView,
+    ActivityIndicator,
     Alert,
   } from "react-native";
   import { useContext, useState } from "react";
   import { SettingContext } from "../../context/SettingContext";
   import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
   import { useNavigation } from "@react-navigation/native";
-  export default function AddPost({ id }) {
+  import { auth,addPost } from "../../firebaseConfig";
+  export default function AddPost() {
     const { theme } = useContext(SettingContext);
     //Lấy từ CSDL các thông tin bài viết dựa theo ID
     const [title, setTitle] = useState("");
     const [image, setImage] = useState("");
     const [content, setContent] = useState("");
-    const [hashtag, setHash] = useState([]);
+    const [hashtag, setHash] = useState();
     const styles = StyleSheet.create({
       container: {
         marginHorizontal: 15,
@@ -41,25 +43,13 @@ import {
         padding: 10,
       },
       imageinput: {
-        width: "100%",
+        width: 300,
         height: 200,
         borderRadius: 10,
         borderWidth: 1,
         backgroundColor: theme.inactive,
-      },
-      image: {
-        width: "100%",
-        height: "100%",
-        borderRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "row",
-      },
-      addImage: {
-        color: "#fff",
-        fontSize: 30,
-        fontFamily: theme.font.bold,
-        textAlign: "left",
+        margin :10,
+        alignSelf:"center"
       },
       contentinput: {
         width: "100%",
@@ -108,18 +98,21 @@ import {
       },
     });
     const [newHash, setNewHash] = useState("");
-    const addImage = () => {
-      //tải hình ảnh từ thiết bị
-    };
     const navigation = useNavigation();
-    const addPost = () => {
-      // update csdl...
+    const [loading,setLoading] = useState(false);
+    const createPost = async() => {
+      var datetime = new Date().toLocaleString();
+      setLoading(true);
+      console.log("Đang tạo bài viết")
+      await addPost(title,image,content,hashtag,auth.currentUser.uid,datetime);
       console.log("Thêm bài viết thành công");
+      setLoading(false);
       navigation.goBack();
     };
     return (
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-        <ScrollView style={styles.container}>
+         <ActivityIndicator style={{ flex: 1 }} size="large" animating={loading}/>
+        <ScrollView style={styles.container}>       
           <Text style={styles.Fieldtitle}>Tiêu đề bài viết</Text>
           <TextInput
             style={styles.titleinput}
@@ -129,17 +122,14 @@ import {
             multiline
           />
           <Text style={styles.Fieldtitle}>Hình ảnh bài viết</Text>
-          <TouchableOpacity
-            style={styles.imageinput}
-            onPress={() => {
-              addImage();
-            }}
-          >
-            <ImageBackground style={styles.image} source={image}>
-              <MaterialCommunityIcons name="plus" size={50} color="#fff" />
-              <Text style={styles.addImage}>Thêm hình ảnh</Text>
-            </ImageBackground>
-          </TouchableOpacity>
+          <TextInput
+            style={styles.titleinput}
+            onChangeText={setImage}
+            value={image}
+            placeholder="Nhập url hình ảnh"
+            multiline
+          />
+          <Image style={styles.imageinput} source={image?{uri:image}:image}/>
           <Text style={styles.Fieldtitle}>Nội dung bài viết</Text>
           <TextInput
             style={styles.contentinput}
@@ -148,48 +138,14 @@ import {
             placeholder="Nhập nội dung bài viết"
             multiline
           />
-          <Text style={styles.Fieldtitle}>Hashtag bài viết</Text>
-          <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-            <TextInput
-              style={styles.hashtaginput}
-              onChangeText={setNewHash}
-              value={newHash}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                //thêm hash
-                if (newHash != "") {
-                  hashtag.push(newHash);
-                  setNewHash("");
-                }
-              }}
-            >
-              <Text style={styles.addHash}>Thêm</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.hashtagList}>
-            {hashtag.map((item) => {
-              return (
-                <View key={item} style={styles.hashtagItem}>
-                  <Text style={styles.hashtagText}>{item}</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      //xóa hash
-                      setHash(
-                        hashtag.filter((remainHash) => remainHash !== item)
-                      );
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="delete"
-                      size={20}
-                      color="black"
-                    />
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </View>
+          <Text style={styles.Fieldtitle}>Thể loại bài viết</Text>
+          <TextInput
+            style={styles.titleinput}
+            onChangeText={setHash}
+            value={hashtag}
+            placeholder="Nhập thể loại bài viết"
+            multiline
+          />
           <View
             style={{
               height: 50,
@@ -199,7 +155,7 @@ import {
           >
             <TouchableOpacity
               onPress={() => {
-                addPost();
+                createPost();
               }}
             >
               <View
