@@ -23,9 +23,9 @@ export function SettingProvider({ children }) {
             reg : "IBMPlexSerif_400Regular",
             italic: "IBMPlexSerif_400Regular_Italic"
         },
-        color: "#73E3D4", //màu chủ đạo
-        inactive: "#ccc", //nút không hoạt động
-        background: "#D9F6F3" //nền giống màu chủ đạo nhưng nhạt hơn
+        color: "#4B3813", //màu chủ đạo
+        inactive: "#B6B0A4", //nút không hoạt động
+        background: "#6D614B" //nền giống màu chủ đạo nhưng nhạt hơn
         //chỉnh màu ở đây
     } 
     
