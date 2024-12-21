@@ -1,6 +1,6 @@
 import { initializeApp, getApp } from "firebase/app";
 import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch} from "firebase/firestore";
-import { initializeAuth, getReactNativePersistence, getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
+import { initializeAuth, getReactNativePersistence, getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 // Your web app's Firebase configuration
@@ -38,9 +38,9 @@ const signup = async (name, email, password, additionalData) => {
             name,
             email,
             password,
-            authProvider: "local",
             ...additionalData
         });  
+        await sendEmailVerification(user);
         return user;     
     } catch (error) {
         if(error.message == "Firebase: Password should be at least 6 characters (auth/weak-password)."){
@@ -60,6 +60,9 @@ const login = async (email, password) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         // Lấy thông tin người dùng từ Firestore
+        if (!user.emailVerified) {
+            return "Vui lòng kiểm tra email của bạn để xác thực tài khoản.";
+        }
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
             const userData = userDoc.data();

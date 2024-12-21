@@ -50,11 +50,12 @@ export default function SignUp() {
           const additionalData = {
           userType: userType,
           avt: "https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245",
-          saved: [],
+          saved: {},
+          history:{},
           };
           const user = await signup(username, email, password, additionalData);
           if (user && typeof user !== "string") {
-            Alert.alert("Đăng ký thành công!");
+            Alert.alert("Đăng ký thành công!","Vui lòng kiểm tra Email để xác thực.");
             navigation.goBack(); // Quay lại trang đăng nhập
           }else {
             Alert.alert("Đăng ký thất bại",user);
@@ -131,18 +132,7 @@ export default function SignUp() {
           />
         </View>
 
-        <View style={styles.radioGroup}>
-          <RadioOption
-            label="Độc giả"
-            isSelected={userType === 'Reader'}
-            onPress={() => setUserType('Reader')}
-          />
-          <RadioOption
-            label="Tác giả"
-            onPress={() => setUserType('Writer')}
-            isSelected={userType === 'Writer'}
-          />
-        </View>
+        
 
         <View style={styles.termsContainer}>
           {/* Checkbox được thêm vào ở đây */}
