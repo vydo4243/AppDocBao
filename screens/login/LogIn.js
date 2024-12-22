@@ -224,7 +224,7 @@ export default function LogIn () {
             secureTextEntry={!isPasswordVisible}
             rightComponent={<PasswordRightComponent />}
           />
-          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+          <TouchableOpacity onPress={() => navigation.navigate('OTPSend')}>
             <Text style={styles.forgotPassword}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>

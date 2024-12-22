@@ -75,6 +75,7 @@ export default function Personal() {
         updateText: {
             fontFamily: theme.font.bold,
             fontSize: 18,
+            color: "white",
         }
     });
 

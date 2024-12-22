@@ -14,15 +14,14 @@ import { useNavigation } from '@react-navigation/native';
 import BackButton from '../../component/BackButton';
 import { SettingContext } from '../../context/SettingContext';
 
-export default function ForgotPassword() {
+export default function ForgotPassword({ route }) {
     const navigation = useNavigation();
-    const [email, setemail] = useState('');
+    const { email } = route.params; // Nhận email từ OTPSend
+
     const [otp, setOTP] = useState('');
   
     const handleEvent = () => {
-        if (email.trim() === "") {
-            Alert.alert("Lỗi", "Vui lòng nhập email.");
-          } else if (otp.trim() === "") {
+          if (otp.trim() === "") {
             Alert.alert("Lỗi", "Vui lòng nhập mã OTP.");
           } else {
             navigation.navigate('PasswordReset');
@@ -142,9 +141,9 @@ export default function ForgotPassword() {
         <View style={styles.formContainer}>
           <Input
             label="Email"
-            placeholder="Nhập Email"
-            value={email} 
-            onChangeText={setemail}
+            
+            value={email}  // Sử dụng email truyền vào
+            editable={false} // Không cho phép chỉnh sửa
           />
           <View style={styles.otpContainer}>
             <Input
