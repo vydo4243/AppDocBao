@@ -48,6 +48,7 @@ import {
   Platform,
 } from "react-native";
 import PopupSettings from "./screens/setting/PopupSetting";
+import OTPSend from "./screens/login/OTPSend";
 // Custom Header
 const CustomHeader = () => {
   const { fontSize, setFontSize, darkMode, setDarkMode } = useContext(SettingContext); // Lấy giá trị từ SettingContext
@@ -232,7 +233,7 @@ function WorldScreen() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="World" component={World} />
-      <Stack.Screen name="WorldPost" component={Post} />
+      <Stack.Screen name="WorldPost" component={Post} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -305,6 +306,7 @@ function MainStackNavigator() {
         {/* Các màn hình không cần BottomTabNavigator */}
         <Stack.Screen name="LogIn" component={LogIn} />
         <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="OTPSend" component={OTPSend} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="PasswordReset" component={PasswordReset} />
         <Stack.Screen name="Policy" component={Policy} />
