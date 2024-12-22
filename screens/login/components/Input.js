@@ -5,7 +5,7 @@ export default function Input  ({ label, placeholder,value, secureTextEntry, rig
   const { theme } = useContext(SettingContext);
   const styles = StyleSheet.create({
     inputContainer: {
-      minHeight: 60,
+      minHeight: 70,
       flexGrow: 1,
     },
     inputLabel: {
@@ -21,7 +21,7 @@ export default function Input  ({ label, placeholder,value, secureTextEntry, rig
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 8,
+      paddingVertical: 10,
     },
     input: {
       flex: 1,

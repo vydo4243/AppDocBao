@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { TouchableOpacity, ScrollView, Alert, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, ScrollView, Alert, Text, StyleSheet, View, Platform } from 'react-native';
 import Input from './components/Input';
 import RadioOption from './components/RadioOption';
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -9,6 +9,7 @@ import { UserContext } from '../../context/UserContext';
 import { signup } from '../../firebaseConfig';
 import { Image } from 'react-native';
 import { SettingContext } from '../../context/SettingContext';
+import BackButton from '../../component/BackButton';
 
 export default function SignUp() {
   const [isChecked, setIsChecked] = useState(false); // Trạng thái cho checkbox
@@ -95,7 +96,8 @@ export default function SignUp() {
   const styles = StyleSheet.create({
     x:{
       flex:1,
-      backgroundColor: "#F4F3F0"
+      backgroundColor: "#F4F3F0",
+      marginTop: Platform.OS === 'ios' ? 40 : 0,
     },
     container: {
       borderRadius: 25,
@@ -113,7 +115,7 @@ export default function SignUp() {
       width: '100%',
       display: 'flex',
       alignItems: 'center',
-      gap: 10,
+      gap: 15,
     },
     radioGroup: {
       display: 'flex',
@@ -210,6 +212,7 @@ export default function SignUp() {
   });
   return (
     <View style={styles.x}>
+      <BackButton navigation={navigation} />
     <ScrollView>
       <View style={styles.container}>
         <Image source={require("../../assets/logo.png")} style={styles.logo}  />

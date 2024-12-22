@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SettingContext } from "../../context/SettingContext";
@@ -12,6 +13,8 @@ import { useContext, useState, useRef , useEffect} from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Zocial from "@expo/vector-icons/Zocial";
 import { getBookmark, getPost, bookmarked, unbookmark } from "../../firebaseConfig";
+import { UserContext } from "../../context/UserContext"; 
+import Dialog from "react-native-dialog"; // Import thư viện Dialog
 export default function Post({ route }) {
   const {id} = route.params;
   const [title, setTitle] = useState("");
@@ -22,10 +25,12 @@ export default function Post({ route }) {
   const [publishDate, setDate] = useState("");
   const [saved, setSaved] = useState(false); // kiểm tra ng dùng đã lưu bài viết này chưa?
   const [iconSaved, setIcon] = useState("bookmark-outline");
-  useEffect(()=>{
-    const getData = async()=>{
+  const { isAuthenticated } = useContext(UserContext);
+  const [dialogVisible, setDialogVisible] = useState(false)
+  useEffect(() => {
+    const getData = async () => {
       const data = await getPost(id);
-      if(data){
+      if (data) {
         setTitle(data.title);
         setImage(data.image);
         setContent(data.content);
@@ -33,19 +38,22 @@ export default function Post({ route }) {
         setDate(data.publishDate);
         setWriter("HTC");
       }
-      const docs = await getBookmark();
+
+      if (isAuthenticated) { // Chỉ kiểm tra nếu đã đăng nhập
+        const docs = await getBookmark();
         setSaved(docs.includes(id));
-        setIcon(docs.includes(id)?"bookmark":"bookmark-outline")
+        setIcon(docs.includes(id) ? "bookmark" : "bookmark-outline");
       }
- 
+    };
     getData();
-  },[])
+  }, [id, isAuthenticated]);
   
 
   const { theme, setReading } = useContext(SettingContext);
   const styles = StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor: theme.background,
     },
     backButton: {
       position: "absolute",
@@ -68,7 +76,7 @@ export default function Post({ route }) {
       backgroundColor: "rgba(255,255,255,0.2)",
     },
     image: {
-      marginVertical: 20,
+      marginBottom: 20,
       width: "100%",
       height: 300,
       backgroundColor: "gray",
@@ -100,9 +108,13 @@ export default function Post({ route }) {
   });
   
   const bookmark = () => {
-    if (saved == false) {
+    if (!isAuthenticated) {
+      setDialogVisible(true); // Hiển thị hộp thoại nếu chưa đăng nhập
+      return;
+    }
+    if (!saved) {
       setSaved(true);
-      bookmarked(id)
+      bookmarked(id);
       setIcon("bookmark");
     } else {
       setSaved(false);
@@ -110,6 +122,7 @@ export default function Post({ route }) {
       setIcon("bookmark-outline");
     }
   };
+
   const shareFB = () => {
     //share qua fb
     console.log("Share qua facebook thành công");
@@ -170,6 +183,34 @@ export default function Post({ route }) {
           color="black"
         />
       </TouchableOpacity>
+      {/* Dialog */}
+      <Dialog.Container visible={dialogVisible} onBackdropPress={() => setDialogVisible(false)}>
+  <Dialog.Title style={{ color: '#14375F', fontSize: 20, fontWeight: 'bold' }}>
+    Yêu cầu đăng nhập
+  </Dialog.Title>
+  <Dialog.Description style={{ color: '#333', fontSize: 16, textAlign: 'center' }}>
+    Bạn cần đăng nhập để lưu bài viết.
+  </Dialog.Description>
+  <Dialog.Button
+    label="Hủy"
+    onPress={() => setDialogVisible(false)}
+    style={{ backgroundColor: '#f5f5f5', color: '#333', borderRadius: 10, padding: 10 }}
+  />
+  <Dialog.Button
+    label="Đăng nhập"
+    onPress={() => {
+      setDialogVisible(false);
+      navigation.navigate("LogIn");
+    }}
+    style={{
+      backgroundColor: '#14375F',
+      color: '#fff',
+      borderRadius: 10,
+      padding: 10,
+      marginLeft: 10,
+    }}
+  />
+</Dialog.Container>
     </View>
   );
 }

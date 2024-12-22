@@ -29,7 +29,7 @@ export function SettingProvider({ children }) {
       reg: "IBMPlexSerif_400Regular",
       italic: "IBMPlexSerif_400Regular_Italic",
     },
-    color: darkMode ? "#FFFFFF" : "#4B3813", // Màu chủ đạo
+    color: darkMode ? "#FFFFFF" : "#800000", // Màu chủ đạo
     inactive: darkMode ? "#555555" : "#B6B0A4", // Nút không hoạt động
     background: darkMode ? "#000000" : "#F4F3F0", // Nền
     fontSize, // Kích thước font chữ

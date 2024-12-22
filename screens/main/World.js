@@ -21,7 +21,7 @@ const World = ({ useFirebase = false }) => {
             id={item.id}
             title={item.title}
             image={item.image || null} // Đảm bảo có fallback nếu không có ảnh
-            nav="worldpost" // Đặt tên màn hình chi tiết bài báo
+            nav="WorldPost" // Đặt tên màn hình chi tiết bài báo
         />
     );
 

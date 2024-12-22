@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Platform
 } from 'react-native';
 import  Input  from './components/Input';
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -16,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import {UserContext} from "../../context/UserContext";
 import { login } from '../../firebaseConfig';
 import { SettingContext } from '../../context/SettingContext';
+import BackButton from '../../component/BackButton';
 const socialLoginOptions = [
   { id: 1, uri: "https://cdn.builder.io/api/v1/image/assets/9c7992bcbe164b8dad4f2629b8fc1688/601391a9a676842ff158bb60ba0b43dd7c4777f81735dca4f02b7a468fdcbb6e?apiKey=9c7992bcbe164b8dad4f2629b8fc1688&" },
   { id: 2, uri: "https://cdn.builder.io/api/v1/image/assets/9c7992bcbe164b8dad4f2629b8fc1688/2ec15b707eee1d75d7e78910d07735cad9d960d002fece29c9b17813df02a5e9?apiKey=9c7992bcbe164b8dad4f2629b8fc1688&" },
@@ -82,6 +84,7 @@ export default function LogIn () {
       x:{
         flex:1,
         backgroundColor: "#F4F3F0",
+        marginTop: Platform.OS === 'ios' ? 40 : 0,
       },
       backButton: {
         position: "absolute",
@@ -100,6 +103,7 @@ export default function LogIn () {
         paddingTop: 10,
         alignItems: 'center',
         paddingHorizontal: 30,
+        marginBottom:50,
       },
       logo: {
         width: 300,
@@ -178,6 +182,7 @@ export default function LogIn () {
         position:"absolute",
         bottom:0,
         paddingVertical: 20,
+        backgroundColor: "#F4F3F0",
       },
       signupText: {
         fontFamily: theme.font.bold,
@@ -200,18 +205,7 @@ export default function LogIn () {
     });
   return (
     <View style={styles.x} >
-      <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            navigation.goBack();
-          }}
-        >
-          <MaterialCommunityIcons
-            name="keyboard-backspace"
-            size={30}
-            color="black"
-          />
-        </TouchableOpacity>
+      <BackButton navigation={navigation} />
     <ScrollView>
       <View style={styles.container}>
         <Image source={require("../../assets/logo.png")} style={styles.logo}  />

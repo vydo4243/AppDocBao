@@ -7,9 +7,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Platform
 } from 'react-native';
 import  Input  from './components/Input';
 import { useNavigation } from '@react-navigation/native';
+import BackButton from '../../component/BackButton';
+import { SettingContext } from '../../context/SettingContext';
 
 export default function ForgotPassword() {
     const navigation = useNavigation();
@@ -25,11 +28,116 @@ export default function ForgotPassword() {
             navigation.navigate('PasswordReset');
         }
     };
-  return (
-    <ScrollView>
-      <View style={styles.container}>
 
-        <View style={styles.logoContainer} />
+    const { theme } = useContext(SettingContext);
+    const styles = StyleSheet.create({
+      container: {
+        borderRadius: 25,
+        maxWidth: 510,
+        paddingTop: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 30, 
+        display: 'flex',
+        marginBottom:50,
+      },
+      logo: {
+        width: 300,
+        height: 100,
+        resizeMode: 'contain',
+      },
+      formContainer: {
+        marginTop: 39,
+        width: '100%',
+        gap: 16,
+      },
+      forgotPassword: {
+        color: "rgba(0, 0, 0, 0.7)",
+        fontFamily: theme.font.bold,
+        fontSize: 18,
+        textAlign: "right",
+        marginTop: 5,
+      },
+      loginButton: {
+        borderRadius: 20,
+        borderColor: "rgba(0, 0, 0, 0.5)",
+        borderWidth: 1,
+        marginTop: 32,
+        width: 250,
+        paddingVertical: 13,
+        alignItems: 'center',
+      },
+      loginButtonText: {
+        fontFamily: theme.font.bold,
+        fontSize: 24,
+        color: "rgba(0, 0, 0, 1)",
+        letterSpacing: -0.48,
+      },
+        otpContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 10,
+
+        alignItems: 'flex-end',
+   
+        },
+        resendButton: {
+        borderRadius: 20,
+        width: 100,
+        height: 50,
+        borderColor: "rgba(0, 0, 0, 0.5)",
+        borderWidth: 1,
+ 
+        alignContent:"center",
+        justifyContent: 'center',
+        marginBottom: 5,
+    
+        },
+        resendButtonText: {
+        fontFamily: theme.font.bold,
+        fontSize: 16,
+        color: "rgba(0, 0, 0, 1)",
+        letterSpacing: -0.32,
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent : 'center',
+        },
+      signupContainer: {
+        flexDirection: 'row',
+        justifyContent:"center",
+        borderTopWidth: 1,
+        borderColor: "rgba(0, 0, 0, 1)",
+        width: '100%',
+        position:"absolute",
+        bottom:0,
+        paddingVertical: 20,
+        backgroundColor: "#F4F3F0",
+      },
+      signupText: {
+        fontFamily: theme.font.bold,
+        fontSize: 18,
+        color: "rgba(0, 0, 0, 1)",
+        textAlign: "center",
+        alignItems: "stretch",
+        letterSpacing: -0.36,
+      },
+      signUpText2: {
+        fontFamily: theme.font.bold,
+        fontSize: 18,
+        color: "#73E3D4",
+        textAlign: "center",
+        alignContent: "center",
+        alignSelf: "center",
+        alignItems: "stretch",
+        letterSpacing: -0.36,
+      }
+    });
+  return (
+    <View style={{flex:1,height:"100%", marginTop: Platform.OS === 'ios' ? 40 : 0,}}>
+      <ScrollView>
+      <View style={styles.container}>
+        <BackButton navigation={navigation} />
+        <Image source={require("../../assets/logo.png")} style={styles.logo}  />
 
         <View style={styles.formContainer}>
           <Input
@@ -54,9 +162,9 @@ export default function ForgotPassword() {
         <TouchableOpacity style={styles.loginButton} onPress={handleEvent}>
           <Text style={styles.loginButtonText}>Xác nhận</Text>
         </TouchableOpacity>
-
-
-        <View style={styles.signupContainer}>
+      </View>
+    </ScrollView>
+    <View style={styles.signupContainer}>
           <Text style={styles.signupText}>
             Đã có tài khoản?{"  "}
           </Text>
@@ -64,112 +172,7 @@ export default function ForgotPassword() {
             <Text style={styles.signUpText2}>Đăng nhập ngay!</Text>           
         </TouchableOpacity>
         </View>
-      </View>
-    </ScrollView>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    fontFamily: "IBM Plex Serif, sans-serif",
-    borderRadius: 25,
-    maxWidth: 510,
-    paddingTop: 16,
-    alignItems: 'center',
-  },
-  logoContainer: {
-    marginTop: 56,
-    width: 300,
-    height: 100,
-    backgroundColor:"#D9D9D9"
-
-  },
-  formContainer: {
-    marginTop: 39,
-    width: '100%',
-    maxWidth: 400,
-    gap: 16,
-  },
-  forgotPassword: {
-    color: "rgba(0, 0, 0, 0.7)",
-    fontFamily: "IBM Plex Serif, sans-serif",
-    fontWeight: "700",
-    fontSize: 18,
-    textAlign: "right",
-    marginTop: 5,
-  },
-  loginButton: {
-    borderRadius: 20,
-    borderColor: "rgba(0, 0, 0, 0.5)",
-    borderWidth: 1,
-    marginTop: 32,
-    width: 250,
-    paddingVertical: 13,
-    alignItems: 'center',
-  },
-  loginButtonText: {
-    fontFamily: "IBM Plex Serif, sans-serif",
-    fontSize: 24,
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: "700",
-    letterSpacing: -0.48,
-  },
-    otpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-    alignContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    },
-    resendButton: {
-    borderRadius: 20,
-    width: 100,
-    height: 50,
-    borderColor: "rgba(0, 0, 0, 0.5)",
-    borderWidth: 1,
-    justifyContent: "center",
-    alignContent:"center",
-    alignItems: "center",
-    alignSelf:"flex-end",
-    marginBottom: 5,
-
-    },
-    resendButtonText: {
-    fontFamily: "IBM Plex Serif, sans-serif",
-    fontSize: 16,
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: "700",
-    letterSpacing: -0.32,
-    textAlign: 'center',
-    },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent:"center",
-    borderTopWidth: 1,
-    borderColor: "rgba(0, 0, 0, 1)",
-    width: '100%',
-    marginTop: 350,
-    paddingVertical: 20,
-  },
-  signupText: {
-    fontFamily: "IBM Plex Serif, sans-serif",
-    fontSize: 18,
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: "700",
-    textAlign: "center",
-    alignItems: "stretch",
-    letterSpacing: -0.36,
-  },
-  signUpText2: {
-    fontFamily: "IBM Plex Serif, sans-serif",
-    fontSize: 18,
-    color: "#73E3D4",
-    fontWeight: "700",
-    textAlign: "center",
-    alignContent: "center",
-    alignSelf: "center",
-    alignItems: "stretch",
-    letterSpacing: -0.36,
-  }
-});

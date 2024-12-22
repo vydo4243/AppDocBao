@@ -21,7 +21,7 @@ export default function Input  ({ label, placeholder,value, secureTextEntry, rig
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 8,
+      paddingVertical: 10,
     },
     input: {
       flex: 1,

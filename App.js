@@ -1,3 +1,4 @@
+import React from "react";
 import { NavigationContainer, getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -41,16 +42,29 @@ import {
   StyleSheet,
   StatusBar,
   Text,
-  ScrollView
+  ScrollView,
+  Modal,
+  Switch,
+  Platform,
 } from "react-native";
-
+import PopupSettings from "./screens/setting/PopupSetting";
 // Custom Header
 const CustomHeader = () => {
+  const { fontSize, setFontSize, darkMode, setDarkMode } = useContext(SettingContext); // Lấy giá trị từ SettingContext
+  const [isModalVisible, setIsModalVisible] = React.useState(false); // Trạng thái của modal
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible); // Hiện hoặc ẩn modal
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode); // Thay đổi trạng thái dark mode trong context
+  };
   return (
     <View style={styles.headerContainer}>
-      <StatusBar/>
+      <StatusBar  />
       <View style={styles.header}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={toggleModal}>
               <Icon name="format-size" size={24} color="gray" />
           </TouchableOpacity>
           <Image
@@ -61,6 +75,18 @@ const CustomHeader = () => {
               <Icon name="bell-outline" size={24} color="gray" />
           </TouchableOpacity>
       </View>
+      {/* Hiển thị modal khi isModalVisible là true */}
+      <Modal transparent={true} visible={isModalVisible} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Chèn PopupSettings vào modal */}
+            <PopupSettings />
+            <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -73,7 +99,18 @@ const CustomTabBar = ({state, descriptors, navigation }) =>{
   return(
     <View style={styles.tabRow}>      
       <TouchableOpacity style={styles.homeIcon}>
+      <View
+        style={{
+          width: 40, // Kích thước tổng thể của nền (hình vuông hoặc hình tròn)
+          height: 40,
+          borderRadius: 30, // Đảm bảo biểu tượng nằm trong nền tròn
+          backgroundColor: theme.background, // Màu nền bên ngoài
+          justifyContent: "center",
+          alignItems: "center", // Căn giữa biểu tượng
+        }}
+      >
         <Icon name="home" size={24} color={theme.color} />
+      </View>
       </TouchableOpacity>
       <ScrollView  
       contentContainerStyle={{ 
@@ -108,14 +145,15 @@ const CustomTabBar = ({state, descriptors, navigation }) =>{
                 }
               }}
               style={{ 
-                maxWidth: 200, // Đảm bảo tabs không quá rộng
+                minWidth: 100, // Đảm bảo tabs không quá rộng
                 backgroundColor: "transparent", // Đảm bảo các tab không có hiệu ứng nền
                 borderBottomWidth:isFocused?2:0,
+                borderBottomColor: isFocused ? theme.color : "transparent",
               }}
             >
               <Text style={{ 
                 padding:5,
-                fontSize: 14,
+                fontSize: 16,
                 fontFamily: theme.font.bold,
                 textAlign: "center", // Căn giữa chữ trong Tab
                 whiteSpace: "nowrap",
@@ -131,11 +169,12 @@ const CustomTabBar = ({state, descriptors, navigation }) =>{
 }
 
 function HomeTab() {
+  const { theme } = useContext(SettingContext);
   return (
         <Tab.Navigator
         tabBar={props => <CustomTabBar {...props}/>}
         >
-          <Tab.Screen name="World" component={WorldScreen} options={{ title: "Thế giới" }} />
+          <Tab.Screen name="WorldScreen" component={WorldScreen} options={{ title: "Thế giới" }} />
           <Tab.Screen name="Business" component={Bussiness} options={{ title: "Kinh doanh" }} />
           <Tab.Screen name="RealEstate" component={RealEstate} options={{ title: "Bất động sản" }} />
           <Tab.Screen name="Science" component={Science} options={{ title: "Khoa học" }} />
@@ -197,23 +236,60 @@ function WorldScreen() {
   );
 }
 
-function ProfileScreen() {
+function ProfileScreen({ navigation, route }) {
   const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "Profile";
+    if (routeName !== "Profile") {
+      // Ẩn thanh BottomTab khi không phải màn hình chính của Profile
+      navigation.setOptions({ tabBarStyle: { display: "none" } });
+    } else {
+      // Hiện thanh BottomTab khi ở màn hình chính
+      navigation.setOptions({ tabBarStyle: { display: "flex" } });
+    }
+  }, [navigation, route]);
+
   return (
-    <Stack.Navigator screenOptions={{
-      headerTitleStyle:{        
-          width:"100%",
+    <Stack.Navigator
+      screenOptions={{
+        headerTitleStyle: {
+          width: "100%",
           fontSize: 18,
           fontFamily: theme.font.bold,
-      }
-    }}>
-      <Stack.Screen name="Profile" component={Profile} options={{headerShown:false, title:"Hồ sơ"}}/>
-
-      <Stack.Screen name="Personal" component={Personal} options={{title:"Thông tin cá nhân"}}/>
-      <Stack.Screen name="YourPost" component={YourPost} options={{title:"Bài viết của bạn"}}/>
-      <Stack.Screen name="AddPost" component={AddPost} options={{title:"Tạo bài viết"}}/>
-      <Stack.Screen name="EditPost" component={EditPost} options={{title:"Chỉnh sửa bài viết"}}/>
-      <Stack.Screen name="Post" component={Post} options={{headerShown:false}}/>
+        },
+      }}
+    >
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{ headerShown: false, title: "Hồ sơ" }}
+      />
+      <Stack.Screen
+        name="Personal"
+        component={Personal}
+        options={{ title: "Thông tin cá nhân" }}
+      />
+      <Stack.Screen
+        name="YourPost"
+        component={YourPost}
+        options={{ title: "Bài viết của bạn" }}
+      />
+      <Stack.Screen
+        name="AddPost"
+        component={AddPost}
+        options={{ title: "Tạo bài viết" }}
+      />
+      <Stack.Screen
+        name="EditPost"
+        component={EditPost}
+        options={{ title: "Chỉnh sửa bài viết" }}
+      />
+      <Stack.Screen
+        name="Post"
+        component={Post}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -231,6 +307,10 @@ function MainStackNavigator() {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="PasswordReset" component={PasswordReset} />
         <Stack.Screen name="Policy" component={Policy} />
+        <Stack.Screen name="AboutUs" component={AboutUs} />
+        <Stack.Screen name="Notification" component={Notification} />
+        <Stack.Screen name="History" component={History} />
+        <Stack.Screen name="Bookmark" component={Bookmark} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -258,16 +338,39 @@ function BottomTabNavigator() {
         },
         tabBarActiveTintColor: theme.color,
         tabBarInactiveTintColor: theme.inactive,
-        header: ({ navigation, route }) => {
-          if (route.name === "HomeScreen") {
-            return <CustomHeader navigation={navigation} />;
-          }
-        },
       })}
     >
-      <BottomTab.Screen name="HomeScreen" component={HomeTab} options={{ title: "Trang chủ" }} />
-      <BottomTab.Screen name="TrendScreen" component={TrendScreen} options={{ title: "Xu hướng" }} />
-      <BottomTab.Screen name="ProfileScreen" component={ProfileScreen} options={{ title: "Hồ sơ" }} />
+      {/* Trang chủ với CustomHeader */}
+      <BottomTab.Screen
+        name="HomeScreen"
+        component={HomeTab}
+        options={{
+          title: "Trang chủ",
+          header: ({ navigation }) => <CustomHeader navigation={navigation} />, // CustomHeader riêng
+        }}
+      />
+      
+      {/* Các màn hình khác hiển thị Header mặc định */}
+      <BottomTab.Screen
+        name="TrendScreen"
+        component={TrendScreen}
+        options={{
+          title: "Xu hướng",
+          headerTitle: "Xu hướng", // Tiêu đề mặc định
+          headerStyle: { backgroundColor: theme.background }, // Tuỳ chỉnh nền header
+          headerTintColor: theme.color, // Màu chữ tiêu đề
+        }}
+      />
+      <BottomTab.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{
+          title: "Hồ sơ",
+          headerTitle: "Hồ sơ cá nhân", // Tiêu đề mặc định
+          headerStyle: { backgroundColor: theme.background },
+          headerTintColor: theme.color,
+        }}
+      />
     </BottomTab.Navigator>
   );
 }
@@ -283,10 +386,10 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  // headerContainer: {
-  //   paddingTop: StatusBar.currentHeight, // Ensure the header is below the StatusBar
-  //   backgroundColor: '#fff',
-  // },
+  headerContainer: {
+    paddingTop: Platform.OS== "ios"?40:0, // Ensure the header is below the StatusBar
+    backgroundColor: "#fff",
+  },
   header: {
     flexDirection: "row",
     flexDirection: "row",
@@ -294,13 +397,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 50,
     paddingHorizontal: 20,
-    backgroundColor: "#F4F3F0",
+    backgroundColor: "#fff",
     elevation: 2,
   },
   logo: {
     width: 100,
-    height: 40,
-    resizeMode: "center",
+    height: 50,
+    resizeMode: "contain",
   },
   tabRow: {
     flexDirection: "row",
@@ -317,4 +420,28 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flex: 1, // Để tabs chiếm phần còn lại của không gian
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+  },
+  closeButton: {
+    alignItems: "center",
+    paddingVertical: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  
 });
