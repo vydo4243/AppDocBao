@@ -69,7 +69,7 @@ export default function LogIn () {
               const avt = userData.avt;
               logIn(userName,type,em,pass,avt); // Gọi hàm logIn từ UserContext
               Alert.alert("Đăng nhập thành công!");
-              navigation.navigate("Profile"); // Điều hướng đến màn hình Profile
+              navigation.navigate("Main", {screen: "ProfileScreen"}); // Điều hướng đến màn hình Profile
           }else{
               Alert.alert("Đăng nhập thất bại",userData);
           }
