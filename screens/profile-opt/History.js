@@ -1,53 +1,70 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { StyleSheet,View,Text, FlatList, TouchableOpacity } from "react-native";
+import Thumbnail from "../../component/Thumbnail";
+import { deleteHistory, getHistory, getPost } from "../../firebaseConfig";
+import { useState,useEffect, useContext } from "react";
+import { SettingContext } from "../../context/SettingContext";
 
-const History = ({ viewedArticles }) => {
-    const renderItem = ({ item }) => (
-        <View style={styles.articleContainer}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.date}>{item.dateViewed}</Text>
-        </View>
-    );
+export default function Bookmark(){
+    const [list,setList] = useState([]);
+    useEffect(()=>{
+      
+  
+      fetchData(); 
+  },[])  
+  async function fetchData() {
+    try {
+      // Lấy danh sách ID lịch sử bài viết
+      const docs = await getHistory();
+      const fetchedPosts = [];
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Lịch sử bài viết đã xem</Text>
-            <FlatList
-                data={viewedArticles}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()}
-            />
-            {viewedArticles.length === 0 && (
-                <Text>Không có bài viết nào trong lịch sử</Text>
-            )}
-        </View>
-    );
-};
+      for (const id of docs) {
+        const post = await getPost(id); // Lấy thông tin bài viết
+        fetchedPosts.push({ id, ...post });
+      }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#fff',
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
-    },
-    articleContainer: {
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    date: {
-        fontSize: 14,
-        color: '#666',
-    },
-});
+      // Cập nhật danh sách bài viết
+      setList(fetchedPosts);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách bài viết:", error);
+    }
+  }
+  const {theme} = useContext(SettingContext)
+  const Item = ({item}) => (
+    <View style={{flex:1}}>
+      <Thumbnail key={item.id} id={item.id} title={item.title} image={item.image} nav="Post"/>
+      <TouchableOpacity style={{marginVertical:10,padding:5,alignSelf:"center",backgroundColor:theme.inactive, borderRadius:10}}
+      onPress={()=>{
+        deleteHistory(item.id)
+        fetchData();
+    }}>
+        <Text style={{fontSize:16,fontFamily:theme.font.bold}}>Xóa khỏi lịch sử xem</Text>
+      </TouchableOpacity>
+    </View>
+  );
+    return(
+    <View style={styles.container}>
+        {list.length==0?
+            <Text style={styles.error}>Không có lịch sử để hiển thị</Text>        
+        :
+      <FlatList
+        data={list.reverse()}
+        renderItem={({item}) => <Item item={item}/>}
+        keyExtractor={item => item.id}
+      />
+    }
+    </View>
+       
+    )
+}
 
-export default History;
+const styles=StyleSheet.create({
+    container:{
+        flex:1,
+        justifyContent:"flex-start",
+        alignItems: "center",
+    },
+    error:{
+        fontSize:18,
+        marginTop: 50,
+    }
+})

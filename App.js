@@ -134,6 +134,7 @@ const CustomTabBar = ({state, descriptors, navigation }) =>{
 
           return (
             <TouchableOpacity
+            key={route.key}
               onPress={() => {
                 const event = navigation.emit({
                   type: 'tabPress',

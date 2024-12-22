@@ -11,9 +11,9 @@ const World = ({ useFirebase = false }) => {
     useEffect(()=>{
       getPostsByHash('Thế giới').then((docs)=>{
         setList(docs);
-        
+        setLoading(false)
       })
-      setLoading(false)
+      
     },[])  
     const renderItem = ({ item }) => (
         <Thumbnail
