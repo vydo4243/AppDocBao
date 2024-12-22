@@ -13,7 +13,7 @@ import  Input  from './components/Input';
 import { useNavigation } from '@react-navigation/native';
 import BackButton from '../../component/BackButton';
 import { SettingContext } from '../../context/SettingContext';
-
+import { ForgotPassword } from '../../firebaseConfig';
 export default function OTPSend() {
     const navigation = useNavigation();
     const [email, setemail] = useState('');
@@ -24,7 +24,15 @@ export default function OTPSend() {
             Alert.alert("Lỗi", "Vui lòng nhập email.");
           }
         else {
-            navigation.navigate('ForgotPassword',{ email: email });
+            ForgotPassword(email).then((alertMessage)=>{              
+              if(alertMessage == "Email này chưa được đăng ký tài khoản"){
+                Alert.alert("Lỗi",alertMessage);
+              }
+              else{
+                Alert.alert("Gửi email thành công",alertMessage);
+                navigation.goBack();
+              }
+            })
         }
     };
 
@@ -148,7 +156,7 @@ export default function OTPSend() {
         </View>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleEvent}>
-          <Text style={styles.loginButtonText}>Gửi mã</Text>
+          <Text style={styles.loginButtonText}>Gửi link</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
