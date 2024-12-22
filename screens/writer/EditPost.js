@@ -29,6 +29,7 @@ export default function EditPost({ route }) {
         setImage(data.image);
         setContent(data.content);
         setHash(data.hashtag);
+        setKeyword(data.keyword);
       }
     }
     getData();
@@ -109,7 +110,7 @@ export default function EditPost({ route }) {
       fontSize: 20,
     },
   });
-  const [newHash, setNewHash] = useState("");
+  const [keyword, setKeyword] = useState("");
   const navigation = useNavigation();
   const deleteBv = () => {
     Alert.alert(
@@ -141,7 +142,7 @@ export default function EditPost({ route }) {
       if (mm < 10) mm = '0' + mm;
       const datetime = dd + '/' + mm + '/' + yyyy;
     console.log("update...")
-    await updatePost(id,title,image,content,hashtag,auth.currentUser.uid,datetime);
+    await updatePost(id,title,image,content,hashtag,auth.currentUser.uid,datetime,keyword);
     console.log("Cập nhật bài viết thành công");
     navigation.goBack();
   };
@@ -180,6 +181,14 @@ export default function EditPost({ route }) {
             onChangeText={setHash}
             value={hashtag}
             placeholder="Nhập thể loại bài viết"
+            multiline
+          />
+          <Text style={styles.Fieldtitle}>Từ khóa bài viết</Text>
+          <TextInput
+            style={styles.titleinput}
+            onChangeText={setKeyword}
+            value={keyword}
+            placeholder="Nhập từ khóa bài viết"
             multiline
           />
         <View

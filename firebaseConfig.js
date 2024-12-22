@@ -110,8 +110,7 @@ const uploadImage = async (fileUri) => {
     }
 };
 
-const addPost = async(title,image,content,hashtag,publisher,publishDate) =>{
-    console.log(title,image,content,hashtag,publisher,publishDate);
+const addPost = async(title,image,content,hashtag,publisher,publishDate,keyword) =>{
     const docRef = await addDoc(collection(db,"posts"),{
         title,
         image,
@@ -119,6 +118,7 @@ const addPost = async(title,image,content,hashtag,publisher,publishDate) =>{
         hashtag,
         publisher,
         publishDate,
+        keyword,
     })
     console.log("Document written with ID: ", docRef.id);
 }
@@ -144,7 +144,7 @@ const getYourPost = async() =>{
      })
      return tempDoc;
 }
-const updatePost = async(postID,title,image,content,hashtag,publisher,publishDate) => {
+const updatePost = async(postID,title,image,content,hashtag,publisher,publishDate,keyword) => {
     try{
         console.log("updatePost");
         const postRef = doc(db, "posts", postID);
@@ -155,6 +155,7 @@ const updatePost = async(postID,title,image,content,hashtag,publisher,publishDat
             hashtag,
             publisher,
             publishDate,
+            keyword,
         })
     }catch(error){
         console.log(error)
@@ -302,5 +303,19 @@ const deleteHistory = async(postID) =>{
     }
 }
 
+const getPostBySearchWord = async(searchWord) =>{
+    try{
+        console.log("Đang tìm kiếm từ:",searchWord);
+        const postsSnapshot = await getDocs(collection(db,"posts"))
+        const posts = postsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    
+    // Lọc tiêu đề chứa từ khóa
+    const filteredPosts = posts.filter((post) => post.keyword.toLowerCase().includes(searchWord.toLowerCase()));
+    return filteredPosts;
+    }catch(error){
+        console.log(error)
+    }
+}
+
  export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, 
-    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory}
+    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord}
