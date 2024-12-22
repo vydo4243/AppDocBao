@@ -1,7 +1,35 @@
-import React from 'react';
+import React, { useContext }  from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-
+import { SettingContext } from '../../../context/SettingContext';
 export default function Input  ({ label, placeholder,value, secureTextEntry, rightComponent,onChangeText }) {
+  const { theme } = useContext(SettingContext);
+  const styles = StyleSheet.create({
+    inputContainer: {
+      minHeight: 70,
+      flexGrow: 1,
+    },
+    inputLabel: {
+      fontFamily: theme.font.reg,
+      color: "rgba(0, 0, 0, 1)",
+      fontSize: 18,
+    },
+    inputWrapper: {
+      borderRadius: 10,
+      borderColor: "rgba(0, 0, 0, 0.5)",
+      borderWidth: 1,
+      marginTop: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
+    input: {
+      flex: 1,
+      fontFamily: theme.font.bold,
+      fontSize: 18,
+      color: "rgba(0, 0, 0, 1)",
+    }
+  });
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
@@ -21,32 +49,3 @@ export default function Input  ({ label, placeholder,value, secureTextEntry, rig
   );
 };
 
-const styles = StyleSheet.create({
-  inputContainer: {
-    minHeight: 86,
-    flexGrow: 1,
-  },
-  inputLabel: {
-    fontFamily: "IBM Plex Serif, sans-serif",
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: "400",
-    fontSize: 18,
-  },
-  inputWrapper: {
-    borderRadius: 10,
-    borderColor: "rgba(0, 0, 0, 0.5)",
-    borderWidth: 1,
-    marginTop: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  input: {
-    flex: 1,
-    fontFamily: "IBM Plex Serif, sans-serif",
-    fontSize: 18,
-    fontWeight: "700",
-    color: "rgba(0, 0, 0, 1)",
-  }
-});

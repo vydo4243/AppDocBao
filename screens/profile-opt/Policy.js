@@ -10,9 +10,10 @@ export default function Policy() {
       gap: 10,
     },
     title: {
-      fontSize: 18,
+      fontSize: 20,
       fontFamily: theme.font.bold,
       lineHeight: 32,
+      color: "#3CBBAA"
     },
     normal: {
       fontSize: 16,
@@ -22,7 +23,7 @@ export default function Policy() {
   });
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Chính sách bảo mật</Text>
+      <Text style={styles.title}>1. Chính sách bảo mật</Text>
       <Text style={styles.normal}>
         Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng, chia
         sẻ dữ liệu cá nhân của bạn khi bạn sử dụng các dịch vụ được cung cấp
@@ -43,7 +44,7 @@ export default function Policy() {
         chính sách bảo mật được hiển thị trên trang web của họ.
       </Text>
       <Text style={styles.title}>
-        Các loại dữ liệu cá nhân chúng tôi thu thập về bạn:
+        2. Các loại dữ liệu cá nhân chúng tôi thu thập về bạn:
       </Text>
       <Text style={styles.normal}>
         Thông tin liên quan đến cách bạn sử dụng và tương tác với các trang web,
@@ -123,7 +124,7 @@ export default function Policy() {
         trong cộng đồng trực tuyến của chúng tôi hoặc các trang công khai khác.
       </Text>
       <Text style={styles.title}>
-        Cách chúng tôi sử dụng dữ liệu cá nhân của bạn
+        3. Cách chúng tôi sử dụng dữ liệu cá nhân của bạn
       </Text>
       <Text style={styles.normal}>
         Chúng tôi chỉ sử dụng dữ liệu cá nhân được thu thập thông qua các trang
@@ -131,7 +132,7 @@ export default function Policy() {
         lý để làm như vậy. Chúng tôi xác định các cơ sở pháp lý dựa trên các mục
         đích mà chúng tôi đã thu thập dữ liệu cá nhân của bạn.
       </Text>
-      <Text style={styles.title}>Cookie và các công nghệ tương tự</Text>
+      <Text style={styles.title}>4. Cookie và các công nghệ tương tự</Text>
       <Text style={styles.normal}>
         Khi bạn truy cập các trang web của chúng tôi hoặc khi bạn sử dụng các
         ứng dụng của chúng tôi, chúng tôi có thể tự động thu thập dữ liệu cá

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { TouchableOpacity, ScrollView, Alert, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, ScrollView, Alert, Text, StyleSheet, View, Platform } from 'react-native';
 import Input from './components/Input';
 import RadioOption from './components/RadioOption';
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -7,6 +7,10 @@ import { useNavigation } from '@react-navigation/native';
 import CheckBox from './components/CheckBox';
 import { UserContext } from '../../context/UserContext';
 import { signup } from '../../firebaseConfig';
+import { Image } from 'react-native';
+import { SettingContext } from '../../context/SettingContext';
+import BackButton from '../../component/BackButton';
+
 export default function SignUp() {
   const [isChecked, setIsChecked] = useState(false); // Trạng thái cho checkbox
   const [username, setUsername] = useState('');
@@ -88,12 +92,130 @@ export default function SignUp() {
       </TouchableOpacity>
     </View>
   );
-
+  const {theme} = useContext(SettingContext);
+  const styles = StyleSheet.create({
+    x:{
+      flex:1,
+      backgroundColor: "#F4F3F0",
+      marginTop: Platform.OS === 'ios' ? 40 : 0,
+    },
+    container: {
+      borderRadius: 25,
+      paddingTop: 10,
+      padding: 30,
+      alignItems: 'center',
+      height:"80%",
+    },
+    logo: {
+      width: 300,
+      height: 100,
+      resizeMode: 'contain',
+    },
+    form: {
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 15,
+    },
+    radioGroup: {
+      display: 'flex',
+      marginTop: 23,
+      width: 262,
+      maxWidth: '100%',
+      alignItems: 'stretch',
+      flexDirection: 'row',
+      gap: 40,
+    },
+    termsContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      marginTop: 25,
+      alignSelf: 'center',
+      alignContent: 'center',
+      alignItems: 'center',
+      gap:3,
+      paddingHorizontal:20,
+    },
+    checkbox: {
+      width: 24,
+      height: 24,
+    },
+    textContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+      flexDirection: 'row',
+  
+    },
+    termsText: {
+      color: 'rgba(0, 0, 0, 1)',
+      fontSize: 16,
+      fontFamily: theme.font.semiBold,
+      textAlign: 'center',
+      letterSpacing: -0.32,
+    },
+    signUpButton: {
+      borderRadius: 20,
+      borderColor: 'rgba(0, 0, 0, 0.5)',
+      borderWidth: 1,
+      marginTop: 28,
+      width: 250,
+      maxWidth: '100%',
+      paddingVertical: 13,
+    },
+    signUpButtonText: {
+      fontFamily: theme.font.bold,
+      fontSize: 24,
+      color: 'rgba(0, 0, 0, 1)',
+      textAlign: 'center',
+      letterSpacing: -0.48,
+    },
+    loginPrompt: {
+      borderTopWidth: 1,
+      borderColor: 'rgba(0, 0, 0, 1)',
+      width: '100%',
+      paddingVertical: 20,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loginPromptText: {
+      fontFamily: theme.font.bold,
+      fontSize: 18,
+      color: 'rgba(0, 0, 0, 1)',
+      textAlign: 'center',
+      alignItems: 'center',
+      letterSpacing: -0.36,
+    },
+    logInText2: {
+      fontSize: 18,
+      fontFamily: theme.font.bold,
+      color: '#73E3D4',
+      textAlign: 'center',
+      alignContent: 'center',
+      alignSelf: 'center',
+      alignItems: 'center',
+      letterSpacing: -0.36,
+    },
+    policyButtonText: {
+      fontFamily: theme.font.semiBold,
+      fontSize: 16,
+      color: '#73E3D4',
+      textAlign: 'center',
+      alignContent: 'center',
+      alignItems: 'center',
+      letterSpacing: -0.32,
+      overflow: 'hidden',
+  
+    },
+  });
   return (
     <View style={styles.x}>
+      <BackButton navigation={navigation} />
     <ScrollView>
       <View style={styles.container}>
-        <View style={styles.logo} />
+        <Image source={require("../../assets/logo.png")} style={styles.logo}  />
         <View style={styles.form}>
           <Input
             label="Tên người dùng"
@@ -143,7 +265,7 @@ export default function SignUp() {
           <View style={styles.textContainer}>
             <Text style={styles.termsText}>Tôi đồng ý với{' '}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Policy')}>
-              <Text style={styles.policyButtonText}>Chính sách và Điều khoản của ....</Text>
+              <Text style={styles.policyButtonText}  numberOfLines={1}  ellipsizeMode="tail">Chính sách và Điều kh...</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -151,8 +273,6 @@ export default function SignUp() {
         <TouchableOpacity style={styles.signUpButton} onPress={signUpEvent}>
           <Text style={styles.signUpButtonText}>Đăng ký</Text>
         </TouchableOpacity>
-
-        
       </View>
     </ScrollView>
     <View style={styles.loginPrompt}>
@@ -167,124 +287,5 @@ export default function SignUp() {
   );
 }
 
-const styles = StyleSheet.create({
-  x:{flex:1},
-  container: {
-    fontFamily: 'IBM Plex Serif',
-    borderRadius: 25,
-    maxWidth: 510,
-    paddingTop: 16,
-    padding: 30,
-    alignItems: 'center',
-  },
-  logo: {
-    marginTop: 56,
-    width: 300,
-    height: 100,
-    marginBottom: 20,
-    backgroundColor: '#D9D9D9',
-  },
-  form: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-  },
-  radioGroup: {
-    display: 'flex',
-    marginTop: 23,
-    width: 262,
-    maxWidth: '100%',
-    alignItems: 'stretch',
-    flexDirection: 'row',
-    gap: 40,
-  },
-  termsContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: 25,
-    alignSelf: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal:30,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-  },
-  textContainer: {
-    display: 'flex',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
-    flexDirection: 'row',
-    marginLeft: 20, // Thêm khoảng cách giữa checkbox và văn bản
 
-  },
-  termsText: {
-    color: 'rgba(0, 0, 0, 1)',
-    fontFamily: 'IBM Plex Serif',
-    fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
-    letterSpacing: -0.32,
-  },
-  signUpButton: {
-    borderRadius: 20,
-    borderColor: 'rgba(0, 0, 0, 0.5)',
-    borderWidth: 1,
-    marginTop: 28,
-    width: 250,
-    maxWidth: '100%',
-    paddingVertical: 13,
-  },
-  signUpButtonText: {
-    fontFamily: 'IBM Plex Serif',
-    fontSize: 24,
-    color: 'rgba(0, 0, 0, 1)',
-    fontWeight: '700',
-    textAlign: 'center',
-    letterSpacing: -0.48,
-  },
-  loginPrompt: {
-    borderTopWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 1)',
-    width: '100%',
-    paddingVertical: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loginPromptText: {
-    fontFamily: 'IBM Plex Serif',
-    fontSize: 18,
-    color: 'rgba(0, 0, 0, 1)',
-    fontWeight: '700',
-    textAlign: 'center',
-    alignItems: 'center',
-    letterSpacing: -0.36,
-  },
-  logInText2: {
-    fontSize: 18,
-    fontFamily: 'IBM Plex Serif, sans-serif',
-    color: '#73E3D4',
-    fontWeight: '700',
-    textAlign: 'center',
-    alignContent: 'center',
-    alignSelf: 'center',
-    alignItems: 'center',
-    letterSpacing: -0.36,
-  },
-  policyButtonText: {
-    fontSize: 16,
-    color: '#73E3D4',
-    fontWeight: '700',
-    textAlign: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-    letterSpacing: -0.32,
-    overflow: 'hidden',
-  },
-});
 

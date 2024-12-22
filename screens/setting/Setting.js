@@ -1,59 +1,64 @@
-import { View, Text, StyleSheet, Button } from 'react-native';
-import React, { useState } from 'react';
-import { Switch } from 'react-native';
-// import { Slider } from 'react-native-elements';
+import React, { useContext } from 'react';       // Đỗ Mai Tường Vy - 22521701
+import { View, Text, StyleSheet } from 'react-native';
+import Slider from '@react-native-community/slider';
+import { SettingContext } from '../../context/SettingContext';
+import SwitchManage from './SwitchManage'
 
-const Setting = ({ navigation }) => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
-    const [fontSize, setFontSize] = useState(16);
-
-    const toggleDarkMode = () => setIsDarkMode(previousState => !previousState);
-
-    return (
-        <View style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-            <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>Settings</Text>
-            <View style={styles.settingItem}>
-                <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>Dark Mode</Text>
-                <Switch
-                    value={isDarkMode}
-                    onValueChange={toggleDarkMode}
-                />
-            </View>
-            <View style={styles.settingItem}>
-                <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>Font Size: {fontSize}</Text>
-                {/* <Slider
-                        style={{ width: 200 }}
-                        minimumValue={14}
-                        maximumValue={32}
-                        step={1}
-                        value={fontSize}
-                        onValueChange={value => setFontSize(value)}
-                /> */}
-            </View>
-            <Button
-                title="Go Back"
-                onPress={() => navigation.goBack()}
-            />
-        </View>
-    );
-};
-
-const styles = StyleSheet.create({
+const Setting = () => {
+  const {darkMode, setDarkMode, fontSize, setFontSize } = useContext(SettingContext);
+  const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+      flex: 1,
+      justifyContent:'center',
+      backgroundColor: darkMode ? '#0E0E0E' : 'rgba(217, 217, 217, 0.4)',
+      paddingHorizontal:30,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+    textStyle: {
+      color: darkMode ? 'white': 'black',
+      fontSize: fontSize ,
     },
-    settingItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
+    fontSizeContainer: {
+      flexDirection: 'column',
+      marginTop: 20,
     },
-});
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    slider: {
+      flex: 1,
+      alignItems:'center',
+      marginTop:30,
+    },
+  });
+  
+  return (
+    <View style={styles.container}>
+      {/* Tùy chọn chế độ tối */}
+      <SwitchManage darkMode={darkMode}
+        title="Dark Mode"                            // Đỗ Mai Tường Vy - 22521701
+        value={darkMode}
+        switchEvent ={setDarkMode}
+    /> 
 
+      {/* Tùy chọn kích thước phông chữ */}
+      <View style={styles.fontSizeContainer}>
+      <View style={styles.header}>
+        <Text style={styles.textStyle}>Font Size</Text>
+        <Text style={styles.textStyle}>{fontSize}</Text>
+      </View>
+      <Slider
+        style={styles.slider}
+        minimumTrackTintColor= '#FFB8C6'
+        minimumValue={12}
+        maximumValue={36}
+        step={2}
+        value={fontSize}
+        onValueChange={setFontSize}
+      />
+      </View>
+    </View>
+  );
+};
 export default Setting;
