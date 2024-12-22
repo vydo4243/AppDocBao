@@ -1,52 +1,105 @@
-import { StyleSheet,View,Text, FlatList } from "react-native";
+import { StyleSheet,View,Text, FlatList, TextInput, TouchableOpacity, Platform, ActivityIndicator } from "react-native";
 import Thumbnail from "../../component/Thumbnail";
-
+import { useContext, useState } from "react";
+import { SettingContext } from "../../context/SettingContext";
+import { getPostBySearchWord } from "../../firebaseConfig";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 export default function Trend(){
-    // Lấy từ CSDL (id, title, image) mà hashtag là thể thao và trong nước đưa vào list
-    const list = [
-        {
-            id:1,
-            title:'Du lịch nội địa "lên ngôi" trong xu hướng tìm kiếm về địa điểm đến',
-            image:"https://i1-dulich.vnecdn.net/2024/12/18/a15-1734507134-1163-1734507321.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=RcYyIWcnTomOoXHVcLnbsA",
+    const [list, setList] = useState([]); 
+    const [searchWord,setWord] = useState("");
+    const {theme} = useContext(SettingContext)
+    const [loading,setLoading] = useState(false);
+    const styles=StyleSheet.create({
+        container:{
+            flex:1,
+            justifyContent:"flex-start",
+            alignItems: "center",
+            paddingBottom: 20,
+            marginTop: Platform.OS == "ios"?50:10,
         },
-        {
-            id:2,
-            title:"Người Việt tìm kiếm công cụ AI nào trên Google trong năm 2024?",
-            image:"https://phongvu.vn/cong-nghe/wp-content/uploads/2024/12/xu-huong-tim-kiem-noi-bat-10.jpg",
+        searchRow:{
+            flexDirection: "row",
+            height:50,
+            justifyContent:"space-between",
+            marginTop:10,
+            gap:5, 
         },
-        {
-            id:3,
-            title:'Ukraine tạo ra "con đường tử thần" ở tỉnh Kursk',
-            image:"https://nld.mediacdn.vn/291774122806476800/2024/12/3/ukraine-17332190420101027006116.jpg",
+        searchField:{
+            width: "80%",
+            borderRadius:10,
+            borderWidth:1,
+            paddingHorizontal:5,
+            justifyContent:"space-between",
+            flexDirection:"row",
+            alignItems:"center"
         },
-    ]
+        searchInput:{      
+            width:"50%",
+            fontSize: 16,
+            fontFamily: theme.font.italic,
+            
+        },
+        searchButton:{
+            borderRadius:10,
+            width:"15%",
+            backgroundColor: theme.color,
+            justifyContent: "center",
+        },
+        searchButtonText:{
+            color :"#fff",
+            fontSize: 18,
+            fontFamily: theme.font.bold,
+            textAlign:"center"
+        },
+        resetsearchForm:{
+            backgroundColor: theme.inactive,
+            borderRadius:50,
+        },
+        error:{
+            fontSize:18,
+            marginTop: 50,
+        }
+    })
+    async function fetchData(searchWord) {
+        const posts = await getPostBySearchWord(searchWord);
+        setList(posts);
+        setLoading(false);
+    }
     return(
     <View style={styles.container}>
-        {list.length === 0?
-            <Text style={styles.error}>Không có tin để hiển thị</Text>        
-        :
-      <FlatList
-        data={list}
-        renderItem={({item}) => <Thumbnail id={item.id} title={item.title} image={item.image} nav="TrendPost"/>}
-        keyExtractor={item => item.id}
-        showsVerticalScrollIndicator={false} // Tắt thanh cuộn dọc
-        contentContainerStyle={{ paddingBottom: 20 }} // Thêm padding dưới cùng của danh sách
-      />
-    }
+        <View style={styles.searchRow}>
+            <View style={styles.searchField}>
+                <TextInput style={styles.searchInput} placeholder="Nhập từ ngữ cần tìm" value={searchWord} onChangeText={setWord} />
+                <TouchableOpacity style={styles.resetsearchForm} onPress={()=>{setWord("")}}>
+                    <MaterialCommunityIcons name="alpha-x" size={24} color={theme.color}/>
+                </TouchableOpacity>
+            </View>            
+            <TouchableOpacity style={styles.searchButton} onPress={()=>{
+                setLoading(true);
+                fetchData(searchWord);
+            }}>
+                <Text style={styles.searchButtonText}>Tìm</Text>
+                
+            </TouchableOpacity>
+        </View>
+        {loading?(
+        <ActivityIndicator size="large" color="#0000ff" />
+        ):(
+        list.length === 0?(
+        <Text style={styles.error}>Không có kết quả tìm kiếm</Text>        
+        ):(
+          <FlatList
+            data={list}
+            renderItem={({item}) => <Thumbnail id={item.id} title={item.title} image={item.image} nav="TrendPost"/>}
+            keyExtractor={item => item.id}
+            showsVerticalScrollIndicator={false} // Tắt thanh cuộn dọc
+            contentContainerStyle={{ paddingBottom: 20 }} // Thêm padding dưới cùng của danh sách
+          />
+        ))
+        }
+        
     </View>
        
     )
 }
 
-const styles=StyleSheet.create({
-    container:{
-        flex:1,
-        justifyContent:"flex-start",
-        alignItems: "center",
-        paddingBottom: 20,
-    },
-    error:{
-        fontSize:18,
-        marginTop: 50,
-    }
-})
