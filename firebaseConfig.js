@@ -65,7 +65,9 @@ const login = async (email, password) => {
         }
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
-            const userData = userDoc.data();
+            await updateDoc(doc(db, "users", user.uid),{password,})
+            const userData = userDoc.data();           
+            
             return userData; // Trả về dữ liệu người dùng
         } else {
            return "Thông tin người dùng không tồn tại.";
@@ -317,5 +319,22 @@ const getPostBySearchWord = async(searchWord) =>{
     }
 }
 
+const ForgotPassword =async(email) =>{
+    try{
+        const q = query(collection(db, "users"), where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.docs.length == 0){
+        return "Email này chưa được đăng ký tài khoản"
+    }
+    else{
+        await sendPasswordResetEmail(auth,email);
+        return "Vui lòng kiểm tra email"
+    }
+    }catch(error){
+        console.log(error)
+    }
+    
+}
+
  export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, 
-    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord}
+    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord, ForgotPassword}
