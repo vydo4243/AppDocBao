@@ -1,7 +1,7 @@
 import React, { useContext }  from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { SettingContext } from '../../../context/SettingContext';
-export default function Input  ({ label, placeholder,value, secureTextEntry, rightComponent,onChangeText }) {
+export default function Input  ({ label, placeholder,value, secureTextEntry, rightComponent,onChangeText, editable }) {
   const { theme } = useContext(SettingContext);
   const styles = StyleSheet.create({
     inputContainer: {
@@ -42,6 +42,7 @@ export default function Input  ({ label, placeholder,value, secureTextEntry, rig
           accessibilityLabel={label}
           onChangeText={onChangeText}
           value={value}
+          editable={editable}
         />
         {rightComponent}
       </View>
