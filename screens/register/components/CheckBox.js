@@ -13,7 +13,7 @@ const CheckBox = ({value, onValueChange}) => {
         style={[styles.checkbox, value && styles.checkboxChecked]}
         onPress={toggleCheckbox}
       >
-        {value && <Text style={styles.checkmark}>✔</Text>}
+        {value && <Text style={styles.checkmark}>✓</Text>}
       </TouchableOpacity>
     </View>
   );
@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#73E3D4',
-    borderColor: '#73E3D4',
+    backgroundColor: "#800000",
+    borderColor: "#800000",
   },
   checkmark: {
     color: '#fff',

@@ -61,7 +61,7 @@ export default function AboutUs() {
         },
         highlight: {
           fontWeight: '700',
-          color: '#73E3D4',
+          color: theme.color,
         },
         listItem: {
           fontSize: 16,
@@ -97,7 +97,7 @@ export default function AboutUs() {
         contactButton: {
           marginTop: 12,
           fontSize: 16,
-          color: '#73E3D4',
+          color: theme.color,
           fontWeight: '700',
           textDecorationLine: 'underline',
         },

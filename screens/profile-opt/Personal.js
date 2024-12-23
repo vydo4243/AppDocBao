@@ -27,12 +27,13 @@ export default function Personal() {
             justifyContent: "flex-start",
             alignItems: "center",
             padding: 30,
+            backgroundColor:theme.background
         },
         avt: {
             width: 150,
             height: 150,
             borderRadius: 75,
-            backgroundColor: theme.inactive,
+            backgroundColor: theme.iconAvt,
         },
         avtChange: {
             fontFamily: theme.font.bold,
@@ -47,15 +48,16 @@ export default function Personal() {
         },
         fieldName: {
             fontFamily: theme.font.bold,
-            color: theme.inactive,
+            color: theme.textColor2,
             fontSize: 18,
         },
         field: {
             width: "100%",
             height: 50,
             borderBottomWidth: 1,
+            borderColor:theme.border,
             fontFamily: theme.font.bold,
-            color: "black",
+            color: theme.textColor,
             fontSize: 18,
         },
         typeField: {
@@ -63,7 +65,7 @@ export default function Personal() {
             height: 50,
             borderBottomWidth: 1,
             fontFamily: theme.font.bold,
-            color: 'gray',
+            color: theme.textColor,
             fontSize: 18,
         },
         updateButton: {
@@ -170,7 +172,7 @@ export default function Personal() {
             updatePass();
         }
     };
-
+    const [isEditing, setIsEditing] = useState(false);
     return (
         <View style={styles.container}>
             <Image alt="avatar" source={{ uri: avatar }} style={styles.avt} />
@@ -183,7 +185,23 @@ export default function Personal() {
             </View>
             <View style={styles.fieldFrame}>
                 <Text style={styles.fieldName}>Ngày sinh</Text>
-                <TextInput style={styles.field} onChangeText={changeBirth} value={newBirth} />
+                <TextInput 
+                style={styles.field} 
+                onChangeText={changeBirth} 
+                value={isEditing ? newBirth : newBirth || "Chưa cập nhật"} 
+                onFocus={() => {
+                    setIsEditing(true);
+                    if (newBirth === null || newBirth === "") {
+                        changeBirth("");
+                    }
+                }}
+                onBlur={() => {
+                    setIsEditing(false);
+                    if (newBirth === "") {
+                        changeBirth(null);
+                    }
+                }}
+            />
             </View>
             <View style={styles.fieldFrame}>
                 <Text style={styles.fieldName}>Email</Text>
