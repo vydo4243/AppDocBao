@@ -73,7 +73,7 @@ export default function Post({ route }) {
       height: 30,
       zIndex: 10,
       borderRadius: 10,
-      backgroundColor: "rgba(255,255,255,0.2)",
+      backgroundColor: theme.modeBG,
     },
     image: {
       marginBottom: 20,
@@ -85,6 +85,7 @@ export default function Post({ route }) {
       fontSize: 20,
       fontFamily: theme.font.bold,
       marginHorizontal: 20,
+      color: theme.textColor
     },
     publishInfoFrame: {
       display: "flex",
@@ -97,6 +98,7 @@ export default function Post({ route }) {
     publishInfo: {
       fontSize: 14,
       fontFamily: theme.font.italic,
+      color: theme.textColor2
     },
     content: {
       marginHorizontal: 20,
@@ -104,6 +106,7 @@ export default function Post({ route }) {
       fontFamily: theme.font.reg,
       lineHeight: 30,
       marginBottom: 20,
+      color: theme.textColor,
     },
   });
   
@@ -116,9 +119,13 @@ export default function Post({ route }) {
       setSaved(true);
       bookmarked(id);
       setIcon("bookmark");
+      console.log("Đã lưu bài viết");
+      setDialogVisible(true);
     } else {
       setSaved(false);
       unbookmark(id);
+      console.log("Đã bỏ lưu bài viết");
+      Alert.alert("Đã bỏ lưu bài viết");
       setIcon("bookmark-outline");
     }
   };
@@ -166,7 +173,7 @@ export default function Post({ route }) {
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => bookmark()}>
-            <MaterialCommunityIcons name={iconSaved} size={30} />
+            <MaterialCommunityIcons name={iconSaved} size={30} color={theme.textColor} />
           </TouchableOpacity>
         </View>
         <Text style={styles.content}>{content}</Text>
@@ -180,37 +187,53 @@ export default function Post({ route }) {
         <MaterialCommunityIcons
           name="arrow-collapse-up"
           size={30}
-          color="black"
+          color={theme.textColor}
         />
       </TouchableOpacity>
       {/* Dialog */}
-      <Dialog.Container visible={dialogVisible} onBackdropPress={() => setDialogVisible(false)}>
-  <Dialog.Title style={{ color: '#14375F', fontSize: 20, fontWeight: 'bold' }}>
-    Yêu cầu đăng nhập
-  </Dialog.Title>
-  <Dialog.Description style={{ color: '#333', fontSize: 16, textAlign: 'center' }}>
-    Bạn cần đăng nhập để lưu bài viết.
-  </Dialog.Description>
-  <Dialog.Button
-    label="Hủy"
-    onPress={() => setDialogVisible(false)}
-    style={{ backgroundColor: '#f5f5f5', color: '#333', borderRadius: 10, padding: 10 }}
-  />
-  <Dialog.Button
-    label="Đăng nhập"
-    onPress={() => {
-      setDialogVisible(false);
-      navigation.navigate("LogIn");
-    }}
-    style={{
-      backgroundColor: '#14375F',
-      color: '#fff',
-      borderRadius: 10,
-      padding: 10,
-      marginLeft: 10,
-    }}
-  />
-</Dialog.Container>
+      <Dialog.Container  style={{ backgroundColor: theme.background, borderRadius: 40 }} visible={dialogVisible} onBackdropPress={() => setDialogVisible(false)}>
+        <Dialog.Title style={{ color: '#14375F', fontSize: 20, fontWeight: 'bold' }}>
+          {saved ? 'Đã lưu bài viết' : 'Yêu cầu đăng nhập'}
+        </Dialog.Title>
+        <Dialog.Description style={{ color: '#333', fontSize: 16, textAlign: 'center' }}>
+          {saved
+            ? 'Bài viết đã được lưu vào mục yêu thích của bạn.'
+            : 'Bạn cần đăng nhập để lưu bài viết.'}
+        </Dialog.Description>
+        <Dialog.Button
+          label="Hủy"
+          onPress={() => setDialogVisible(false)}
+          style={{ backgroundColor: '#f5f5f5', color: '#333', borderRadius: 10, padding: 10 }}
+        />
+        {saved ? (
+          <Dialog.Button
+            label="Đóng"
+            onPress={() => setDialogVisible(false)}
+            style={{
+              backgroundColor: '#14375F',
+              color: '#fff',
+              borderRadius: 10,
+              padding: 10,
+              marginLeft: 10,
+            }}
+          />
+        ) : (
+          <Dialog.Button
+            label="Đăng nhập"
+            onPress={() => {
+              setDialogVisible(false);
+              navigation.navigate("LogIn");
+            }}
+            style={{
+              backgroundColor: '#14375F',
+              color: '#fff',
+              borderRadius: 10,
+              padding: 10,
+              marginLeft: 10,
+            }}
+          />
+        )}
+      </Dialog.Container>
     </View>
   );
 }

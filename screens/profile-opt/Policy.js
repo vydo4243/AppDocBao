@@ -6,19 +6,21 @@ export default function Policy() {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      margin: 20,
+      padding:20,
       gap: 10,
+      backgroundColor:theme.background
     },
     title: {
       fontSize: 20,
       fontFamily: theme.font.bold,
       lineHeight: 32,
-      color: "#3CBBAA"
+      color: theme.color
     },
     normal: {
       fontSize: 16,
       fontFamily: theme.font.reg,
       lineHeight: 30,
+      color: theme.textColor
     },
   });
   return (

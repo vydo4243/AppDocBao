@@ -69,7 +69,7 @@ export default function LogIn () {
               const avt = userData.avt;
               logIn(userName,type,em,pass,avt); // Gọi hàm logIn từ UserContext
               Alert.alert("Đăng nhập thành công!");
-              navigation.navigate("Main", {screen: "ProfileScreen"}); // Điều hướng đến màn hình Profile
+                navigation.replace('Main', { screen: 'ProfileScreen' }); // Điều hướng đến màn hình Profile
           }else{
               Alert.alert("Đăng nhập thất bại",userData);
           }
@@ -195,7 +195,7 @@ export default function LogIn () {
       signUpText2: {
         fontFamily: theme.font.bold,
         fontSize: 18,
-        color: "#73E3D4",
+        color: theme.color,
         textAlign: "center",
         alignContent: "center",
         alignSelf: "center",

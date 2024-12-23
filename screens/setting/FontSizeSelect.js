@@ -1,25 +1,32 @@
-import * as React from "react";
-import { View, Text, StyleSheet } from "react-native";
+// FontSizeSelect.js
 
-export default function FontSizeSelect({ size, fontSize = 18 }) {
+import React, { useContext } from "react";
+import { Text, TouchableOpacity, StyleSheet } from "react-native";
+import { SettingContext } from "../../context/SettingContext"; // Đảm bảo đường dẫn đúng
+
+export default function FontSizeSelect({ size, fontSize }) {
+  const { theme } = useContext(SettingContext); // Truy cập theme từ context
+
+  const styles = StyleSheet.create({
+    fontSizeContainer: {
+      justifyContent: "center",
+      alignItems: "center",
+      alignContent:"center",
+      padding: 3,
+      borderRadius: 5,
+      backgroundColor: theme.buttonCard
+    },
+    fontSizeText: {
+      color: theme.textColor,
+      fontFamily: theme.font.reg,
+      textAlign:'center',
+      alignSelf:'center'
+    },
+  });
+  
   return (
-    <View style={[styles.fontSizeContainer, { height: fontSize + 20 }]}>
+    <TouchableOpacity style={styles.fontSizeContainer} disabled>
       <Text style={[styles.fontSizeText, { fontSize }]}>{size}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  fontSizeContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 8,
-    width: 38,
-    borderRadius: 4,
-    backgroundColor: "#F5F5F5",
-  },
-  fontSizeText: {
-    color: "#131313",
-    fontWeight: "500",
-  },
-});

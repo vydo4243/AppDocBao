@@ -1,5 +1,7 @@
-import * as React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+// ThemeToggle.js
+
+import React from "react";
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 export default function ThemeToggle({ label, isActive, onPress }) {
   return (
@@ -24,7 +26,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F0F0",
   },
   activeOption: {
-    backgroundColor: "#E53935",
+    backgroundColor: "#1EB1FC",
   },
   toggleText: {
     fontSize: 14,

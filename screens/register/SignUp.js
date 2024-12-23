@@ -191,7 +191,7 @@ export default function SignUp() {
     logInText2: {
       fontSize: 18,
       fontFamily: theme.font.bold,
-      color: '#73E3D4',
+      color: theme.color,
       textAlign: 'center',
       alignContent: 'center',
       alignSelf: 'center',
@@ -201,7 +201,7 @@ export default function SignUp() {
     policyButtonText: {
       fontFamily: theme.font.semiBold,
       fontSize: 16,
-      color: '#73E3D4',
+      color: theme.color,
       textAlign: 'center',
       alignContent: 'center',
       alignItems: 'center',

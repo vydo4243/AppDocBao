@@ -123,7 +123,7 @@ export default function OTPSend() {
       signUpText2: {
         fontFamily: theme.font.bold,
         fontSize: 18,
-        color: "#73E3D4",
+        color: theme.color,
         textAlign: "center",
         alignContent: "center",
         alignSelf: "center",
