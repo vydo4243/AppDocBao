@@ -1,13 +1,17 @@
-import { StyleSheet,View,Text, FlatList } from "react-native";
+import { StyleSheet,View,Text, FlatList, ActivityIndicator } from "react-native";
 import Thumbnail from "../../component/Thumbnail";
 import { getBookmark, getPost } from "../../firebaseConfig";
-import { useState,useEffect } from "react";
+import { useState,useEffect,useContext } from "react";
+import { SettingContext } from '../../context/SettingContext'
 
 export default function Bookmark(){
+    const [loading, setLoading] = useState(true);
+    const { theme, fontSize } = useContext(SettingContext);  // Lấy fontSize từ context
     const [list,setList] = useState([]);
     useEffect(()=>{
       async function fetchData() {
         try {
+          setLoading(true);
           // Lấy danh sách ID bài viết đã lưu
           const docs = await getBookmark();
           const fetchedPosts = [];
@@ -19,6 +23,7 @@ export default function Bookmark(){
   
           // Cập nhật danh sách bài viết
           setList(fetchedPosts);
+          setLoading(false);
         } catch (error) {
           console.error("Lỗi khi lấy danh sách bài viết:", error);
         }
@@ -28,12 +33,14 @@ export default function Bookmark(){
   },[])  
     return(
     <View style={styles.container}>
-        {list.length==0?
+        {loading ? (
+                <ActivityIndicator size="large" color={theme.color} />
+            ) : list.length==0?
             <Text style={styles.error}>Không có tin để hiển thị</Text>        
         :
       <FlatList
         data={list}
-        renderItem={({item}) => <Thumbnail key={item.id} id={item.id} title={item.title} image={item.image} nav="Post"/>}
+        renderItem={({item}) => <Thumbnail key={item.id} id={item.id} title={item.title} image={item.image} hashtag={item.hashtag} nav="Post"/>}
         keyExtractor={item => item.id}
       />
     }

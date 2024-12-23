@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { getPostsByHash } from '../../firebaseConfig';
+import { getHome } from '../../firebaseConfig';
 import Thumbnail from '../../component/Thumbnail'; 
 import { SettingContext } from '../../context/SettingContext';
 
@@ -11,12 +11,14 @@ const Home = ({ useFirebase = false }) => {
     const { theme, fontSize } = useContext(SettingContext);  // Lấy fontSize từ context
 
     useEffect(() => {
-        getPostsByHash('Thế giới').then((docs) => {
-            setList(docs);
+        fetchData();
+    }, []);
+    async function fetchData() {
+        getHome().then((docs) => {
+            setList(docs.reverse());            
             setLoading(false);
         });
-    }, []);
-
+    }
     const renderItem = ({ item }) => (
         <Thumbnail
             key={item.id}
