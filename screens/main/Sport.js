@@ -1,44 +1,66 @@
-import { StyleSheet,View,Text, FlatList } from "react-native";
-import Thumbnail from "../../component/Thumbnail";
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { getPostsByHash } from '../../firebaseConfig';
+import Thumbnail from '../../component/Thumbnail';
+import { SettingContext } from '../../context/SettingContext';
 
-export default function Sport(){
-    // Lấy từ CSDL (id, title, image) mà hashtag là thể thao và trong nước đưa vào list
-    const list = [
-        {
-            id:1,
-            title:"HLV Kim Sang-sik kỳ vọng vào hiệu ứng Nguyễn Xuân Son",
-            image:"https://i1-thethao.vnecdn.net/2024/12/20/z6148453181474-fdf038827acc957-5689-4594-1734673213.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=dGbV4K1xbJzJYoZ-FuAh3g",
-        },
-        {
-            id:2,
-            title:"HLV Myanmar dọa gây sốc cho Việt Nam",
-            image:"https://i1-thethao.vnecdn.net/2024/12/20/472973e9f2fe4fa016ef-173467284-7110-6086-1734672935.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=-xgGAkVXzrNrhm7wbrxvuQ",
-        },
-    ]
-    return(
-    <View style={styles.container}>
-        {list.length===0?
-            <Text style={styles.error}>Không có tin để hiển thị</Text>        
-        :
-      <FlatList
-        data={list}
-        renderItem={({item}) => <Thumbnail id={item.id} title={item.title} image={item.image} nav="SportPost"/>}
-        keyExtractor={item => item.id}
-      />
-    }
-    </View>
-       
-    )
-}
+const Sport = ({ useFirebase = false }) => {
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [list, setList] = useState([]);
+    const { theme, fontSize } = useContext(SettingContext);  // Lấy fontSize từ context
 
-const styles=StyleSheet.create({
-    container:{
-        flex:1,
-        justifyContent:"flex-start",
-        alignItems: "center",
-    },
-    error:{
-        fontSize:18,
-        marginTop: 50,
-    }
-})
+    useEffect(() => {
+        getPostsByHash('Thể thao').then((docs) => {
+            setList(docs);
+            setLoading(false);
+        });
+    }, []);
+
+    const renderItem = ({ item }) => (
+        <Thumbnail
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            image={item.image || null}
+            hashtag={item.hashtag || "Không có"}  // Truyền hashtag, fallback nếu không có
+            fontSize={fontSize}  // Truyền fontSize
+            nav="SportPost"
+        />
+    );
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            padding: 16,
+            backgroundColor: theme.background,
+        },
+        noArticlesText: {
+            fontSize: fontSize,
+            color: theme.textColor,
+            textAlign: 'center',
+            marginTop: 16,
+        },
+    });
+
+    return (
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={styles.container}>
+                {loading ? (
+                    <ActivityIndicator size="large" color={theme.color} />
+                ) : list.length > 0 ? (
+                    <FlatList
+                        data={list}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id || item.title}
+                        scrollEnabled={false}  // Tắt cuộn của FlatList
+                    />
+                ) : (
+                    <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
+                )}
+            </View>
+        </ScrollView>
+    );
+};
+
+export default Sport;

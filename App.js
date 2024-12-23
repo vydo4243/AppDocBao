@@ -12,7 +12,6 @@ import { View, TouchableOpacity, Image, StyleSheet, StatusBar, Modal, Text, Plat
 // Import screens
 import Home from "./screens/main/Home";
 import Sport from "./screens/main/Sport";
-import SportQT from "./screens/main/SportQT";
 import Trend from "./screens/main/Trend";
 import Profile from "./screens/main/Profile";
 import Post from "./screens/main/Post";
@@ -29,7 +28,7 @@ import AddPost  from "./screens/writer/AddPost"
 import EditPost  from "./screens/writer/EditPost"
 import YourPost  from "./screens/writer/YourPost"
 import World from "./screens/main/World"
-import Bussiness from "./screens/main/Bussiness"
+import Business from "./screens/main/Business"
 import Setting from "./screens/setting/Setting";
 import RealEstate from "./screens/main/RealEstate";
 import Science from "./screens/main/Science";
@@ -124,6 +123,7 @@ const CustomHeader = () => {
 const CustomHeader2 = ({ title, theme }) => (
   <View
     style={{
+      paddingTop: Platform.OS== "ios"?40:0,
       flexDirection: "row",
       alignItems: "center",
       justifyContent:"flex-start",
@@ -158,6 +158,7 @@ const CustomHeader3 = ({ title, theme }) => {
   return (
     <View
       style={{
+        paddingTop: Platform.OS== "ios"?40:0,
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: theme.background,
@@ -165,7 +166,7 @@ const CustomHeader3 = ({ title, theme }) => {
         elevation: 5,
         borderBottomWidth: 1,
         borderBottomColor: theme.border,
-        height: 60,
+        height: Platform.OS== "ios"?"auto":60,
       }}
     >
       <TouchableOpacity
@@ -331,13 +332,9 @@ function HomeTab() {
         component={HomeStack}
         options={{ tabBarLabel: null }}
       />
-      <Tab.Screen
-        name="WorldScreen"
-        component={WorldScreen}
-        options={{ title: "Thế giới" }}
-      />
-      <Tab.Screen name="Business" component={Bussiness} options={{ title: "Kinh doanh" }} />
-      <Tab.Screen name="RealEstate" component={RealEstate} options={{ title: "Bất động sản" }} />
+      <Tab.Screen name="WorldScreen" component={WorldScreen} options={{ title: "Thế giới" }}/>
+      <Tab.Screen name="BusinessScreen" component={BusinessScreen} options={{ title: "Kinh doanh" }} />
+      <Tab.Screen name="RealEstateScreen" component={RealEstateScreen} options={{ title: "Bất động sản" }} />
       <Tab.Screen name="Science" component={Science} options={{ title: "Khoa học" }} />
       <Tab.Screen name="Entertainment" component={Entertainment} options={{ title: "Giải trí" }} />
       <Tab.Screen name="Sport" component={Sport} options={{ title: "Thể thao" }} />
@@ -428,6 +425,55 @@ function WorldScreen({ navigation, route }) {
     </Stack.Navigator>
   );
 }
+
+function BusinessScreen({ navigation, route }) {
+  const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "Business";
+    navigation.setOptions({
+      tabBarStyle: routeName === "BusinessPost"
+        ? { display: "none" }
+        : {
+            paddingVertical: 5,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+    });
+  }, [navigation, route, theme]);
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Business" component={Business} />
+      <Stack.Screen name="BusinessPost" component={Post} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
+function RealEstateScreen({ navigation, route }) {
+  const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "RealEstate";
+    navigation.setOptions({
+      tabBarStyle: routeName === "RealEstatePost"
+        ? { display: "none" }
+        : {
+            paddingVertical: 5,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+    });
+  }, [navigation, route, theme]);
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="RealEstate" component={RealEstate} />
+      <Stack.Screen name="RealEstatePost" component={Post} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
 
 function ProfileScreen({ navigation, route }) {
   const { theme } = useContext(SettingContext);

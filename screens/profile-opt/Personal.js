@@ -64,6 +64,7 @@ export default function Personal() {
             width: "100%",
             height: 50,
             borderBottomWidth: 1,
+            borderColor: theme.border,
             fontFamily: theme.font.bold,
             color: theme.textColor,
             fontSize: 18,
