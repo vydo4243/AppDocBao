@@ -1,21 +1,35 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { getPostsByHash } from '../../firebaseConfig';
-import Thumbnail from '../../component/Thumbnail'; 
+import { getHome } from '../../firebaseConfig';
+import Thumbnail from '../../component/Thumbnail';
 import { SettingContext } from '../../context/SettingContext';
+import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
 
-const Home = ({ useFirebase = false }) => {
+const Home = () => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [list, setList] = useState([]);
-    const { theme, fontSize } = useContext(SettingContext);  // Lấy fontSize từ context
+    const { theme, fontSize } = useContext(SettingContext);
 
-    useEffect(() => {
-        getPostsByHash('Thế giới').then((docs) => {
-            setList(docs);
-            setLoading(false);
-        });
-    }, []);
+    // Fetch dữ liệu từ Firebase
+    const fetchData = async () => {
+        setLoading(true);
+        const docs = await getHome();
+        setArticles(docs.reverse());
+        setLoading(false);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchData();  // Load lại dữ liệu mỗi khi màn hình Home được focus
+        }, [])
+    );
+
+    const handleSaveChange = (id, newSavedStatus) => {
+        const updatedList = articles.map(article =>
+            article.id === id ? { ...article, saved: newSavedStatus } : article
+        );
+        setArticles(updatedList);
+    };
 
     const renderItem = ({ item }) => (
         <Thumbnail
@@ -23,9 +37,11 @@ const Home = ({ useFirebase = false }) => {
             id={item.id}
             title={item.title}
             image={item.image || null}
-            hashtag={item.hashtag || "Không có"}  // Truyền hashtag, fallback nếu không có
-            fontSize={fontSize}  // Truyền fontSize
+            hashtag={item.hashtag || "Không có"}
+            fontSize={fontSize}
             nav="HomePost"
+            initialSaved={item.saved}
+            onSaveChange={handleSaveChange}  // Truyền callback cập nhật trạng thái
         />
     );
 
@@ -36,7 +52,7 @@ const Home = ({ useFirebase = false }) => {
             backgroundColor: theme.background,
         },
         noArticlesText: {
-            fontSize: fontSize,  // Điều chỉnh size chữ theo context
+            fontSize: fontSize,
             color: theme.textColor,
             textAlign: 'center',
             marginTop: 16,
@@ -47,9 +63,9 @@ const Home = ({ useFirebase = false }) => {
         <View style={styles.container}>
             {loading ? (
                 <ActivityIndicator size="large" color={theme.color} />
-            ) : list.length > 0 ? (
+            ) : articles.length > 0 ? (
                 <FlatList
-                    data={list}
+                    data={articles}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id || item.title}
                 />

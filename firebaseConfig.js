@@ -1,5 +1,6 @@
 import { initializeApp, getApp } from "firebase/app";
-import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch, collection, arrayRemove,arrayUnion} from "firebase/firestore";
+import { orderByChild } from "firebase/database";
+import { getFirestore, setDoc, addDoc, doc, getDoc, getDocs, where, query, updateDoc, deleteDoc, writeBatch, collection, arrayRemove,arrayUnion, orderBy} from "firebase/firestore";
 import { initializeAuth, getReactNativePersistence, getAuth, deleteUser, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
@@ -336,5 +337,19 @@ const ForgotPassword =async(email) =>{
     
 }
 
+const getHome = async() =>{
+    try{
+        const q = query(collection(db, "posts"), orderBy("publishDate"));
+        const tempDoc = []
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            tempDoc.push({ id: doc.id, ...doc.data() })
+        })
+     return tempDoc;
+    }catch(error){
+        console.log(error)
+    }
+}
+
  export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, 
-    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord, ForgotPassword}
+    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord, ForgotPassword, getHome}

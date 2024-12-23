@@ -1,20 +1,20 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { useContext, useState, useEffect } from "react";
 import { SettingContext } from "../context/SettingContext";
-import { Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { UserContext } from "../context/UserContext";
+import { Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-const windowWidth = Dimensions.get('window').width;
-import { getBookmark, bookmarked, unbookmark } from "../firebaseConfig";
-import { UserContext } from "../context/UserContext"; 
-import Dialog from "react-native-dialog";
+const windowWidth = Dimensions.get("window").width;
+import { updateHistory, bookmarked, unbookmark, getBookmark } from "../firebaseConfig";
+import Dialog from "react-native-dialog"; // Import thư viện Dialog
 
-export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved, onUnbookmark }) {
+export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved, onSaveChange }) {
     const navigation = useNavigation();
     const { theme, setReading, fontSize } = useContext(SettingContext);
     const { isAuthenticated } = useContext(UserContext);
 
-    const [isSaved, setSaved] = useState(initialSaved);  
+    const [isSaved, setSaved] = useState(initialSaved);
     const [iconSaved, setIcon] = useState(initialSaved ? "bookmark" : "bookmark-outline");
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogContent, setDialogContent] = useState({
@@ -56,12 +56,27 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
         setSaved(newSavedStatus);
         setIcon(newSavedStatus ? "bookmark" : "bookmark-outline");
         setDialogVisible(true);
-
-        // Cập nhật danh sách Bookmark khi bỏ lưu
-        if (!newSavedStatus && onUnbookmark) {
-            onUnbookmark(id);
+    
+        // Gọi callback cập nhật trạng thái trong danh sách Home
+        if (onSaveChange) {
+            onSaveChange(id, newSavedStatus);
         }
     };
+    
+
+
+    const syncBookmarkStatus = async () => {
+        if (isAuthenticated) {
+            const docs = await getBookmark();
+            const isBookmarked = docs.includes(id);
+            setSaved(isBookmarked);
+            setIcon(isBookmarked ? "bookmark" : "bookmark-outline");
+        }
+    };
+
+    useEffect(() => {
+        syncBookmarkStatus();
+    }, [id, isAuthenticated]);
 
     const styles = StyleSheet.create({
         container: {
@@ -122,30 +137,35 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             activeOpacity={0.85}
             onPress={() => {
                 if (nav !== "EditPost") setReading(true);
-                navigation.navigate(nav, {
-                    id: id,
-                    initialSaved: isSaved,
-                });
+                if (isAuthenticated) {
+                    updateHistory(id).then(() => {
+                        navigation.navigate(nav, { 
+                            id: id, 
+                            initialSaved: isSaved,
+                            onSaveChange: (newSavedStatus) => {
+                                setSaved(newSavedStatus);
+                                setIcon(newSavedStatus ? "bookmark" : "bookmark-outline");
+                        
+                                if (route.params?.onSaveChange) {
+                                    route.params.onSaveChange(id, newSavedStatus);
+                                }
+                            }
+                        });
+                    });
+                } else {
+                    navigation.navigate(nav, { id: id });
+                }
             }}
         >
             <View style={styles.container}>
-                {image ? (
-                    <Image style={styles.image} source={{ uri: image }} />
-                ) : (
-                    <View style={styles.image} />
-                )}
+                <Image style={styles.image} source={image ? { uri: image } : image} />
                 <Text numberOfLines={3} ellipsizeMode="tail" style={styles.title}>
                     {title}
                 </Text>
-
                 <View style={styles.footerRow}>
                     <Text style={styles.hashtag}>{hashtag || "Không có"}</Text>
                     <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <MaterialCommunityIcons
-                            name={iconSaved}
-                            size={30}
-                            color={isSaved ? theme.bottomTabIconColor : theme.textColor}
-                        />
+                        <MaterialCommunityIcons name={iconSaved} size={30} />
                         <Text style={styles.saveButtonText}>
                             {isSaved ? "Bỏ lưu" : "Lưu"}
                         </Text>
@@ -153,39 +173,10 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
                 </View>
             </View>
 
-            {/* Dialog */}
-            <Dialog.Container
-                style={{ backgroundColor: theme.background, borderRadius: 40 }}
-                visible={dialogVisible}
-                onBackdropPress={() => setDialogVisible(false)}
-            >
-                <Dialog.Title style={{ color: '#14375F', fontSize: 20, fontWeight: 'bold' }}>
-                    {dialogContent.title}
-                </Dialog.Title>
-                <Dialog.Description style={{ color: '#333', fontSize: 16, textAlign: 'center' }}>
-                    {dialogContent.description}
-                </Dialog.Description>
-                <Dialog.Button
-                    label="Đóng"
-                    onPress={() => setDialogVisible(false)}
-                    style={{ backgroundColor: '#f5f5f5', color: '#333', borderRadius: 10, padding: 10 }}
-                />
-                {dialogContent.showLogin && (
-                    <Dialog.Button
-                        label="Đăng nhập"
-                        onPress={() => {
-                            setDialogVisible(false);
-                            navigation.navigate("LogIn");
-                        }}
-                        style={{
-                            backgroundColor: '#14375F',
-                            color: '#fff',
-                            borderRadius: 10,
-                            padding: 10,
-                            marginLeft: 10,
-                        }}
-                    />
-                )}
+            <Dialog.Container visible={dialogVisible}>
+                <Dialog.Title>{dialogContent.title}</Dialog.Title>
+                <Dialog.Description>{dialogContent.description}</Dialog.Description>
+                <Dialog.Button label="Đóng" onPress={() => setDialogVisible(false)} />
             </Dialog.Container>
         </TouchableOpacity>
     );

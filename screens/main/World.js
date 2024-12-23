@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { getPostsByHash } from '../../firebaseConfig';
 import Thumbnail from '../../component/Thumbnail'; 
 import { SettingContext } from '../../context/SettingContext';
+import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
 
 const World = ({ useFirebase = false }) => {
     const [articles, setArticles] = useState([]);
@@ -10,12 +11,15 @@ const World = ({ useFirebase = false }) => {
     const [list, setList] = useState([]);
     const { theme, fontSize } = useContext(SettingContext);  // Lấy fontSize từ context
 
-    useEffect(() => {
-        getPostsByHash('Thế giới').then((docs) => {
-            setList(docs);
-            setLoading(false);
-        });
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            setLoading(true);  // Đảm bảo trạng thái loading hiển thị trước khi fetch
+            getPostsByHash('Thế giới').then((docs) => {
+                setList(docs);
+                setLoading(false);  // Kết thúc loading khi fetch xong
+            });
+        }, [])
+    );
 
     const renderItem = ({ item }) => (
         <Thumbnail

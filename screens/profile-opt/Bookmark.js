@@ -2,14 +2,17 @@ import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert } from "reac
 import Thumbnail from "../../component/Thumbnail";
 import { getBookmark, getPost } from "../../firebaseConfig";
 import { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Bookmark() {
     const [list, setList] = useState([]);
     const [loading, setLoading] = useState(true);  // Trạng thái loading
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+          fetchData();  // Load lại dữ liệu mỗi khi quay về trang Bookmark
+        }, [])
+      );
 
     // Hàm fetch data từ firebase
     const fetchData = async () => {
@@ -30,10 +33,18 @@ export default function Bookmark() {
         }
     };
 
-    // Xử lý khi người dùng bỏ lưu
-    const handleUnbookmark = useCallback(async () => {
-        await fetchData();  // Gọi lại fetchData để tải lại danh sách
-    }, []);
+// Xử lý khi người dùng bỏ lưu
+const handleUnbookmark = useCallback(async (id) => {
+    setList((prevList) => {
+        const updatedList = prevList.filter((item) => item.id !== id);
+        
+        // Kiểm tra nếu danh sách trống sau khi xóa
+        if (updatedList.length === 0) {
+            fetchData();  // Gọi lại fetchData để đảm bảo load lại dữ liệu
+        }
+        return updatedList;
+    });
+}, []);
 
     return (
         <View style={styles.container}>
