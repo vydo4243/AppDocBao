@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
+  Share,
   ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -170,6 +172,46 @@ export default function Post({ route }) {
       color: theme.textColor,
     },
   });
+
+  
+  const bookmark = () => {
+    if (!isAuthenticated) {
+      setDialogVisible(true); // Hiển thị hộp thoại nếu chưa đăng nhập
+      return;
+    }
+    if (!saved) {
+      setSaved(true);
+      bookmarked(id);
+      setIcon("bookmark");
+      console.log("Đã lưu bài viết");
+      setDialogVisible(true);
+    } else {
+      setSaved(false);
+      unbookmark(id);
+      console.log("Đã bỏ lưu bài viết");
+      Alert.alert("Đã bỏ lưu bài viết");
+      setIcon("bookmark-outline");
+    }
+  };
+
+  const share = async() => {
+    try{
+      const result = await Share.share({
+        message:title+".\n\n"+content,
+      })
+      if(result.action ===Share.sharedAction){
+        Alert.alert("Chia sẻ thành công")
+      }
+      else{
+        Alert.alert("Lỗi","Không thể tiến hành chia sẻ bài viết")
+      }
+    }catch(error){
+      
+    }
+  };
+  const navigation = useNavigation();
+  const scrollRef = useRef(null);
+
   return (
     <View style={styles.container}>
        {loading ? (
@@ -195,11 +237,8 @@ export default function Post({ route }) {
 
         <View style={styles.publishInfoFrame}>
           <View style={{ flexDirection: "row", gap: 20 }}>
-            <TouchableOpacity onPress={() => shareFB()}>
-              <Zocial name="facebook" size={24} color="blue" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => shareGM()}>
-              <Zocial name="gmail" size={24} color="red" />
+            <TouchableOpacity onPress={() => share()}>
+              <MaterialCommunityIcons name="share" size={24} color={theme.color} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => bookmark()}>
