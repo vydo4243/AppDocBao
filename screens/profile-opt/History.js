@@ -32,6 +32,18 @@ export default function Bookmark(){
     }
   }
   const {theme} = useContext(SettingContext)
+  const styles=StyleSheet.create({
+    container:{
+        flex:1,
+        justifyContent:"flex-start",
+        alignItems: "center",
+        backgroundColor: theme.background,
+    },
+    error:{
+        fontSize:18,
+        marginTop: 50,
+    }
+})
   const Item = ({item}) => (
     <View style={{flex:1}}>
       <Thumbnail key={item.id} id={item.id} title={item.title} image={item.image} hashtag={item.hashtag} nav="Post"/>
@@ -63,14 +75,3 @@ export default function Bookmark(){
     )
 }
 
-const styles=StyleSheet.create({
-    container:{
-        flex:1,
-        justifyContent:"flex-start",
-        alignItems: "center",
-    },
-    error:{
-        fontSize:18,
-        marginTop: 50,
-    }
-})

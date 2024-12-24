@@ -1,94 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import firebase from '../../firebaseConfig';
-import fetchLatestNews from '../../fetchLatestNews';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { getPostsByHash } from '../../firebaseConfig';
+import Thumbnail from '../../component/Thumbnail';
+import { SettingContext } from '../../context/SettingContext';
+import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
 
 const Law = ({ useFirebase = false }) => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [list, setList] = useState([]);
+    const { theme, fontSize } = useContext(SettingContext);  // Lấy fontSize từ context
 
-    useEffect(() => {
-        if (useFirebase) {
-            fetchArticlesFromFirebase();
-        } else {
-            fetchArticlesFromAPI();
-        }
-    }, [useFirebase]);
-
-    const fetchArticlesFromAPI = async () => {
-        try {
-            const data = await fetchLatestNews(); // Gọi API Currents
-            setArticles(data);
-        } catch (error) {
-            console.error('Error fetching articles from API:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchArticlesFromFirebase = async () => {
-        try {
-            const articlesRef = firebase.firestore().collection('business-articles');
-            const snapshot = await articlesRef.get();
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setArticles(data);
-        } catch (error) {
-            console.error('Error fetching articles from Firebase:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    useFocusEffect(
+        useCallback(() => {
+            setLoading(true);  // Đảm bảo trạng thái loading hiển thị trước khi fetch
+            getPostsByHash('Pháp luật').then((docs) => {
+                setList(docs);
+                setLoading(false);  // Kết thúc loading khi fetch xong
+            });
+        }, [])
+    );
 
     const renderItem = ({ item }) => (
-        <View style={styles.articleContainer}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
-        </View>
+        <Thumbnail
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            image={item.image || null}
+            hashtag={item.hashtag || "Không có"}  // Truyền hashtag, fallback nếu không có
+            fontSize={fontSize}  // Truyền fontSize
+            nav="LawPost"
+        />
     );
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            padding: 16,
+            backgroundColor: theme.background,
+        },
+        noArticlesText: {
+            fontSize: fontSize,
+            color: theme.textColor,
+            textAlign: 'center',
+            marginTop: 16,
+        },
+    });
 
     return (
-        <View style={styles.container}>
-            {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : articles.length > 0 ? (
-                <FlatList
-                    data={articles}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id || item.title}
-                />
-            ) : (
-                <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
-            )}
-        </View>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={styles.container}>
+                {loading ? (
+                    <ActivityIndicator size="large" color={theme.color} />
+                ) : list.length > 0 ? (
+                    <FlatList
+                        data={list}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id || item.title}
+                        scrollEnabled={false}  // Tắt cuộn của FlatList
+                    />
+                ) : (
+                    <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
+                )}
+            </View>
+        </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#fff',
-    },
-    articleContainer: {
-        marginBottom: 16,
-        padding: 16,
-        backgroundColor: '#f9f9f9',
-        borderRadius: 8,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    description: {
-        fontSize: 14,
-        color: '#666',
-    },
-    noArticlesText: {
-        fontSize: 16,
-        color: 'gray',
-        textAlign: 'center',
-        marginTop: 16,
-    },
-});
 
 export default Law;

@@ -1,152 +1,115 @@
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Platform, ActivityIndicator } from "react-native";
-import Thumbnail from "../../component/Thumbnail";
-import { useContext, useState } from "react";
-import { SettingContext } from "../../context/SettingContext";
-import { getPostBySearchWord } from "../../firebaseConfig";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Dialog from "react-native-dialog"; // Import Dialog
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import xml2js from 'react-native-xml2js';  // Import thư viện
+import RenderHTML from 'react-native-render-html';
+import { Dimensions } from "react-native";
+import { useWindowDimensions } from 'react-native';
+export default function TrendingNews() {
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const windowWidth = Dimensions.get("window").width;
+    const fetchNews = async () => {
+        try {
+            const response = await fetch(
+                "https://news.google.com/rss?hl=vi&gl=VN&ceid=VN:vi"
+            );
+            const text = await response.text();
+    
+            xml2js.parseString(text, (error, result) => {
+                if (error) {
+                    console.error("Error parsing XML:", error);
+                    return;
+                }
+                const items = result.rss.channel[0].item;
+                const parsedArticles = items.map((item) => {
+                    // Trích xuất ảnh từ description (nếu có)
+                    const imgMatch = item.description[0].match(/<img[^>]+src="([^">]+)"/);
+                    const imgUrl = imgMatch ? imgMatch[1] : null;
+    
+                    return {
+                        title: item.title[0],
+                        link: item.link[0],
+                        description: item.description ? item.description[0] : "Không có mô tả",
+                        pubDate: item.pubDate ? item.pubDate[0] : "Không rõ ngày đăng",
+                        image: imgUrl,  // Thêm ảnh vào bài viết
+                    };
+                });
+    
+                setArticles(parsedArticles);
+            });
+        } catch (error) {
+            console.error("Error fetching news:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-export default function Trend() {
-  const [list, setList] = useState([]);
-  const [searchWord, setWord] = useState("");
-  const { theme } = useContext(SettingContext);
-  const [loading, setLoading] = useState(false);
-  const [isFocused, setIsFocused] = useState(false); // Trạng thái focus của input
-  const [dialogVisible, setDialogVisible] = useState(false); // Hiển thị hộp thoại
+    useEffect(() => {
+        fetchNews();
+    }, []);
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "flex-start",
-      alignItems: "center",
-      paddingBottom: 20,
-      backgroundColor: theme.background,
-    },
-    searchRow: {
-      flexDirection: "row",
-      height: 50,
-      justifyContent: "space-between",
-      marginTop: 10,
-      gap: 5,
-    },
-    searchField: {
-      width: "80%",
-      borderRadius: 10,
-      borderWidth: 1,
-      borderColor: isFocused ? theme.borderFocus : theme.border,
-      paddingHorizontal: 5,
-      justifyContent: "space-between",
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: theme.cardBackground,
-    },
-    searchInput: {
-      width: "70%",
-      fontSize: 16,
-      fontFamily: theme.font.italic,
-      color: theme.textColor,
-    },
-    searchButton: {
-      borderRadius: 10,
-      width: "15%",
-      backgroundColor: theme.color,
-      justifyContent: "center",
-    },
-    searchButtonText: {
-      color: theme.textColor,
-      fontSize: 18,
-      fontFamily: theme.font.bold,
-      textAlign: "center",
-    },
-    resetsearchForm: {
-      backgroundColor: theme.inactive,
-      borderRadius: 50,
-    },
-    error: {
-      fontSize: 18,
-      marginTop: 50,
-      color: theme.textColor2,
-    },
-  });
-
-  async function fetchData(searchWord) {
-    const posts = await getPostBySearchWord(searchWord);
-    setList(posts);
-    setLoading(false);
-  }
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.searchRow}>
-        <View style={styles.searchField}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Nhập từ khóa"
-            placeholderTextColor={theme.textColor2}
-            value={searchWord}
-            onChangeText={setWord}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-          />
-          <TouchableOpacity
-            style={styles.resetsearchForm}
-            onPress={() => {
-              setWord("");
-            }}
-          >
-            <MaterialCommunityIcons name="alpha-x" size={24} color={theme.color} />
-          </TouchableOpacity>
+    const renderItem = ({ item }) => (
+        <View style={styles.articleContainer}>
+            {item.image && (
+                <Image
+                    source={{ uri: item.image }}
+                    style={styles.image}
+                    resizeMode="cover"
+                />
+            )}
+            <Text style={styles.title}>{item.title}</Text>
+            <RenderHTML
+                contentWidth={windowWidth}
+                source={{ html: item.description }}
+                ignoredDomTags={['font']}
+            />
+            <Text style={styles.pubDate}>{item.pubDate}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.searchButton}
-          onPress={() => {
-            if (searchWord.trim() === "") {
-              setDialogVisible(true); // Hiển thị hộp thoại nếu từ khóa rỗng
-              return;
-            }
-            setLoading(true);
-            fetchData(searchWord);
-          }}
-        >
-          <Text style={styles.searchButtonText}>Tìm</Text>
-        </TouchableOpacity>
-      </View>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : list.length === 0 ? (
-        <Text style={styles.error}>Không có kết quả tìm kiếm</Text>
-      ) : (
-        <FlatList
-          data={list}
-          renderItem={({ item }) => (
-            <Thumbnail id={item.id} title={item.title} image={item.image} hashtag={item.hashtag} nav="TrendPost" />
-          )}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        />
-      )}
+        
+    );
 
-      {/* Dialog nhỏ */}
-      <Dialog.Container visible={dialogVisible} onBackdropPress={() => setDialogVisible(false)}>
-        <Dialog.Title style={{ fontSize: 18, textAlign: "center", fontFamily: theme.font.bold }}>
-          Lỗi
-        </Dialog.Title>
-        <Dialog.Description style={{ fontSize: 16, textAlign: "center", color:"#131313" }}>
-          Vui lòng nhập từ khóa tìm kiếm.
-        </Dialog.Description>
-        <Dialog.Button
-          label="Đóng"
-          onPress={() => setDialogVisible(false)}
-          style={{
-            backgroundColor: theme.color,
-            color: theme.textColor,
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-          }}
-        />
-      </Dialog.Container>
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+            {loading ? (
+                <ActivityIndicator size="large" color="#800000" />
+            ) : (
+                <FlatList
+                    data={articles}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            )}
+        </View>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: "#fff",
+    },
+    articleContainer: {
+        marginBottom: 20,
+        padding: 10,
+        borderBottomWidth: 1,
+        borderColor: "#ddd",
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    pubDate: {
+        fontSize: 14,
+        color: "gray",
+        marginTop: 5,
+    },
+    image: {
+        width: "100%",
+        height: 200,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+});
+

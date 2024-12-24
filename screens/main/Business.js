@@ -5,7 +5,7 @@ import Thumbnail from '../../component/Thumbnail';
 import { SettingContext } from '../../context/SettingContext';
 import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
 
-const Entertainment = ({ useFirebase = false }) => {
+const Business = ({ useFirebase = false }) => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [list, setList] = useState([]);
@@ -14,7 +14,7 @@ const Entertainment = ({ useFirebase = false }) => {
     useFocusEffect(
         useCallback(() => {
             setLoading(true);  // Đảm bảo trạng thái loading hiển thị trước khi fetch
-            getPostsByHash('Giải trí').then((docs) => {
+            getPostsByHash('Kinh doanh').then((docs) => {
                 setList(docs);
                 setLoading(false);  // Kết thúc loading khi fetch xong
             });
@@ -29,7 +29,7 @@ const Entertainment = ({ useFirebase = false }) => {
             image={item.image || null}
             hashtag={item.hashtag || "Không có"}  // Truyền hashtag, fallback nếu không có
             fontSize={fontSize}  // Truyền fontSize
-            nav="EntertainmentPost"
+            nav="BusinessPost"
         />
     );
 
@@ -67,4 +67,4 @@ const Entertainment = ({ useFirebase = false }) => {
     );
 };
 
-export default Entertainment;
+export default Business;

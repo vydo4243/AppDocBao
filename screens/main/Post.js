@@ -6,30 +6,44 @@ import {
   Image,
   ScrollView,
   Alert,
-  Share
+  Share,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SettingContext } from "../../context/SettingContext";
-import { useContext, useState, useRef , useEffect} from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Zocial from "@expo/vector-icons/Zocial";
 import { getBookmark, getPost, bookmarked, unbookmark } from "../../firebaseConfig";
-import { UserContext } from "../../context/UserContext"; 
+import { UserContext } from "../../context/UserContext";
 import Dialog from "react-native-dialog"; // Import thư viện Dialog
+
 export default function Post({ route }) {
-  const {id} = route.params;
+  const { id, initialSaved } = route.params; // Nhận trạng thái từ Thumbnail
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [content, setContent] = useState("");
   const [hashtag, setHash] = useState();
   const [publisher, setWriter] = useState("");
   const [publishDate, setDate] = useState("");
-  const [saved, setSaved] = useState(false); // kiểm tra ng dùng đã lưu bài viết này chưa?
-  const [iconSaved, setIcon] = useState("bookmark-outline");
+  const [saved, setSaved] = useState(initialSaved);
+  const [iconSaved, setIcon] = useState(initialSaved ? "bookmark" : "bookmark-outline");
   const { isAuthenticated } = useContext(UserContext);
-  const [dialogVisible, setDialogVisible] = useState(false)
+  const { theme, fontSize, setReading } = useContext(SettingContext);
+  const [loading, setLoading] = useState(true);  // Thêm trạng thái loading
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [dialogContent, setDialogContent] = useState({
+    title: "",
+    description: "",
+    showLogin: false,
+  });
+
+  const navigation = useNavigation();
+  const scrollRef = useRef(null);
+
   useEffect(() => {
     const getData = async () => {
+      setLoading(true);  // Bắt đầu loading khi fetch dữ liệu
       const data = await getPost(id);
       if (data) {
         setTitle(data.title);
@@ -40,17 +54,65 @@ export default function Post({ route }) {
         setWriter("HTC");
       }
 
-      if (isAuthenticated) { // Chỉ kiểm tra nếu đã đăng nhập
+      if (isAuthenticated) {
         const docs = await getBookmark();
         setSaved(docs.includes(id));
         setIcon(docs.includes(id) ? "bookmark" : "bookmark-outline");
       }
+      setLoading(false);  // Kết thúc loading sau khi fetch xong
     };
     getData();
   }, [id, isAuthenticated]);
-  
 
-  const { theme, setReading } = useContext(SettingContext);
+  const bookmark = async () => {
+    if (!isAuthenticated) {
+      // Dialog khi chưa đăng nhập
+      setDialogContent({
+        title: "Yêu cầu đăng nhập",
+        description: "Bạn cần đăng nhập để lưu bài viết.",
+        showLogin: true,
+      });
+      setDialogVisible(true);
+      return;
+    }
+
+    let newSavedStatus;
+    if (!saved) {
+      await bookmarked(id);
+      newSavedStatus = true;
+      // Dialog khi lưu bài viết
+      setDialogContent({
+        title: "Đã lưu bài viết",
+        description: "Bài viết đã được lưu vào mục yêu thích của bạn.",
+        showLogin: false,
+      });
+    } else {
+      await unbookmark(id);
+      newSavedStatus = false;
+      // Dialog khi bỏ lưu bài viết
+      setDialogContent({
+        title: "Đã bỏ lưu bài viết",
+        description: "Bài viết đã được bỏ lưu khỏi mục yêu thích của bạn.",
+        showLogin: false,
+      });
+    }
+
+    setSaved(newSavedStatus);
+    setIcon(newSavedStatus ? "bookmark" : "bookmark-outline");
+    setDialogVisible(true);
+
+    // Gọi callback để cập nhật trạng thái ở Thumbnail hoặc Bookmark
+    if (route.params?.onSaveChange) {
+      route.params.onSaveChange(newSavedStatus);
+    }
+  };
+
+  const shareFB = () => {
+    console.log("Share qua facebook thành công");
+  };
+  const shareGM = () => {
+    console.log("Share qua gmail thành công");
+  };
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -83,7 +145,7 @@ export default function Post({ route }) {
       backgroundColor: "gray",
     },
     title: {
-      fontSize: 20,
+      fontSize: fontSize+4,
       fontFamily: theme.font.bold,
       marginHorizontal: 20,
       color: theme.textColor
@@ -97,19 +159,20 @@ export default function Post({ route }) {
       justifyContent: "space-between",
     },
     publishInfo: {
-      fontSize: 14,
+      fontSize: fontSize-2,
       fontFamily: theme.font.italic,
       color: theme.textColor2
     },
     content: {
       marginHorizontal: 20,
-      fontSize: 16,
+      fontSize: fontSize,
       fontFamily: theme.font.reg,
       lineHeight: 30,
       marginBottom: 20,
       color: theme.textColor,
     },
   });
+
   
   const bookmark = () => {
     if (!isAuthenticated) {
@@ -148,8 +211,12 @@ export default function Post({ route }) {
   };
   const navigation = useNavigation();
   const scrollRef = useRef(null);
+
   return (
     <View style={styles.container}>
+       {loading ? (
+        <ActivityIndicator size="large" color="#800000" />
+      ) : (
       <ScrollView ref={scrollRef}>
         <TouchableOpacity
           style={styles.backButton}
@@ -158,19 +225,16 @@ export default function Post({ route }) {
             navigation.goBack();
           }}
         >
-          <MaterialCommunityIcons
-            name="keyboard-backspace"
-            size={30}
-            color="black"
-          />
+          <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
         </TouchableOpacity>
 
-        <Image style={styles.image} source={image?{uri:image}:image} />
+        <Image style={styles.image} source={image ? { uri: image } : image} />
         <Text style={styles.title}>{title}</Text>
         <View style={styles.publishInfoFrame}>
           <Text style={styles.publishInfo}>Người đăng: {publisher}</Text>
           <Text style={styles.publishInfo}>Ngày đăng: {publishDate}</Text>
         </View>
+
         <View style={styles.publishInfoFrame}>
           <View style={{ flexDirection: "row", gap: 20 }}>
             <TouchableOpacity onPress={() => share()}>
@@ -178,51 +242,39 @@ export default function Post({ route }) {
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => bookmark()}>
-            <MaterialCommunityIcons name={iconSaved} size={30} color={theme.textColor} />
+            <MaterialCommunityIcons name={iconSaved} size={30} color={saved ? theme.bottomTabIconColor : theme.textColor} />
           </TouchableOpacity>
         </View>
         <Text style={styles.content}>{content}</Text>
       </ScrollView>
+)}
       <TouchableOpacity
         style={styles.upButton}
         onPress={() => {
           scrollRef.current.scrollTo({ offset: 0, animated: true });
         }}
       >
-        <MaterialCommunityIcons
-          name="arrow-collapse-up"
-          size={30}
-          color={theme.textColor}
-        />
+        <MaterialCommunityIcons name="arrow-collapse-up" size={30} color={theme.textColor} />
       </TouchableOpacity>
+
       {/* Dialog */}
-      <Dialog.Container  style={{ backgroundColor: theme.background, borderRadius: 40 }} visible={dialogVisible} onBackdropPress={() => setDialogVisible(false)}>
+      <Dialog.Container
+        style={{ backgroundColor: theme.background, borderRadius: 40 }}
+        visible={dialogVisible}
+        onBackdropPress={() => setDialogVisible(false)}
+      >
         <Dialog.Title style={{ color: '#14375F', fontSize: 20, fontWeight: 'bold' }}>
-          {saved ? 'Đã lưu bài viết' : 'Yêu cầu đăng nhập'}
+          {dialogContent.title}
         </Dialog.Title>
         <Dialog.Description style={{ color: '#333', fontSize: 16, textAlign: 'center' }}>
-          {saved
-            ? 'Bài viết đã được lưu vào mục yêu thích của bạn.'
-            : 'Bạn cần đăng nhập để lưu bài viết.'}
+          {dialogContent.description}
         </Dialog.Description>
         <Dialog.Button
-          label="Hủy"
+          label="Đóng"
           onPress={() => setDialogVisible(false)}
           style={{ backgroundColor: '#f5f5f5', color: '#333', borderRadius: 10, padding: 10 }}
         />
-        {saved ? (
-          <Dialog.Button
-            label="Đóng"
-            onPress={() => setDialogVisible(false)}
-            style={{
-              backgroundColor: '#14375F',
-              color: '#fff',
-              borderRadius: 10,
-              padding: 10,
-              marginLeft: 10,
-            }}
-          />
-        ) : (
+        {dialogContent.showLogin && (
           <Dialog.Button
             label="Đăng nhập"
             onPress={() => {
@@ -242,3 +294,4 @@ export default function Post({ route }) {
     </View>
   );
 }
+

@@ -1,33 +1,48 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { getHome } from '../../firebaseConfig';
-import Thumbnail from '../../component/Thumbnail'; 
+import Thumbnail from '../../component/Thumbnail';
 import { SettingContext } from '../../context/SettingContext';
+import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
+import Weather from '../Weather';
 
-const Home = ({ useFirebase = false }) => {
+const Home = () => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [list, setList] = useState([]);
-    const { theme, fontSize } = useContext(SettingContext);  // Lấy fontSize từ context
+    const { theme, fontSize } = useContext(SettingContext);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-    async function fetchData() {
-        getHome().then((docs) => {
-            setList(docs.reverse());            
-            setLoading(false);
-        });
-    }
+    // Fetch dữ liệu từ Firebase
+    const fetchData = async () => {
+        setLoading(true);
+        const docs = await getHome();
+        setArticles(docs.reverse());
+        setLoading(false);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchData();  // Load lại dữ liệu mỗi khi màn hình Home được focus
+        }, [])
+    );
+
+    const handleSaveChange = (id, newSavedStatus) => {
+        const updatedList = articles.map(article =>
+            article.id === id ? { ...article, saved: newSavedStatus } : article
+        );
+        setArticles(updatedList);
+    };
+
     const renderItem = ({ item }) => (
         <Thumbnail
             key={item.id}
             id={item.id}
             title={item.title}
             image={item.image || null}
-            hashtag={item.hashtag || "Không có"}  // Truyền hashtag, fallback nếu không có
-            fontSize={fontSize}  // Truyền fontSize
+            hashtag={item.hashtag || "Không có"}
+            fontSize={fontSize}
             nav="HomePost"
+            initialSaved={item.saved}
+            onSaveChange={handleSaveChange}  // Truyền callback cập nhật trạng thái
         />
     );
 
@@ -38,7 +53,7 @@ const Home = ({ useFirebase = false }) => {
             backgroundColor: theme.background,
         },
         noArticlesText: {
-            fontSize: fontSize,  // Điều chỉnh size chữ theo context
+            fontSize: fontSize,
             color: theme.textColor,
             textAlign: 'center',
             marginTop: 16,
@@ -46,19 +61,23 @@ const Home = ({ useFirebase = false }) => {
     });
 
     return (
-        <View style={styles.container}>
-            {loading ? (
-                <ActivityIndicator size="large" color={theme.color} />
-            ) : list.length > 0 ? (
-                <FlatList
-                    data={list}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id || item.title}
-                />
-            ) : (
-                <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
-            )}
-        </View>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={styles.container}>
+                <Weather />
+                {loading ? (
+                    <ActivityIndicator size="large" color={theme.color} />
+                ) : articles.length > 0 ? (
+                    <FlatList
+                        data={articles}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id || item.title}
+                        scrollEnabled={false} 
+                    />
+                ) : (
+                    <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
+                )}
+            </View>
+        </ScrollView>
     );
 };
 
