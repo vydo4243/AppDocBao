@@ -1,8 +1,9 @@
 import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert } from "react-native";
 import Thumbnail from "../../component/Thumbnail";
 import { getBookmark, getPost } from "../../firebaseConfig";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { SettingContext } from "../../context/SettingContext";
 
 export default function Bookmark() {
     const [list, setList] = useState([]);
@@ -46,6 +47,23 @@ const handleUnbookmark = useCallback(async (id) => {
     });
 }, []);
 
+const {theme} = useContext (SettingContext);
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: theme.background,
+    },
+    error: {
+        fontSize: 18,
+        marginTop: 50,
+    },
+    loader: {
+        marginTop: 20,
+    },
+});
+
     return (
         <View style={styles.container}>
             {loading ? (  // Nếu đang loading, hiển thị vòng quay
@@ -74,17 +92,3 @@ const handleUnbookmark = useCallback(async (id) => {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    error: {
-        fontSize: 18,
-        marginTop: 50,
-    },
-    loader: {
-        marginTop: 20,
-    },
-});

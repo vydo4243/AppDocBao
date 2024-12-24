@@ -120,16 +120,15 @@ export function SettingProvider({ children }) {
     loadSettings();
   }, []);
 
-  // Lưu cài đặt mỗi khi themeMode hoặc fontSize thay đổi
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      console.log("ThemeMode:", themeMode);
-      console.log("DarkMode:", darkMode);
-      saveSettings();
-    }, 500); // Debounce thời gian lưu
+ // Lưu cài đặt mỗi khi themeMode hoặc fontSize thay đổi (Debounce)
+ useEffect(() => {
+  const timeout = setTimeout(() => {
+    saveSettings();
+  }, 200);  // Giảm thời gian lưu xuống 200ms
 
-    return () => clearTimeout(timeout);
-  }, [themeMode, fontSize]);
+  return () => clearTimeout(timeout);
+}, [themeMode, fontSize]);
+
 
   // Kiểm tra trạng thái tải font và cài đặt
   if (!fontsLoaded || loadingSettings) {

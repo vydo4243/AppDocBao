@@ -37,6 +37,7 @@ import Law from "./screens/main/Law";
 import History from "./screens/profile-opt/History";
 import PopupSettings from "./screens/setting/PopupSetting";
 import OTPSend from "./screens/login/OTPSend";
+import Search from "./screens/main/Search";
 
 // Import context
 import { SettingProvider, SettingContext } from "./context/SettingContext";
@@ -100,6 +101,7 @@ const CustomHeader = () => {
     fontWeight: "bold",
   },
   });
+  const navigation = useNavigation();
   return (
     <View style={styles.headerContainer}>
       <StatusBar  />
@@ -111,8 +113,82 @@ const CustomHeader = () => {
               source={require("./assets/logo.png")}
               style={styles.logo}
           />
-          <TouchableOpacity>
-              <Icon name="bell-outline" size={24} color="gray" />
+          <TouchableOpacity onPress={() => {console.log("Navigating to SearchScreen"); navigation.navigate("SearchScreen")}}>
+              <Ionicons name="search-sharp" size={24} color={theme.textColor2} />
+          </TouchableOpacity>
+      </View>
+      <Ex visible={isPopupVisible} onClose={() => setPopupVisible(false)} />
+    </View>
+  );
+};
+
+// Custom Header
+const CustomHeaderPost = () => {
+  const { fontSize, setFontSize, darkMode, setDarkMode } = useContext(SettingContext); // Lấy giá trị từ SettingContext
+  const [isModalVisible, setIsModalVisible] = React.useState(false); // Trạng thái của modal
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const {theme} = useContext(SettingContext)
+  const styles = StyleSheet.create({
+    headerContainer: {
+      paddingTop: Platform.OS== "ios"?40:0, // Ensure the header is below the StatusBar
+      backgroundColor: theme.background,
+    },
+    header: {
+      flexDirection: "row",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      height: 60,
+      paddingHorizontal: 20,
+      paddingVertical:5,
+      backgroundColor:  theme.background,
+      elevation: 3,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
+    logo: {
+      width: 100,
+      height: 55,
+      resizeMode: "contain",
+    },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: theme.background,
+    borderRadius: 10,
+  },
+  closeButton: {
+    alignItems: "center",
+    paddingVertical: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  });
+  const navigation = useNavigation();
+  return (
+    <View style={styles.headerContainer}>
+      <StatusBar  />
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => setPopupVisible(true)}>
+              <Icon name="format-size" size={24} color={theme.textColor2} />
+          </TouchableOpacity>
+          <Image
+              source={require("./assets/logo.png")}
+              style={styles.logo}
+          />
+          <TouchableOpacity onPress={() => {console.log("Navigating to Search"); navigation.navigate("Search")}}>
+              <Ionicons name="search-sharp" size={24} color={theme.textColor2} />
           </TouchableOpacity>
       </View>
       <Ex visible={isPopupVisible} onClose={() => setPopupVisible(false)} />
@@ -335,10 +411,10 @@ function HomeTab() {
       <Tab.Screen name="WorldScreen" component={WorldScreen} options={{ title: "Thế giới" }}/>
       <Tab.Screen name="BusinessScreen" component={BusinessScreen} options={{ title: "Kinh doanh" }} />
       <Tab.Screen name="RealEstateScreen" component={RealEstateScreen} options={{ title: "Bất động sản" }} />
-      <Tab.Screen name="Science" component={Science} options={{ title: "Khoa học" }} />
-      <Tab.Screen name="Entertainment" component={Entertainment} options={{ title: "Giải trí" }} />
-      <Tab.Screen name="Sport" component={Sport} options={{ title: "Thể thao" }} />
-      <Tab.Screen name="Law" component={Law} options={{ title: "Pháp luật" }} />
+      <Tab.Screen name="ScienceScreen" component={ScienceScreen} options={{ title: "Khoa học" }} />
+      <Tab.Screen name="EntertainmentScreen" component={EntertainmentScreen} options={{ title: "Giải trí" }} />
+      <Tab.Screen name="SportScreen" component={SportScreen} options={{ title: "Thể thao" }} />
+      <Tab.Screen name="LawScreen" component={LawScreen} options={{ title: "Pháp luật" }} />
     </Tab.Navigator>
   );
 }
@@ -384,7 +460,7 @@ function HomeStack({ navigation, route }) {
   React.useLayoutEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route) ?? "Home";
     navigation.setOptions({
-      tabBarStyle: routeName === "HomePost"
+      tabBarStyle: routeName === "HomePost" 
         ? { display: "none" }
         : {
             paddingVertical: 5,
@@ -398,6 +474,34 @@ function HomeStack({ navigation, route }) {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="HomePost" component={Post} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
+function SearchScreen({ navigation, route }) {
+  const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "Search";
+    navigation.setOptions({
+      tabBarStyle: routeName === "SearchPost"
+        ? { display: "none" }
+        : {
+            paddingVertical: 5,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+    });
+  }, [navigation, route, theme]);
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Search" component={Search} options={{
+          header: () => <CustomHeader3 title="Tìm kiếm" theme={theme} />,  // Thêm CustomHeader3
+        }}/>
+      <Stack.Screen name="SearchPost" component={Post} options={{
+          header: () => <CustomHeaderPost title=""  theme={theme} />,  
+        }}/>
     </Stack.Navigator>
   );
 }
@@ -474,6 +578,101 @@ function RealEstateScreen({ navigation, route }) {
   );
 }
 
+function ScienceScreen({ navigation, route }) {
+  const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "Science";
+    navigation.setOptions({
+      tabBarStyle: routeName === "SciencePost"
+        ? { display: "none" }
+        : {
+            paddingVertical: 5,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+    });
+  }, [navigation, route, theme]);
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Science" component={Science} />
+      <Stack.Screen name="SciencePost" component={Post} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
+function EntertainmentScreen({ navigation, route }) {
+  const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "Entertainment";
+    navigation.setOptions({
+      tabBarStyle: routeName === "EntertainmentPost"
+        ? { display: "none" }
+        : {
+            paddingVertical: 5,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+    });
+  }, [navigation, route, theme]);
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Entertainment" component={Entertainment} />
+      <Stack.Screen name="EntertainmentPost" component={Post} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
+function SportScreen({ navigation, route }) {
+  const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "Sport";
+    navigation.setOptions({
+      tabBarStyle: routeName === "SportPost"
+        ? { display: "none" }
+        : {
+            paddingVertical: 5,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+    });
+  }, [navigation, route, theme]);
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Sport" component={Sport} />
+      <Stack.Screen name="SportPost" component={Post} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
+function LawScreen({ navigation, route }) {
+  const { theme } = useContext(SettingContext);
+
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? "Law";
+    navigation.setOptions({
+      tabBarStyle: routeName === "LawPost"
+        ? { display: "none" }
+        : {
+            paddingVertical: 5,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+    });
+  }, [navigation, route, theme]);
+
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Law" component={Law} />
+      <Stack.Screen name="LawPost" component={Post} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
 
 function ProfileScreen({ navigation, route }) {
   const { theme } = useContext(SettingContext);
@@ -549,7 +748,7 @@ function MainStackNavigator() {
       <Stack.Navigator >
         {/* Đặt BottomTabNavigator bên trong StackNavigator */}
         <Stack.Screen name="Main" component={BottomTabNavigator} options={{ headerShown: false }}/>
-
+        <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }}/>
         {/* Các màn hình không cần BottomTabNavigator */}
         <Stack.Screen name="LogIn" component={LogIn} options={{ headerShown: false }}/>
         <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }}/>

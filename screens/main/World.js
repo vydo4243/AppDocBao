@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { getPostsByHash } from '../../firebaseConfig';
 import Thumbnail from '../../component/Thumbnail'; 
 import { SettingContext } from '../../context/SettingContext';
@@ -48,19 +48,22 @@ const World = ({ useFirebase = false }) => {
     });
 
     return (
-        <View style={styles.container}>
-            {loading ? (
-                <ActivityIndicator size="large" color={theme.color} />
-            ) : list.length > 0 ? (
-                <FlatList
-                    data={list}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id || item.title}
-                />
-            ) : (
-                <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
-            )}
-        </View>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={styles.container}>
+                {loading ? (
+                    <ActivityIndicator size="large" color={theme.color} />
+                ) : list.length > 0 ? (
+                    <FlatList
+                        data={list}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id || item.title}
+                        scrollEnabled={false} 
+                    />
+                ) : (
+                    <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
+                )}
+            </View>
+        </ScrollView>
     );
 };
 

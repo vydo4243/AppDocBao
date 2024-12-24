@@ -80,19 +80,24 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
 
     const styles = StyleSheet.create({
         container: {
+            flex:1,
             marginTop: 10,
-            width: windowWidth - 10,
+            marginBottom:10,
+            width: "100%",
             paddingVertical: 10,
             paddingHorizontal: 20,
             backgroundColor: theme.cardBackground,
+            // Đổ bóng (iOS)
             shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.5,
+            shadowOffset: { width: 0, height: 3 },  // Đổ bóng chỉ phía dưới
+            shadowOpacity: 0.2,
             shadowRadius: 8,
-            elevation: 8,
+
+            // Đổ bóng (Android)
+            elevation: 3,
             borderRadius: 8,
             gap: 15,
-            alignSelf: "center",
+            alignSelf: "stretch",
         },
         image: {
             width: "100%",
@@ -104,7 +109,7 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
         },
         title: {
             fontFamily: theme.font.bold,
-            fontSize: fontSize + 2,
+            fontSize: fontSize + 4,
             color: theme.textColor,
             lineHeight: fontSize + 6,
         },
@@ -114,7 +119,7 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             alignItems: "center",
         },
         hashtag: {
-            fontFamily: theme.font.regular,
+            fontFamily: theme.font.reg,
             fontSize: fontSize - 2,
             color: theme.inactive,
         },
@@ -128,7 +133,7 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             marginLeft: 5,
             fontFamily: theme.font.bold,
             fontSize: fontSize - 2,
-            color: theme.textColor,
+            color: isSaved ? theme.bottomTabIconColor : theme.textColor,
         },
     });
 
@@ -165,7 +170,7 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
                 <View style={styles.footerRow}>
                     <Text style={styles.hashtag}>{hashtag || "Không có"}</Text>
                     <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <MaterialCommunityIcons name={iconSaved} size={30} />
+                        <MaterialCommunityIcons name={iconSaved} size={30} color={isSaved ? theme.bottomTabIconColor : theme.textColor} />
                         <Text style={styles.saveButtonText}>
                             {isSaved ? "Bỏ lưu" : "Lưu"}
                         </Text>

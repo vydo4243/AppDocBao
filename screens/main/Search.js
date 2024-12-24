@@ -6,7 +6,7 @@ import { getPostBySearchWord } from "../../firebaseConfig";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Dialog from "react-native-dialog"; // Import Dialog
 
-export default function Trend() {
+export default function Search() {
   const [list, setList] = useState([]);
   const [searchWord, setWord] = useState("");
   const { theme } = useContext(SettingContext);
@@ -119,7 +119,7 @@ export default function Trend() {
         <FlatList
           data={list}
           renderItem={({ item }) => (
-            <Thumbnail id={item.id} title={item.title} image={item.image} nav="TrendPost" />
+            <Thumbnail id={item.id} title={item.title} image={item.image} hashtag={item.hashtag} nav="SearchPost"  initialSaved={item.initialSaved}/>
           )}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

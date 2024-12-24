@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { getHome } from '../../firebaseConfig';
 import Thumbnail from '../../component/Thumbnail';
 import { SettingContext } from '../../context/SettingContext';
 import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
+import Weather from '../Weather';
 
 const Home = () => {
     const [articles, setArticles] = useState([]);
@@ -60,19 +61,23 @@ const Home = () => {
     });
 
     return (
-        <View style={styles.container}>
-            {loading ? (
-                <ActivityIndicator size="large" color={theme.color} />
-            ) : articles.length > 0 ? (
-                <FlatList
-                    data={articles}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id || item.title}
-                />
-            ) : (
-                <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
-            )}
-        </View>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={styles.container}>
+                <Weather />
+                {loading ? (
+                    <ActivityIndicator size="large" color={theme.color} />
+                ) : articles.length > 0 ? (
+                    <FlatList
+                        data={articles}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id || item.title}
+                        scrollEnabled={false} 
+                    />
+                ) : (
+                    <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
+                )}
+            </View>
+        </ScrollView>
     );
 };
 

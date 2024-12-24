@@ -27,7 +27,7 @@ export default function Post({ route }) {
   const [saved, setSaved] = useState(initialSaved);
   const [iconSaved, setIcon] = useState(initialSaved ? "bookmark" : "bookmark-outline");
   const { isAuthenticated } = useContext(UserContext);
-  const { theme, setReading } = useContext(SettingContext);
+  const { theme, fontSize, setReading } = useContext(SettingContext);
   const [loading, setLoading] = useState(true);  // Thêm trạng thái loading
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogContent, setDialogContent] = useState({
@@ -143,7 +143,7 @@ export default function Post({ route }) {
       backgroundColor: "gray",
     },
     title: {
-      fontSize: 20,
+      fontSize: fontSize+4,
       fontFamily: theme.font.bold,
       marginHorizontal: 20,
       color: theme.textColor
@@ -157,13 +157,13 @@ export default function Post({ route }) {
       justifyContent: "space-between",
     },
     publishInfo: {
-      fontSize: 14,
+      fontSize: fontSize-2,
       fontFamily: theme.font.italic,
       color: theme.textColor2
     },
     content: {
       marginHorizontal: 20,
-      fontSize: 16,
+      fontSize: fontSize,
       fontFamily: theme.font.reg,
       lineHeight: 30,
       marginBottom: 20,
