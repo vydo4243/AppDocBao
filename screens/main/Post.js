@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   Alert,
+  Share
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SettingContext } from "../../context/SettingContext";
@@ -130,13 +131,20 @@ export default function Post({ route }) {
     }
   };
 
-  const shareFB = () => {
-    //share qua fb
-    console.log("Share qua facebook thành công");
-  };
-  const shareGM = () => {
-    //share qua gmail
-    console.log("Share qua gmail thành công");
+  const share = async() => {
+    try{
+      const result = await Share.share({
+        message:title+".\n\n"+content,
+      })
+      if(result.action ===Share.sharedAction){
+        Alert.alert("Chia sẻ thành công")
+      }
+      else{
+        Alert.alert("Lỗi","Không thể tiến hành chia sẻ bài viết")
+      }
+    }catch(error){
+      
+    }
   };
   const navigation = useNavigation();
   const scrollRef = useRef(null);
@@ -165,11 +173,8 @@ export default function Post({ route }) {
         </View>
         <View style={styles.publishInfoFrame}>
           <View style={{ flexDirection: "row", gap: 20 }}>
-            <TouchableOpacity onPress={() => shareFB()}>
-              <Zocial name="facebook" size={24} color="blue" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => shareGM()}>
-              <Zocial name="gmail" size={24} color="red" />
+            <TouchableOpacity onPress={() => share()}>
+              <MaterialCommunityIcons name="share" size={24} color={theme.color} />
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => bookmark()}>

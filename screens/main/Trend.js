@@ -119,7 +119,7 @@ export default function Trend() {
         <FlatList
           data={list}
           renderItem={({ item }) => (
-            <Thumbnail id={item.id} title={item.title} image={item.image} nav="TrendPost" />
+            <Thumbnail id={item.id} title={item.title} image={item.image} hashtag={item.hashtag} nav="TrendPost" />
           )}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
