@@ -1,115 +1,156 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
-import xml2js from 'react-native-xml2js';  // Import thư viện
-import RenderHTML from 'react-native-render-html';
-import { Dimensions } from "react-native";
-import { useWindowDimensions } from 'react-native';
-export default function TrendingNews() {
-    const [articles, setArticles] = useState([]);
+import React, { useContext, useEffect, useState , useCallback } from "react";
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, RefreshControl, ScrollView } from "react-native";
+import Thumbnail from "../../component/Thumbnail";
+import { getRSSPosts, getRSSBookmark } from "../../firebaseConfig";
+import { SettingContext } from "../../context/SettingContext";
+import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
+export default function Trend() {
+    const [rssPosts, setRssPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const windowWidth = Dimensions.get("window").width;
-    const fetchNews = async () => {
+    const [refreshing, setRefreshing] = useState(false);
+
+    const { theme, fontSize } = useContext(SettingContext);
+
+    // Fetch RSS posts từ Firebase
+    const fetchRSSPosts = async (isRefreshing = false) => {
+        // Nếu là làm mới, không set loading (tránh vòng quay lớn giữa trang)
+        if (!isRefreshing) {
+            setLoading(true);
+        }
+
         try {
-            const response = await fetch(
-                "https://news.google.com/rss?hl=vi&gl=VN&ceid=VN:vi"
-            );
-            const text = await response.text();
-    
-            xml2js.parseString(text, (error, result) => {
-                if (error) {
-                    console.error("Error parsing XML:", error);
-                    return;
-                }
-                const items = result.rss.channel[0].item;
-                const parsedArticles = items.map((item) => {
-                    // Trích xuất ảnh từ description (nếu có)
-                    const imgMatch = item.description[0].match(/<img[^>]+src="([^">]+)"/);
-                    const imgUrl = imgMatch ? imgMatch[1] : null;
-    
-                    return {
-                        title: item.title[0],
-                        link: item.link[0],
-                        description: item.description ? item.description[0] : "Không có mô tả",
-                        pubDate: item.pubDate ? item.pubDate[0] : "Không rõ ngày đăng",
-                        image: imgUrl,  // Thêm ảnh vào bài viết
-                    };
-                });
-    
-                setArticles(parsedArticles);
-            });
+            const posts = await getRSSPosts();
+            setRssPosts(posts);
         } catch (error) {
-            console.error("Error fetching news:", error);
+            console.error("Lỗi khi tải RSS Posts:", error);
         } finally {
             setLoading(false);
+            setRefreshing(false);  // Dù lỗi hay thành công đều dừng RefreshControl
         }
     };
 
-    useEffect(() => {
-        fetchNews();
-    }, []);
+    // Gọi fetchRSSPosts khi màn hình Trend focus
+    useFocusEffect(
+        useCallback(() => {
+            fetchRSSPosts();  // Tải lại dữ liệu khi focus
+        }, [])
+    );
+    const handleSaveChange = (id, newSavedStatus) => {
+        // Cập nhật nhanh trạng thái trong state hiện tại (UI phản hồi ngay)
+        const updatedList = rssPosts.map(post =>
+            post.id === id ? { ...post, saved: newSavedStatus } : post
+        );
+        setRssPosts(updatedList);
+    
+        // Thực hiện gọi API trong nền để đồng bộ trạng thái
+        if (newSavedStatus) {
+            bookmarkRSS(id).catch(() => {
+                // Nếu thất bại, rollback trạng thái
+                setRssPosts((prev) =>
+                    prev.map((post) =>
+                        post.id === id ? { ...post, saved: !newSavedStatus } : post
+                    )
+                );
+                alert("Lỗi khi lưu bài viết. Vui lòng thử lại.");
+            });
+        } else {
+            unbookmarkRSS(id).catch(() => {
+                setRssPosts((prev) =>
+                    prev.map((post) =>
+                        post.id === id ? { ...post, saved: !newSavedStatus } : post
+                    )
+                );
+                alert("Lỗi khi bỏ lưu bài viết. Vui lòng thử lại.");
+            });
+        }
+    };
+    
+    // Làm mới danh sách khi kéo xuống
+    const handleRefresh = async () => {
+        setRefreshing(true);
+    
+        // Tải dữ liệu mới nhưng giữ lại dữ liệu cũ cho đến khi có phản hồi
+        const oldList = [...rssPosts];  // Lưu danh sách cũ
+    
+        try {
+            const newPosts = await getRSSPosts();
+            setRssPosts(newPosts);
+        } catch (error) {
+            console.error("Lỗi khi tải RSS Posts:", error);
+            // Nếu lỗi, khôi phục danh sách cũ
+            setRssPosts(oldList);
+            alert("Lỗi mạng. Không thể làm mới dữ liệu.");
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
+    
     const renderItem = ({ item }) => (
-        <View style={styles.articleContainer}>
-            {item.image && (
-                <Image
-                    source={{ uri: item.image }}
-                    style={styles.image}
-                    resizeMode="cover"
-                />
-            )}
-            <Text style={styles.title}>{item.title}</Text>
-            <RenderHTML
-                contentWidth={windowWidth}
-                source={{ html: item.description }}
-                ignoredDomTags={['font']}
-            />
-            <Text style={styles.pubDate}>{item.pubDate}</Text>
-        </View>
-        
+        <Thumbnail
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            image={item.imageUrl}
+            initialSaved={item.saved}
+            onUnbookmark={handleSaveChange}
+            nav="PostRSS"
+            fontSize={fontSize}  // Truyền fontSize
+            type="rss"
+            pubDate={item.pubDate}
+        />
     );
 
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            padding: 16,
+            backgroundColor: theme.background,
+        },
+        noArticlesText: {
+            fontSize: fontSize,
+            color: theme.textColor,
+            textAlign: "center",
+            marginTop: 16,
+        },
+        loader: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+    });
+
     return (
-        <View style={styles.container}>
-            {loading ? (
-                <ActivityIndicator size="large" color="#800000" />
-            ) : (
-                <FlatList
-                    data={articles}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            )}
+        <View style={{ flex: 1, backgroundColor: theme.background }}>
+            <ScrollView
+                style={{ flex: 1 }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={handleRefresh}
+                        colors={[theme.textColor]}  // Vòng xoay - Android
+                        tintColor={theme.textColor} // Vòng xoay - iOS
+                        progressBackgroundColor={theme.background} // Nền của vòng xoay - Android
+                        style={{ backgroundColor: theme.background }} // Nền của RefreshControl
+                    />
+                }
+            >
+                <View style={styles.container}>
+                    {loading ? (  // Nếu đang loading, hiển thị vòng quay
+                        <ActivityIndicator size="large" color="#800000" style={styles.loader} />
+                    ) : rssPosts.length > 0 ? (
+                        <FlatList
+                            data={rssPosts}
+                            renderItem={renderItem}
+                            keyExtractor={(item) => item.id}
+                            scrollEnabled={false}  // Vô hiệu hóa cuộn của FlatList
+                            ListEmptyComponent={<Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>}
+                        />
+                    ) : (
+                        <Text style={styles.noArticlesText}>Không có tin để hiển thị</Text>
+                    )}
+                </View>
+            </ScrollView>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: "#fff",
-    },
-    articleContainer: {
-        marginBottom: 20,
-        padding: 10,
-        borderBottomWidth: 1,
-        borderColor: "#ddd",
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-    pubDate: {
-        fontSize: 14,
-        color: "gray",
-        marginTop: 5,
-    },
-    image: {
-        width: "100%",
-        height: 200,
-        borderRadius: 10,
-        marginBottom: 10,
-    },
-});
-

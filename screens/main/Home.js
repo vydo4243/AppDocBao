@@ -42,7 +42,7 @@ const Home = () => {
             fontSize={fontSize}
             nav="HomePost"
             initialSaved={item.saved}
-            onSaveChange={handleSaveChange}  // Truyền callback cập nhật trạng thái
+            onUnbookmark={handleSaveChange}
         />
     );
 

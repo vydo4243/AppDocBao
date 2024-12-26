@@ -26,6 +26,7 @@ export default function YourPost() {
       flex: 1,
       justifyContent: "flex-start",
       alignItems: "center",
+      backgroundColor: theme.background
     },
     list: {
       paddingBottom: 50,
@@ -33,6 +34,7 @@ export default function YourPost() {
     error: {
       fontSize: 18,
       marginTop: 50,
+      color: theme.textColor,
     },
     addButton: {
       width: 80,

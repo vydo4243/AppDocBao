@@ -2,6 +2,7 @@
   "expo": {
     "name": "U&V",
     "slug": "U&V",
+    "owner": "U&V",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

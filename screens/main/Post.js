@@ -8,15 +8,17 @@ import {
   Alert,
   Share,
   ActivityIndicator,
+  Platform
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SettingContext } from "../../context/SettingContext";
-import { useContext, useState, useRef, useEffect } from "react";
+import { useContext, useState, useRef, useEffect,useCallback } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Zocial from "@expo/vector-icons/Zocial";
 import { getBookmark, getPost, bookmarked, unbookmark } from "../../firebaseConfig";
 import { UserContext } from "../../context/UserContext";
 import Dialog from "react-native-dialog"; // Import thư viện Dialog
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Post({ route }) {
   const { id, initialSaved } = route.params; // Nhận trạng thái từ Thumbnail
@@ -41,9 +43,9 @@ export default function Post({ route }) {
   const navigation = useNavigation();
   const scrollRef = useRef(null);
 
-  useEffect(() => {
-    const getData = async () => {
-      setLoading(true);  // Bắt đầu loading khi fetch dữ liệu
+  const fetchData = async () => {
+    setLoading(true);
+    try {
       const data = await getPost(id);
       if (data) {
         setTitle(data.title);
@@ -59,10 +61,22 @@ export default function Post({ route }) {
         setSaved(docs.includes(id));
         setIcon(docs.includes(id) ? "bookmark" : "bookmark-outline");
       }
-      setLoading(false);  // Kết thúc loading sau khi fetch xong
-    };
-    getData();
+    } catch (error) {
+      console.error("Lỗi tải dữ liệu bài viết:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [id, isAuthenticated]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [id])
+  );
 
   const bookmark = async () => {
     if (!isAuthenticated) {
@@ -101,20 +115,15 @@ export default function Post({ route }) {
     setIcon(newSavedStatus ? "bookmark" : "bookmark-outline");
     setDialogVisible(true);
 
-    // Gọi callback để cập nhật trạng thái ở Thumbnail hoặc Bookmark
-    if (route.params?.onSaveChange) {
-      route.params.onSaveChange(newSavedStatus);
-    }
+    // Cập nhật trạng thái trên màn hình hiện tại
+    navigation.setOptions({
+      saved: newSavedStatus,
+    });
   };
 
-  const shareFB = () => {
-    console.log("Share qua facebook thành công");
-  };
-  const shareGM = () => {
-    console.log("Share qua gmail thành công");
-  };
   const styles = StyleSheet.create({
     container: {
+      paddingTop: Platform.OS== "ios"?40:0,
       flex: 1,
       backgroundColor: theme.background,
     },
@@ -174,26 +183,6 @@ export default function Post({ route }) {
   });
 
   
-  const bookmark = () => {
-    if (!isAuthenticated) {
-      setDialogVisible(true); // Hiển thị hộp thoại nếu chưa đăng nhập
-      return;
-    }
-    if (!saved) {
-      setSaved(true);
-      bookmarked(id);
-      setIcon("bookmark");
-      console.log("Đã lưu bài viết");
-      setDialogVisible(true);
-    } else {
-      setSaved(false);
-      unbookmark(id);
-      console.log("Đã bỏ lưu bài viết");
-      Alert.alert("Đã bỏ lưu bài viết");
-      setIcon("bookmark-outline");
-    }
-  };
-
   const share = async() => {
     try{
       const result = await Share.share({
@@ -209,8 +198,6 @@ export default function Post({ route }) {
       
     }
   };
-  const navigation = useNavigation();
-  const scrollRef = useRef(null);
 
   return (
     <View style={styles.container}>

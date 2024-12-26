@@ -9,31 +9,26 @@ export default function AboutUs() {
         container: {
           flexGrow: 1,
           padding: 20,
-          backgroundColor: '#f9f9f9',
+          backgroundColor: theme.background,
           alignItems: 'center',
-          fontFamily: "IBM Plex Serif, sans-serif",
-        },
-        logoContainer: {
-          alignItems: 'center',
-          marginBottom: 20,
         },
         logo: {
-          width: 120,
+          width: 150,
           height: 120,
           borderRadius: 60,
-          backgroundColor: '#ddd',
+          resizeMode:"contain"
         },
         title: {
           fontSize: 24,
           fontFamily: theme.font.bold,
-          color: '#333',
+          color: theme.textColor,
           textAlign: 'center',
           marginBottom: 16,
         },
         subtitle: {
           fontSize: 20,
           fontFamily: theme.font.semiBold,
-          color: '#444',
+          color: theme.textColor,
           marginTop: 20,
           marginBottom: 10,
           textAlign: 'left',
@@ -55,19 +50,19 @@ export default function AboutUs() {
           fontSize: 16,
           lineHeight: 24,
           fontFamily: theme.font.reg,
-          color: '#555',
+          color: theme.textColor2,
           textAlign: 'justify',
           marginBottom: 12,
         },
         highlight: {
-          fontWeight: '700',
+          fontFamily:theme.font.bold,
           color: theme.color,
         },
         listItem: {
           fontSize: 16,
           lineHeight: 24,
           fontFamily: theme.font.reg,
-          color: '#555',
+          color: theme.textColor2,
           textAlign: 'left',
           alignSelf: 'flex-start',
           marginLeft: 10,
@@ -89,12 +84,14 @@ export default function AboutUs() {
           alignItems: 'center',
         },
         contactItem: {
+          fontFamily: theme.font.reg,
           fontSize: 16,
           color: '#333',
           marginBottom: 8,
           alignItems:'flex-start',
         },
         contactButton: {
+          fontFamily: theme.font.semiBold,
           marginTop: 12,
           fontSize: 16,
           color: theme.color,
@@ -106,19 +103,19 @@ export default function AboutUs() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-        //   source={require('./assets/logo.png')} // Thay bằng đường dẫn logo của bạn
-          style={styles.logo}
+            source={require("../../assets/logo.png")}
+            style={styles.logo}
         />
       </View>
 
-      <Text style={styles.title}>Giới thiệu về <Text style={styles.highlight}>[Tên Ứng Dụng]</Text> </Text>
+      <Text style={styles.title}>Giới thiệu về <Text style={styles.highlight}>U&V</Text> </Text>
 
       <Text style={styles.paragraph}>
-        Chào mừng bạn đến với <Text style={styles.highlight}>[Tên Ứng Dụng]</Text> – người bạn đồng hành lý tưởng để cập nhật tin tức mọi lúc, mọi nơi! 
+        Chào mừng bạn đến với <Text style={styles.highlight}>U&V</Text> – người bạn đồng hành lý tưởng để cập nhật tin tức mọi lúc, mọi nơi! 
       </Text>
 
       <Text style={styles.paragraph}>
-        <Text style={styles.highlight}>[Tên Ứng Dụng]</Text> được thiết kế nhằm mang đến cho bạn trải nghiệm đọc báo hiện đại, thuận tiện và thú vị. 
+        <Text style={styles.highlight}>U&V</Text> được thiết kế nhằm mang đến cho bạn trải nghiệm đọc báo hiện đại, thuận tiện và thú vị. 
         Chúng tôi không chỉ cung cấp các tin tức mới nhất mà còn giúp bạn dễ dàng khám phá các bài viết theo sở thích, từ kinh tế, thể thao, giải trí, đến đời sống thường ngày.
       </Text>
 
@@ -131,11 +128,11 @@ export default function AboutUs() {
 
       <Text style={styles.subtitle}>Chúng tôi là ai?</Text>
       <Text style={styles.paragraph}>
-        <Text style={styles.highlight}>[Tên Ứng Dụng]</Text> là sản phẩm của [Tên Công Ty hoặc Nhóm Phát Triển], được phát triển với tâm huyết mang lại giá trị thông tin và tri thức đến cộng đồng.
+        <Text style={styles.highlight}>U&V</Text> là sản phẩm của hai bạn sinh viên Uyên và Vy, được phát triển với tâm huyết mang lại giá trị thông tin và tri thức đến cộng đồng.
       </Text>
 
       <Text style={styles.footer}>
-        Cảm ơn bạn đã lựa chọn <Text style={styles.highlight}>[Tên Ứng Dụng]</Text>. 
+        Cảm ơn bạn đã lựa chọn <Text style={styles.highlight}>U&V</Text>. 
         Chúng tôi cam kết không ngừng cải tiến để phục vụ bạn tốt hơn mỗi ngày!
       </Text>
 

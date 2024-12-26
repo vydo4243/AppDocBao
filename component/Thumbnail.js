@@ -6,10 +6,10 @@ import { Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 const windowWidth = Dimensions.get("window").width;
-import { updateHistory, bookmarked, unbookmark, getBookmark } from "../firebaseConfig";
+import { updateHistory, bookmarked, unbookmark, getBookmark, unbookmarkRSS, bookmarkRSS, getRSSBookmark, updateHistoryRSS} from "../firebaseConfig";
 import Dialog from "react-native-dialog"; // Import thư viện Dialog
 
-export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved, onSaveChange }) {
+export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved, onUnbookmark, type = "firebase", pubDate }) {
     const navigation = useNavigation();
     const { theme, setReading, fontSize } = useContext(SettingContext);
     const { isAuthenticated } = useContext(UserContext);
@@ -22,6 +22,9 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
         description: "",
         showLogin: false,
     });
+    useEffect(() => {
+        setSaved(initialSaved);  // Đồng bộ khi initialSaved thay đổi từ Bookmark
+    }, [initialSaved]);
 
     const handleSave = async () => {
         if (!isAuthenticated) {
@@ -33,50 +36,105 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             setDialogVisible(true);
             return;
         }
-    
         let newSavedStatus;
         if (isSaved) {
-            await unbookmark(id);
-            newSavedStatus = false;
+            if (type === "rss") {
+                await unbookmarkRSS(id);
+            } else {
+                await unbookmark(id);
+            }
+            newSavedStatus = false;  // Cập nhật icon và text khi bỏ lưu
             setDialogContent({
                 title: "Đã bỏ lưu bài viết",
                 description: "Bài viết đã được bỏ lưu khỏi mục yêu thích của bạn.",
                 showLogin: false,
             });
+
+            // Gọi callback khi bỏ lưu
+            if (onUnbookmark) {
+                onUnbookmark(id, newSavedStatus);
+            }
+            
         } else {
-            await bookmarked(id);
+            if (type === "rss") {
+                await bookmarkRSS(id);
+            } else {
+                await bookmarked(id);
+            }
+
             newSavedStatus = true;
             setDialogContent({
                 title: "Đã lưu bài viết",
                 description: "Bài viết đã được lưu vào mục yêu thích của bạn.",
                 showLogin: false,
             });
+
+           
         }
-    
         setSaved(newSavedStatus);
         setIcon(newSavedStatus ? "bookmark" : "bookmark-outline");
         setDialogVisible(true);
-    
-        // Gọi callback cập nhật trạng thái trong danh sách Home
-        if (onSaveChange) {
-            onSaveChange(id, newSavedStatus);
-        }
     };
     
 
 
     const syncBookmarkStatus = async () => {
         if (isAuthenticated) {
-            const docs = await getBookmark();
-            const isBookmarked = docs.includes(id);
-            setSaved(isBookmarked);
-            setIcon(isBookmarked ? "bookmark" : "bookmark-outline");
+            if (type === "rss") {
+                const rssDocs = await getRSSBookmark();
+                const isBookmarked = rssDocs ? rssDocs.includes(id) : false;
+                setSaved(isBookmarked);
+                setIcon(isBookmarked ? "bookmark" : "bookmark-outline");
+            } else {
+                const docs = await getBookmark();
+                const isBookmarked = docs ? docs.includes(id) : false;
+                setSaved(isBookmarked);
+                setIcon(isBookmarked ? "bookmark" : "bookmark-outline");
+            }
         }
     };
-
+    
     useEffect(() => {
         syncBookmarkStatus();
     }, [id, isAuthenticated]);
+
+    // Hàm định dạng pubDate
+    function formatPubDate(pubDate) {
+        try {
+            // Tách phần ngày, giờ và múi giờ
+            const parts = pubDate.match(/(\d{2})\/(\d{2})\/(\d{4}), (\d{2}:\d{2}) \(GMT\+(\d+)\)/);
+            
+            if (!parts) throw new Error("Invalid pubDate format");
+    
+            const day = parts[1];
+            const month = parts[2];
+            const year = parts[3];
+            const time = parts[4];
+            const gmtOffset = parts[5];
+    
+            // Định dạng lại thành ISO 8601
+            const isoDate = `${year}-${month}-${day}T${time}:00+0${gmtOffset}:00`;
+    
+            // Parse thành Date object
+            const date = new Date(isoDate);
+            
+            if (isNaN(date.getTime())) throw new Error("Invalid date conversion");
+    
+            // Định dạng lại theo chuẩn VN
+            return date.toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'Asia/Ho_Chi_Minh'
+            });
+            
+        } catch (error) {
+            console.error("Lỗi định dạng pubDate:", error);
+            return "Không rõ ngày";
+        }
+    }
 
     const styles = StyleSheet.create({
         container: {
@@ -111,7 +169,7 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             fontFamily: theme.font.bold,
             fontSize: fontSize + 4,
             color: theme.textColor,
-            lineHeight: fontSize + 6,
+            lineHeight: fontSize + 8,
         },
         footerRow: {
             flexDirection: "row",
@@ -143,19 +201,24 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             onPress={() => {
                 if (nav !== "EditPost") setReading(true);
                 if (isAuthenticated) {
-                    updateHistory(id).then(() => {
-                        navigation.navigate(nav, { 
-                            id: id, 
-                            initialSaved: isSaved,
-                            onSaveChange: (newSavedStatus) => {
-                                setSaved(newSavedStatus);
-                                setIcon(newSavedStatus ? "bookmark" : "bookmark-outline");
-                        
-                                if (route.params?.onSaveChange) {
-                                    route.params.onSaveChange(id, newSavedStatus);
-                                }
-                            }
-                        });
+                    if (type === "rss") {
+                        updateHistoryRSS(id).then(() => {
+                            navigation.navigate(nav, { 
+                                id: id, 
+                                initialSaved: isSaved,
+                            });
+                        });  // Lịch sử cho bài viết RSS
+                    } else {
+                        updateHistory(id).then(() => {
+                            navigation.navigate(nav, { 
+                                id: id, 
+                                initialSaved: isSaved,
+                            });
+                        });  // Lịch sử cho bài viết firebase
+                    }
+                    navigation.navigate(nav, {
+                        id: id,
+                        initialSaved: isSaved,
                     });
                 } else {
                     navigation.navigate(nav, { id: id });
@@ -163,14 +226,19 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             }}
         >
             <View style={styles.container}>
-                <Image style={styles.image} source={image ? { uri: image } : image} />
+                <Image style={styles.image} source={image ? { uri: image } : {uri: "https://www.shutterstock.com/image-photo/create-visual-breaking-news-image-260nw-2528875197.jpg"}} />
                 <Text numberOfLines={3} ellipsizeMode="tail" style={styles.title}>
                     {title}
                 </Text>
                 <View style={styles.footerRow}>
-                    <Text style={styles.hashtag}>{hashtag || "Không có"}</Text>
+                    {type === "firebase" && (
+                        <Text style={styles.hashtag}>{hashtag || "Không rõ"}</Text>
+                    )}
+                    {type === "rss" && (
+                        <Text style={styles.hashtag}>{formatPubDate(pubDate)}</Text>
+                    )}
                     <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <MaterialCommunityIcons name={iconSaved} size={30} color={isSaved ? theme.bottomTabIconColor : theme.textColor} />
+                        <MaterialCommunityIcons name={isSaved ? "bookmark" : "bookmark-outline"} size={30} color={isSaved ? theme.bottomTabIconColor : theme.textColor} />
                         <Text style={styles.saveButtonText}>
                             {isSaved ? "Bỏ lưu" : "Lưu"}
                         </Text>
@@ -178,11 +246,40 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
                 </View>
             </View>
 
-            <Dialog.Container visible={dialogVisible}>
-                <Dialog.Title>{dialogContent.title}</Dialog.Title>
-                <Dialog.Description>{dialogContent.description}</Dialog.Description>
-                <Dialog.Button label="Đóng" onPress={() => setDialogVisible(false)} />
-            </Dialog.Container>
+      {/* Dialog */}
+      <Dialog.Container
+        style={{ backgroundColor: theme.background, borderRadius: 40 }}
+        visible={dialogVisible}
+        onBackdropPress={() => setDialogVisible(false)}
+      >
+        <Dialog.Title style={{ color: '#14375F', fontSize: 20, fontWeight: 'bold' }}>
+          {dialogContent.title}
+        </Dialog.Title>
+        <Dialog.Description style={{ color: '#333', fontSize: 16, textAlign: 'center' }}>
+          {dialogContent.description}
+        </Dialog.Description>
+        <Dialog.Button
+          label="Đóng"
+          onPress={() => setDialogVisible(false)}
+          style={{ backgroundColor: '#f5f5f5', color: '#333', borderRadius: 10, padding: 10 }}
+        />
+        {dialogContent.showLogin && (
+          <Dialog.Button
+            label="Đăng nhập"
+            onPress={() => {
+              setDialogVisible(false);
+              navigation.navigate("LogIn");
+            }}
+            style={{
+              backgroundColor: '#14375F',
+              color: '#fff',
+              borderRadius: 10,
+              padding: 10,
+              marginLeft: 10,
+            }}
+          />
+        )}
+      </Dialog.Container>
         </TouchableOpacity>
     );
 }

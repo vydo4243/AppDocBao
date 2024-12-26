@@ -30,6 +30,7 @@ const Law = ({ useFirebase = false }) => {
             hashtag={item.hashtag || "Không có"}  // Truyền hashtag, fallback nếu không có
             fontSize={fontSize}  // Truyền fontSize
             nav="LawPost"
+            initialSaved={item.saved}
         />
     );
 

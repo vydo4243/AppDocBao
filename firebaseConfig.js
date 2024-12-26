@@ -25,8 +25,20 @@ const cloudinaryConfig = {
   
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = initializeAuth(app, {persistence: getReactNativePersistence(ReactNativeAsyncStorage)});
+// const app = initializeApp(firebaseConfig);
+// const auth = initializeAuth(app, {persistence: getReactNativePersistence(ReactNativeAsyncStorage)});
+// const db = getFirestore(app);
+
+//Đảm bảo rằng ứng dụng không bị khởi tạo nhiều lần
+let app;
+try {
+  app = getApp();
+} catch (e) {
+  app = initializeApp(firebaseConfig);
+}
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
 const db = getFirestore(app);
 
 const signup = async (name, email, password, additionalData) => {
@@ -313,7 +325,7 @@ const getPostBySearchWord = async(searchWord) =>{
         const posts = postsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     
     // Lọc tiêu đề chứa từ khóa
-    const filteredPosts = posts.filter((post) => post.keyword.toLowerCase().includes(searchWord.toLowerCase()));
+    const filteredPosts = posts.filter((post) => post.keyword?.toLowerCase().includes(searchWord.toLowerCase()));
     return filteredPosts;
     }catch(error){
         console.log(error)
@@ -351,5 +363,136 @@ const getHome = async() =>{
     }
 }
 
+const getRSSPosts = async () => {
+    try {
+        const q = query(collection(db, "rssPosts"), orderBy("pubDate", "desc"));
+        const querySnapshot = await getDocs(q);
+        const rssPosts = [];
+        querySnapshot.forEach((doc) => {
+            rssPosts.push({ id: doc.id, ...doc.data() });
+        });
+        return rssPosts;
+    } catch (error) {
+        console.error("Lỗi fetch RSS posts:", error);
+        return [];
+    }
+};
+
+const getRSSPostById = async (postID) => {
+    try {
+        const postRef = await getDoc(doc(db, "rssPosts", postID));
+        if (postRef.exists()) {
+            return postRef.data();
+        } else {
+            console.warn("RSS Post not found.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching RSS post:", error);
+        return null;
+    }
+};
+
+const bookmarkRSS = async (postID) => {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+        const uid = user.uid;
+        const userDocRef = doc(db, "users", uid);
+        await updateDoc(userDocRef, { saved_rss: arrayUnion(postID) });
+    
+      } catch (error) {
+        console.error("Không thể lưu bài viết rss:", error);
+      }
+};
+const unbookmarkRSS = async (postID) => {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+
+        const uid = user.uid;
+        
+        const userDoc = doc(db, "users", uid);
+        // Lưu toàn bộ movieList vào history
+        await updateDoc(userDoc, { saved_rss: arrayRemove(postID) });
+        
+        
+    } catch (error) {
+        console.error("Error removing bookmarked rss post:", error);
+        return false;
+    }
+};
+const getRSSBookmark = async () => {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+
+        const uid = user.uid;
+        const userDoc = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDoc);
+
+        if (userDocSnap.exists()) {
+            const saved_rss = userDocSnap.data().saved_rss || [];
+            return saved_rss;  // Trả về mảng các id
+        }
+        return [];
+    } catch (error) {
+        console.error("Không thể lấy ds rss đã lưu:", error);
+        return [];
+    }
+};
+
+const getHistoryRSS = async()=>{
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+        const uid = user.uid;
+        const userDoc = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDoc);
+    
+        if (userDocSnap.exists()) {
+          const history_rss = userDocSnap.data().history_rss;
+          return history_rss || null;
+        } else {
+          console.warn("Không tìm thấy tài liệu người dùng.");  
+        }
+      } catch (error) {
+        console.error("Không thể lấy lịch sử rss:", error);
+      }
+}
+
+const updateHistoryRSS = async(postID) =>{
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+    
+        const uid = user.uid;
+        const userDocRef = doc(db, "users", uid);
+        // Lưu toàn bộ movieList vào history rss
+        await updateDoc(userDocRef, { history_rss: arrayUnion(postID) });
+    
+      } catch (error) {
+        console.error("Không thể cập nhật lịch sử:", error);
+        return [];
+      }
+}
+const deleteHistoryRSS = async(postID) => {
+    try {
+        if (!postID) throw new Error("postID không hợp lệ.");
+        const user = auth.currentUser;
+        if (!user) throw new Error("Người dùng chưa đăng nhập.");
+        
+        const uid = user.uid;
+        const userDoc = doc(db, "users", uid);
+        await updateDoc(userDoc, { history_rss: arrayRemove(postID) });
+    } catch (error) {
+        console.error("Không thể xóa bài viết này khỏi lịch sử:", error);
+        return false;
+    }
+}
+
  export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, 
-    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord, ForgotPassword, getHome}
+    getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord, ForgotPassword, getHome, getRSSPosts,
+    getRSSPostById, bookmarkRSS, unbookmarkRSS, getRSSBookmark, updateHistoryRSS, getHistoryRSS, deleteHistoryRSS }

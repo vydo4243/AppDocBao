@@ -72,6 +72,8 @@ export function SettingProvider({ children }) {
     iconAvt: darkMode ? "#D9D9D9" : "#EAEAEA", // Màu icon avatar
     modeBG: darkMode ? "#767676" : "#D9D9D9",
     buttonSwitch: darkMode ? "#C4C4C4" : "#FFFFFF",
+    unread: darkMode ? "#C4C4C4" : "#CACACA",
+    textUnRead: darkMode ? "#121212" : "#808080",
     fontSize, // Kích thước font chữ
     borderFocus: darkMode ?"#D9D9D9": "#800000",
     // Màu cho các yếu tố không bị ảnh hưởng bởi theme
