@@ -15,7 +15,7 @@ import { SettingContext } from "../../context/SettingContext";
 import { useContext, useState, useRef, useEffect,useCallback } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Zocial from "@expo/vector-icons/Zocial";
-import { getBookmark, getPost, bookmarked, unbookmark } from "../../firebaseConfig";
+import { getBookmark, getPost, bookmarked, unbookmark, getRelatedPosts} from "../../firebaseConfig";
 import { UserContext } from "../../context/UserContext";
 import Dialog from "react-native-dialog"; // Import thư viện Dialog
 import { useFocusEffect } from "@react-navigation/native";
@@ -33,6 +33,7 @@ export default function Post({ route }) {
   const { isAuthenticated } = useContext(UserContext);
   const { theme, fontSize, setReading } = useContext(SettingContext);
   const [loading, setLoading] = useState(true);  // Thêm trạng thái loading
+  const [relatedPosts, setRelatedPosts] = useState([]);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogContent, setDialogContent] = useState({
     title: "",
@@ -121,6 +122,16 @@ export default function Post({ route }) {
     });
   };
 
+  useEffect(() => {
+    if (hashtag) {  // Chỉ fetch khi hashtag đã được set
+      const fetchRelatedPosts = async () => {
+        const related = await getRelatedPosts(hashtag, id);
+        setRelatedPosts(related);
+      };
+      fetchRelatedPosts();
+    }
+  }, [hashtag, id]);  // Lắng nghe khi hashtag hoặc id thay đổi
+
   const styles = StyleSheet.create({
     container: {
       paddingTop: Platform.OS== "ios"?40:0,
@@ -180,6 +191,39 @@ export default function Post({ route }) {
       marginBottom: 20,
       color: theme.textColor,
     },
+
+    relatedSection: {
+      marginTop: 30,
+      marginHorizontal: 20,
+    },
+    relatedTitle: {
+      fontSize: fontSize + 2,
+      fontFamily: theme.font.bold,
+      color: theme.textColor,
+      marginBottom: 10,
+    },
+    relatedItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 15,
+      gap: 15,
+    },
+    relatedImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 10,
+    },
+    relatedText: {
+      flex: 1,
+      fontSize: fontSize,
+      fontFamily: theme.font.reg,
+      color: theme.textColor,
+    },
+    noRelatedText: {
+      fontSize: fontSize - 2,
+      fontFamily: theme.font.italic,
+      color: theme.textColor2,
+    },
   });
 
   
@@ -198,6 +242,35 @@ export default function Post({ route }) {
       
     }
   };
+
+  const handleNavigate = (relatedPost) => {
+    const screenName = getScreenNameByCategory(relatedPost.category);  // Lấy tên màn hình theo category
+    navigation.navigate(screenName, { id: relatedPost.id });
+};
+
+// Hàm xác định màn hình tương ứng dựa trên category
+const getScreenNameByCategory = (category) => {
+    switch (category) {
+        case "Kinh doanh":
+            return "BusinessPost";
+        case "Thế giới":
+            return "WorldPost";
+        case "Bất động sản":
+          return "RealEstatePost"
+        case "Bất động sản":
+          return "RealEstatePost"
+        case "Khoa học":
+          return "SciencePost"
+        case "Giải trí":
+          return "EntertainmentPost"
+        case "Thể thao":
+          return "SportPost"
+        case "Pháp luật":
+          return "LawPost"
+        default:
+            return "HomePost";  // Mặc định là màn hình HomePost
+    }
+};
 
   return (
     <View style={styles.container}>
@@ -233,6 +306,24 @@ export default function Post({ route }) {
           </TouchableOpacity>
         </View>
         <Text style={styles.content}>{content}</Text>
+        
+        <View style={styles.relatedSection}>
+        <Text style={styles.relatedTitle}>Bài viết liên quan</Text>
+        {relatedPosts.length > 0 ? (
+          relatedPosts.map((post) => (
+            <TouchableOpacity
+              key={post.id}
+              style={styles.relatedItem}
+              onPress={() => handleNavigate(post)}
+            >
+              <Image source={{ uri: post.image }} style={styles.relatedImage} />
+              <Text numberOfLines={2} style={styles.relatedText}>{post.title}</Text>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.noRelatedText}>Không có bài viết liên quan</Text>
+        )}
+      </View>
       </ScrollView>
 )}
       <TouchableOpacity

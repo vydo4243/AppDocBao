@@ -170,6 +170,9 @@ export default function Thumbnail({ id, title, image, hashtag, nav, initialSaved
             fontSize: fontSize + 4,
             color: theme.textColor,
             lineHeight: fontSize + 8,
+            // flexShrink:1,
+            // flexGrow:1,
+            // textAlign:""
         },
         footerRow: {
             flexDirection: "row",

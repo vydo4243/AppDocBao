@@ -16,7 +16,7 @@ import { SettingContext } from "../../context/SettingContext";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Dialog from "react-native-dialog";
 import { UserContext } from "../../context/UserContext";
-import { getRSSBookmark, getRSSPostById, unbookmarkRSS, bookmarkRSS } from "../../firebaseConfig";
+import { getRSSBookmark, getRSSPostById, unbookmarkRSS, bookmarkRSS, getRecentRSSPosts } from "../../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -29,6 +29,8 @@ export default function PostRSS({ route }) {
   const { isAuthenticated } = useContext(UserContext);
   const { theme, fontSize, setReading } = useContext(SettingContext);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [recentPosts, setRecentPosts] = useState([]);
+
   const [dialogContent, setDialogContent] = useState({
     title: "",
     description: "",
@@ -108,6 +110,15 @@ export default function PostRSS({ route }) {
       });
   };
 
+  useEffect(() => {
+    const fetchRecentPosts = async () => {
+        const recent = await getRecentRSSPosts(5);  // Lấy 5 bài mới nhất
+        setRecentPosts(recent);
+    };
+    fetchRecentPosts();
+}, [id]);
+
+
  const styles = StyleSheet.create({
     container: {
       paddingTop: Platform.OS== "ios"?40:0,
@@ -153,6 +164,7 @@ export default function PostRSS({ route }) {
       marginHorizontal: 20,
       marginVertical: 10,
       justifyContent: "space-between",
+      flexWrap:"wrap"
     },
     publishInfo: {
       fontSize: fontSize-2,
@@ -167,6 +179,40 @@ export default function PostRSS({ route }) {
       marginBottom: 20,
       color: theme.textColor,
     },
+
+    relatedSection: {
+      marginTop: 30,
+      marginHorizontal: 20,
+    },
+    relatedTitle: {
+      fontSize: fontSize + 2,
+      fontFamily: theme.font.bold,
+      color: theme.textColor,
+      marginBottom: 10,
+    },
+    relatedItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 15,
+      gap: 15,
+    },
+    relatedImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 10,
+    },
+    relatedText: {
+      flex: 1,
+      fontSize: fontSize,
+      fontFamily: theme.font.reg,
+      color: theme.textColor,
+    },
+    noRelatedText: {
+      fontSize: fontSize - 2,
+      fontFamily: theme.font.italic,
+      color: theme.textColor2,
+    },
+
   });
 
   if (!post) {
@@ -264,7 +310,31 @@ export default function PostRSS({ route }) {
           <MaterialCommunityIcons name={iconSaved} size={30} color={saved ? theme.bottomTabIconColor : theme.textColor} />
         </TouchableOpacity>
       </View>
+      <Text style={styles.content}>{post.abstract}</Text>
       <Text style={styles.content}>{post.content}</Text>
+
+      <View style={styles.relatedSection}>
+        <Text style={styles.relatedTitle}>Bài viết mới đăng tải gần đây</Text>
+        {recentPosts.length > 0 ? (
+          recentPosts.map((post) => (
+            <TouchableOpacity
+              key={post.id}
+              style={styles.relatedItem}
+              onPress={() =>
+                navigation.push("PostRSS", {
+                    id: post.id,
+                    initialSaved: post.saved || false,
+                })
+            }
+            >
+              <Image source={{ uri: post.image }} style={styles.relatedImage} />
+              <Text numberOfLines={2} style={styles.relatedText}>{post.title}</Text>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.noRelatedText}>Không có bài viết</Text>
+        )}
+      </View>
     </ScrollView>
  ) : (
   <Text style={styles.title}>Không tìm thấy bài viết</Text>

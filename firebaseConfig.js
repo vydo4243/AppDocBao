@@ -493,6 +493,49 @@ const deleteHistoryRSS = async(postID) => {
     }
 }
 
+const getRelatedPosts = async (hashtag, postId) => {
+    try {
+        const q = query(
+            collection(db, "posts"),
+            orderBy("publishDate", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const relatedPosts = [];
+
+        querySnapshot.forEach((doc) => {
+            const post = doc.data();
+            if (post.hashtag === hashtag && doc.id !== postId) {
+                relatedPosts.push({ id: doc.id, ...post });
+            }
+        });
+
+        return relatedPosts;
+    } catch (error) {
+        console.error("Lỗi fetch bài viết liên quan:", error);
+        return [];
+    }
+};
+
+const getRecentRSSPosts = async (limitNumber = 5) => {
+    try {
+        const q = query(
+            collection(db, "rssPosts"),
+            orderBy("pubDate", "desc"),
+            // limit(limitNumber)  // Lấy số lượng bài viết giới hạn
+        );
+        const querySnapshot = await getDocs(q);
+        const recentPosts = [];
+        querySnapshot.forEach((doc) => {
+            recentPosts.push({ id: doc.id, ...doc.data() });
+        });
+        return recentPosts;
+    } catch (error) {
+        console.error("Lỗi fetch bài viết mới:", error);
+        return [];
+    }
+};
+
+
  export{ auth, signup, login, logout,uploadImage, updateAvatar, updateInfo, addPost, getYourPost, getPost, deletePost, updatePost, 
     getPostsByHash, getBookmark, bookmarked, unbookmark, updateHistory, getHistory, deleteHistory, getPostBySearchWord, ForgotPassword, getHome, getRSSPosts,
-    getRSSPostById, bookmarkRSS, unbookmarkRSS, getRSSBookmark, updateHistoryRSS, getHistoryRSS, deleteHistoryRSS }
+    getRSSPostById, bookmarkRSS, unbookmarkRSS, getRSSBookmark, updateHistoryRSS, getHistoryRSS, deleteHistoryRSS, getRelatedPosts, getRecentRSSPosts }
