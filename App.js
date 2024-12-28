@@ -43,6 +43,7 @@ import Search from "./screens/main/Search";
 import { SettingProvider, SettingContext } from "./context/SettingContext";
 import { UserProvider, UserContext} from "./context/UserContext"; // Import UserProvider
 import Ex from "./screens/setting/Ex";
+import PostRSS from "./screens/main/PostRSS";
 
 const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
@@ -449,7 +450,7 @@ function TrendScreen({ navigation, route }) {
         }}
       />
       {/* Các màn hình khác ẩn header */}
-      <Stack.Screen name="TrendPost" component={Post} options={{ headerShown: false }} />
+      <Stack.Screen name="PostRSS" component={PostRSS} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

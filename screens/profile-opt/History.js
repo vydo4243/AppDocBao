@@ -34,14 +34,16 @@ export default function Bookmark(){
   const {theme} = useContext(SettingContext)
   const styles=StyleSheet.create({
     container:{
-        flex:1,
-        justifyContent:"flex-start",
-        alignItems: "center",
-        backgroundColor: theme.background,
+      flex:1,
+      justifyContent:"flex-start",
+      alignItems: "center",
+      backgroundColor: theme.background,
+      padding:16,
+
     },
     error:{
-        fontSize:18,
-        marginTop: 50,
+      fontSize:18,
+      marginTop: 50,
     }
 })
   const Item = ({item}) => (

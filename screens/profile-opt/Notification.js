@@ -1,113 +1,145 @@
+import React, { useState, useContext } from "react";
 import {
-  StyleSheet,
   View,
   Text,
+  FlatList,
+  StyleSheet,
   TouchableOpacity,
-  ScrollView,
-  Image,
+  Alert,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { SettingContext } from "../../context/SettingContext";
-import { useContext, useState } from "react";
+
 export default function Notification() {
-  const { theme } = useContext(SettingContext);
+  const { theme, fontSize } = useContext(SettingContext);
+  const [notifications, setNotifications] = useState([
+    { id: "1", title: "Bài viết mới được đăng", time: "10 phút trước", read: false },
+    { id: "2", title: "Cập nhật chính sách quyền riêng tư", time: "2 giờ trước", read: false },
+    { id: "3", title: "Tin tức nổi bật hôm nay", time: "Hôm qua", read: true },
+  ]);
+
+  // Đánh dấu tất cả là đã đọc
+  const markAllAsRead = () => {
+    const updatedNotifications = notifications.map((notification) => ({
+      ...notification,
+      read: true,
+    }));
+    setNotifications(updatedNotifications);
+    Alert.alert("Thông báo", "Tất cả thông báo đã được đánh dấu là đã đọc.");
+  };
+
+  // Đánh dấu thông báo cụ thể là đã đọc
+  const markAsRead = (id) => {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+  };
+
+  const handlePress = (id, title) => {
+    markAsRead(id);
+    Alert.alert("Thông báo", `Bạn vừa mở thông báo: ${title}`);
+  };
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={[
+        styles.notificationItem,
+        { backgroundColor: item.read ? theme.cardBackground : theme.unread  },
+      ]}
+      onPress={() => handlePress(item.id, item.title)}
+    >
+      <Ionicons
+        name={item.read ? "notifications-outline" : "notifications"}
+        size={30}
+        color={theme.color}
+      />
+      <View style={styles.textContainer}>
+        <Text
+          style={[
+            styles.title,
+            { color: item.read ? theme.textColor : theme.textUnread, fontSize: 18 },
+          ]}
+        >
+          {item.title}
+        </Text>
+        <Text style={[styles.time, { color: theme.textColor2 }]}>
+          {item.time}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: "flex-start",
+      padding: 20,
+      backgroundColor:theme.background,
+    },
+    notificationItem: {
+      flexDirection: "row",
       alignItems: "center",
+      padding: 15,
+      marginBottom: 10,
+      borderRadius: 10,
+      elevation: 2,
     },
-    scroll: {
-      width: "100%",
+    textContainer: {
+      marginLeft: 15,
+      flex: 1,
     },
-    error: {
-      fontSize: 18,
+    title: {
+      fontFamily: theme.font.bold
+    },
+    time: {
+      marginTop: 5,
+      fontSize: 14,
+      corlor: theme.textColor2,
+    },
+    emptyText: {
+      textAlign: "center",
       marginTop: 50,
-    },
-    buttonFrame: {
-      backgroundColor: theme.color,
-      padding: 10,
-      borderRadius: 25,
-      margin: 10,
-    },
-    buttonText: {
-      fontFamily: theme.font.bold,
       fontSize: 18,
+      color: theme.textColor2,
     },
-    image: {
-      width: "30%",
-      height: 80,
-      backgroundColor: theme.inactive,
+    fab: {
+      position: "absolute",
+      right: 20,
+      bottom: 30,
+      backgroundColor: "#800000",
+      borderRadius: 50,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      flexDirection: "row",
+      alignItems: "center",
+      elevation: 5,
     },
-    notifName: {
-      width: "60%",
-      fontFamily: theme.font.bold,
+    fabText: {
+      color: "#fff",
+      marginLeft: 10,
       fontSize: 16,
-      flexWrap: "wrap",
-      margin: 10,
+      fontFamily: theme.font.bold,
     },
   });
-  const seen = (ten) => {
-    setList(
-      notifList.map((notif) => {
-        if (notif.ten === ten && notif.state == "Chưa đọc") {
-          return {
-            ...notif,
-            state: "Đã đọc",
-          };
-        } else return notif;
-      })
-    );
-  };
   return (
     <View style={styles.container}>
+      <FlatList
+        data={notifications}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={<Text style={styles.emptyText}>Không có thông báo</Text>}
+      />
+
+      {/* Nút FAB - Đánh dấu tất cả là đã đọc */}
       <TouchableOpacity
-        style={styles.buttonFrame}
-        onPress={() => {
-          setList(
-            notifList.map((notif) => {
-              if (notif.state == "Chưa đọc") {
-                return {
-                  ...notif,
-                  state: "Đã đọc",
-                };
-              } else return notif;
-            })
-          );
-        }}
+        style={styles.fab}
+        onPress={markAllAsRead}
       >
-        <Text style={styles.buttonText}>Đánh dấu tất cả là đã đọc</Text>
+        <Ionicons name="checkmark-done" size={28} color="#fff" />
+        <Text style={styles.fabText}>Đã đọc tất cả</Text>
       </TouchableOpacity>
-      {notifList.length == 0 ? (
-        <View style={styles.container}>
-          <Text style={styles.error}>Bạn không có thông báo nào</Text>
-        </View>
-      ) : (
-        <ScrollView style={styles.scroll}>
-          {notifList.map((notif) => {
-            return (
-              <TouchableOpacity
-                key={notif.ten}
-                onPress={() => {
-                  seen(notif.ten);
-                }}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: 10,
-                  backgroundColor:
-                    notif.state == "Chưa đọc" ? theme.color : theme.background,
-                  width: "100%",
-                  height: 100,
-                  borderBottomWidth: 1,
-                }}
-              >
-                <Image style={styles.image} src={notif.image} />
-                <Text style={styles.notifName}>{notif.ten}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      )}
     </View>
   );
 }
+

@@ -56,6 +56,8 @@ export default function SignUp() {
           avt: "https://cdn.builder.io/api/v1/image/assets/TEMP/b463d37bf2cb16b4a605772df7c7398fd66a33fb96a9785a3ecf39425b7c3245",
           saved: {},
           history:{},
+          saved_rss: [],
+          history_rss: [],
           };
           const user = await signup(username, email, password, additionalData);
           if (user && typeof user !== "string") {
