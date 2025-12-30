@@ -73,10 +73,7 @@ Cách 2: Chạy trên giả lập
 - Khởi động emulator từ AVD Manager.
 - Trong terminal Metro Bundler:
   Nhấn ``` a ``` → Expo sẽ tự động detect và cài app lên emulator.
-  Hoặc chạy lệnh:
-  ```bash
-  npx expo run:android
-  ```
+  Hoặc chạy lệnh: ``` npx expo run:android ```
 
 
 ## 📧 Liên hệ
