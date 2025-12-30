@@ -1,4 +1,4 @@
-# 📚 U&V newspaper reading mobile application
+# U&V newspaper reading mobile application
 
 <p align="center">
   <a href="https://www.uit.edu.vn/" title="University of Information Technology" style="border: none;">
@@ -56,6 +56,26 @@ cd AppDocBao
 npm install
 npx expo start
 ```
+Sau lệnh này, một cửa sổ Metro Bundler sẽ mở ra với QR code và các tùy chọn chạy.
+Cách 1: Chạy trên điện thoại thật với Expo Go:
+- Tải ứng dụng Expo Go từ:
+  Android: Google Play Store (tìm "Expo Go")
+  iOS: App Store (tìm "Expo Go")
+* Đảm bảo điện thoại và máy tính kết nối cùng một mạng Wi-Fi.
+- Quét QR code hiển thị trong terminal bằng camera của Expo Go:
+  Trên Android: Mở Expo Go → Chọn "Scan QR Code".
+  Trên iOS: Mở Expo Go → Quét QR code trực tiếp (Expo Go sẽ tự động mở camera).
+Ứng dụng sẽ tải và chạy ngay lập tức, hỗ trợ hot reload (cập nhật code realtime).
+
+Cách 2: Chạy trên giả lập
+- Tải và cài đặt Android Studio từ https://developer.android.com/studio.
+- Mở Android Studio → Configure → AVD Manager → Tạo một Virtual Device (ví dụ: Pixel 6, API level 34 hoặc mới hơn).
+- Khởi động emulator từ AVD Manager (chờ emulator chạy hoàn toàn).
+- Trong terminal Metro Bundler:
+  Nhấn a → Expo sẽ tự động detect và cài app lên emulator.
+  Hoặc chạy lệnh: ```bash npx expo run:android ```
+
+
 
 ## 📧 Liên hệ
-Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ, vui lòng liên hệ với tôi qua email: dragneel.takeshi@gmail.com hoặc 22521641@gm.uit.edu.vn
+Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ, vui lòng liên hệ với tôi qua email: vydo422004@gmail.com hoặc 22521701@gm.uit.edu.vn
